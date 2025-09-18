@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>我的订单</title>
+    <style>
+        /* 设计系统变量 */
+        :root {
+            /* 品牌色 */
+            --primary: #FF6B35;
+            --primary-light: #FF8F66;
+            --primary-dark: #E5602F;
+            
+            /* 功能色 */
+            --success: #52C41A;
+            --warning: #FAAD14;
+            --error: #F5222D;
+            --info: #1890FF;
+            
+            /* 中性色 */
+            --gray-1: #FFFFFF;
+            --gray-2: #FAFAFA;
+            --gray-3: #F5F5F5;
+            --gray-4: #E8E8E8;
+            --gray-5: #D9D9D9;
+            --gray-6: #BFBFBF;
+            --gray-7: #8C8C8C;
+            --gray-8: #595959;
+            --gray-9: #262626;
+            --gray-10: #000000;
+            
+            /* VIP色彩 */
+            --vip-gold: #FFD700;
+            --vip-gradient: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            
+            /* 间距 */
+            --spacing-1: 4px;
+            --spacing-2: 8px;
+            --spacing-3: 12px;
+            --spacing-4: 16px;
+            --spacing-5: 20px;
+            --spacing-6: 24px;
+            --spacing-8: 32px;
+            --spacing-10: 40px;
+            
+            /* 圆角 */
+            --radius-sm: 4px;
+            --radius-base: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-2xl: 24px;
+            --radius-full: 9999px;
+            
+            /* 阴影 */
+            --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-2: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-3: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+            --shadow-primary: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+        
+        /* 基础样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: var(--gray-9);
+            background-color: var(--gray-2);
+            overflow-x: hidden;
+        }
+        
+        /* 容器布局 */
+        .app-container {
+            min-height: 100vh;
+            max-width: 430px;
+            margin: 0 auto;
+            background-color: var(--gray-2);
+            position: relative;
+            padding-bottom: 60px;
+        }
+        
+        /* 顶部导航 */
+        .header {
+            background-color: var(--gray-1);
+            padding: env(safe-area-inset-top) var(--spacing-4) var(--spacing-4);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-1);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-9);
+        }
+        
+        .header-back {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        /* Tab栏 */
+        .tabs-container {
+            background-color: var(--gray-1);
+            padding: 0 var(--spacing-4);
+            position: sticky;
+            top: 60px;
+            z-index: 50;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .tabs {
+            display: flex;
+            gap: var(--spacing-8);
+            border-bottom: 1px solid var(--gray-4);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab {
+            padding: var(--spacing-4) 0;
+            font-size: 15px;
+            color: var(--gray-7);
+            cursor: pointer;
+            position: relative;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: var(--primary);
+            border-radius: 2px;
+        }
+        
+        /* 订单列表 */
+        .orders-container {
+            padding: var(--spacing-4);
+        }
+        
+        .order-card {
+            background-color: var(--gray-1);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-4);
+            margin-bottom: var(--spacing-4);
+            box-shadow: var(--shadow-2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-3);
+        }
+        
+        /* 订单头部 */
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-3);
+            padding-bottom: var(--spacing-3);
+            border-bottom: 1px solid var(--gray-4);
+        }
+        
+        .store-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+            flex: 1;
+        }
+        
+        .store-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-base);
+            background-color: var(--gray-3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        .store-details {
+            flex: 1;
+        }
+        
+        .store-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-9);
+            margin-bottom: var(--spacing-1);
+        }
+        
+        .order-time {
+            font-size: 13px;
+            color: var(--gray-7);
+        }
+        
+        .order-status {
+            padding: var(--spacing-1) var(--spacing-3);
+            border-radius: var(--radius-2xl);
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background-color: rgba(250, 173, 20, 0.1);
+            color: var(--warning);
+        }
+        
+        .status-confirmed {
+            background-color: rgba(24, 144, 255, 0.1);
+            color: var(--info);
+        }
+        
+        .status-completed {
+            background-color: rgba(82, 196, 26, 0.1);
+            color: var(--success);
+        }
+        
+        .status-cancelled {
+            background-color: rgba(189, 189, 189, 0.1);
+            color: var(--gray-7);
+        }
+        
+        /* 订单内容 */
+        .order-content {
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .order-items {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-2);
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-2) 0;
+        }
+        
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+            flex: 1;
+        }
+        
+        .item-image {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-base);
+            background-color: var(--gray-3);
+            object-fit: cover;
+        }
+        
+        .item-details {
+            flex: 1;
+        }
+        
+        .item-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--gray-9);
+            margin-bottom: var(--spacing-1);
+        }
+        
+        .item-specs {
+            font-size: 13px;
+            color: var(--gray-7);
+        }
+        
+        .item-price {
+            text-align: right;
+        }
+        
+        .price-current {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-9);
+        }
+        
+        .price-quantity {
+            font-size: 13px;
+            color: var(--gray-7);
+        }
+        
+        /* 订单汇总 */
+        .order-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: var(--spacing-3);
+            border-top: 1px solid var(--gray-4);
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .summary-label {
+            font-size: 14px;
+            color: var(--gray-7);
+        }
+        
+        .summary-amount {
+            display: flex;
+            align-items: baseline;
+            gap: var(--spacing-1);
+        }
+        
+        .amount-total {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .amount-saved {
+            font-size: 12px;
+            color: var(--vip-gold);
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 165, 0, 0.1) 100%);
+            padding: 2px 8px;
+            border-radius: var(--radius-sm);
+            margin-left: var(--spacing-2);
+        }
+        
+        /* 订单操作 */
+        .order-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--spacing-3);
+        }
+        
+        .action-btn {
+            padding: var(--spacing-2) var(--spacing-4);
+            border-radius: var(--radius-2xl);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid var(--gray-4);
+            background-color: var(--gray-1);
+            color: var(--gray-8);
+        }
+        
+        .action-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .action-btn.primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: var(--gray-1);
+            border: none;
+            box-shadow: var(--shadow-primary);
+        }
+        
+        .action-btn.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-10) var(--spacing-4);
+            text-align: center;
+        }
+        
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: var(--spacing-4);
+            opacity: 0.3;
+        }
+        
+        .empty-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-8);
+            margin-bottom: var(--spacing-2);
+        }
+        
+        .empty-desc {
+            font-size: 14px;
+            color: var(--gray-7);
+            margin-bottom: var(--spacing-6);
+        }
+        
+        .empty-action {
+            padding: var(--spacing-3) var(--spacing-6);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: var(--gray-1);
+            border: none;
+            border-radius: var(--radius-2xl);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: var(--shadow-primary);
+        }
+        
+        /* 快速操作栏 */
+        .quick-actions {
+            position: fixed;
+            bottom: var(--spacing-4);
+            right: var(--spacing-4);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-3);
+            z-index: 90;
+        }
+        
+        .quick-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: var(--gray-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: var(--shadow-3);
+            transition: all 0.3s ease;
+        }
+        
+        .quick-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+        }
+        
+        /* 加载动画 */
+        @keyframes skeleton {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+        
+        .skeleton {
+            background: linear-gradient(90deg, var(--gray-3) 25%, var(--gray-4) 50%, var(--gray-3) 75%);
+            background-size: 200% 100%;
+            animation: skeleton 1.5s ease-in-out infinite;
+            border-radius: var(--radius-sm);
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 375px) {
+            .order-card {
+                padding: var(--spacing-3);
+            }
+            
+            .store-avatar {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .item-image {
+                width: 50px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航 -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-back" onclick="history.back()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </div>
+                <h1 class="header-title">我的订单</h1>
+                <div style="width: 36px;"></div>
+            </div>
+        </header>
+        
+        <!-- Tab栏 -->
+        <div class="tabs-container">
+            <div class="tabs">
+                <div class="tab active" data-tab="all">全部</div>
+                <div class="tab" data-tab="pending">待付款</div>
+                <div class="tab" data-tab="confirmed">待使用</div>
+                <div class="tab" data-tab="completed">已完成</div>
+                <div class="tab" data-tab="refund">退款/售后</div>
+            </div>
+        </div>
+        
+        <!-- 订单列表 -->
+        <div class="orders-container">
+            <!-- 订单卡片 1 - 待使用 -->
+            <div class="order-card">
+                <div class="order-header">
+                    <div class="store-info">
+                        <div class="store-avatar">🎤</div>
+                        <div class="store-details">
+                            <h3 class="store-name">星光KTV（三里屯店）</h3>
+                            <p class="order-time">预订时间：03月20日 20:00</p>
+                        </div>
+                    </div>
+                    <span class="order-status status-confirmed">待使用</span>
+                </div>
+                
+                <div class="order-content">
+                    <div class="order-items">
+                        <div class="order-item">
+                            <div class="item-info">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Crect width='60' height='60' fill='%23FF6B35' rx='8'/%3E%3Ctext x='50%25' y='50%25' font-size='12' fill='white' text-anchor='middle' dy='.3em'%3E豪华包A%3C/text%3E%3C/svg%3E" alt="包间" class="item-image">
+                                <div class="item-details">
+                                    <p class="item-name">豪华包间A</p>
+                                    <p class="item-specs">4-6人 | 20:00-23:00</p>
+                                </div>
+                            </div>
+                            <div class="item-price">
+                                <p class="price-current">¥594</p>
+                                <p class="price-quantity">3小时</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="order-summary">
+                    <span class="summary-label">总计</span>
+                    <div class="summary-amount">
+                        <span class="amount-total">¥504</span>
+                        <span class="amount-saved">VIP省¥90</span>
+                    </div>
+                </div>
+                
+                <div class="order-actions">
+                    <button class="action-btn">联系商家</button>
+                    <button class="action-btn primary">查看详情</button>
+                </div>
+            </div>
+            
+            <!-- 订单卡片 2 - 待付款 -->
+            <div class="order-card">
+                <div class="order-header">
+                    <div class="store-info">
+                        <div class="store-avatar">🎵</div>
+                        <div class="store-details">
+                            <h3 class="store-name">悦唱KTV（国贸店）</h3>
+                            <p class="order-time">下单时间：10分钟前</p>
+                        </div>
+                    </div>
+                    <span class="order-status status-pending">待付款</span>
+                </div>
+                
+                <div class="order-content">
+                    <div class="order-items">
+                        <div class="order-item">
+                            <div class="item-info">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Crect width='60' height='60' fill='%231890FF' rx='8'/%3E%3Ctext x='50%25' y='50%25' font-size='12' fill='white' text-anchor='middle' dy='.3em'%3E中型包B%3C/text%3E%3C/svg%3E" alt="包间" class="item-image">
+                                <div class="item-details">
+                                    <p class="item-name">中型包间B</p>
+                                    <p class="item-specs">5-8人 | 今晚 19:00-22:00</p>
+                                </div>
+                            </div>
+                            <div class="item-price">
+                                <p class="price-current">¥894</p>
+                                <p class="price-quantity">3小时</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="order-summary">
+                    <span class="summary-label">总计</span>
+                    <div class="summary-amount">
+                        <span class="amount-total">¥774</span>
+                        <span class="amount-saved">VIP省¥120</span>
+                    </div>
+                </div>
+                
+                <div class="order-actions">
+                    <button class="action-btn">取消订单</button>
+                    <button class="action-btn primary">立即支付</button>
+                </div>
+            </div>
+            
+            <!-- 订单卡片 3 - 已完成 -->
+            <div class="order-card">
+                <div class="order-header">
+                    <div class="store-info">
+                        <div class="store-avatar">🎶</div>
+                        <div class="store-details">
+                            <h3 class="store-name">钱柜KTV（西单店）</h3>
+                            <p class="order-time">消费时间：03月15日</p>
+                        </div>
+                    </div>
+                    <span class="order-status status-completed">已完成</span>
+                </div>
+                
+                <div class="order-content">
+                    <div class="order-items">
+                        <div class="order-item">
+                            <div class="item-info">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Crect width='60' height='60' fill='%2352C41A' rx='8'/%3E%3Ctext x='50%25' y='50%25' font-size='12' fill='white' text-anchor='middle' dy='.3em'%3E大型包C%3C/text%3E%3C/svg%3E" alt="包间" class="item-image">
+                                <div class="item-details">
+                                    <p class="item-name">大型包间C</p>
+                                    <p class="item-specs">10-15人 | 4小时</p>
+                                </div>
+                            </div>
+                            <div class="item-price">
+                                <p class="price-current">¥1,992</p>
+                                <p class="price-quantity">4小时</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="order-summary">
+                    <span class="summary-label">总计</span>
+                    <div class="summary-amount">
+                        <span class="amount-total">¥1,712</span>
+                        <span class="amount-saved">VIP省¥280</span>
+                    </div>
+                </div>
+                
+                <div class="order-actions">
+                    <button class="action-btn">再次预订</button>
+                    <button class="action-btn primary">去评价</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 快速操作 -->
+        <div class="quick-actions">
+            <div class="quick-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 3h18v18H3zM9 9h6v6H9z"/>
+                </svg>
+            </div>
+        </div>
+        
+        <!-- 空状态（默认隐藏） -->
+        <div class="empty-state" style="display: none;">
+            <div class="empty-icon">📋</div>
+            <h3 class="empty-title">暂无订单</h3>
+            <p class="empty-desc">您还没有相关订单，快去预订吧~</p>
+            <button class="empty-action">去预订</button>
+        </div>
+    </div>
+    
+    <script>
+        // Tab切换
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 移除所有active
+                tabs.forEach(t => t.classList.remove('active'));
+                // 添加当前active
+                this.classList.add('active');
+                
+                // 这里可以添加筛选订单的逻辑
+                const tabType = this.getAttribute('data-tab');
+                console.log('切换到:', tabType);
+            });
+        });
+        
+        // 订单卡片点击
+        const orderCards = document.querySelectorAll('.order-card');
+        orderCards.forEach(card => {
+            card.addEventListener('click', function(e) {
+                // 如果点击的是按钮，不触发卡片点击
+                if (e.target.classList.contains('action-btn')) {
+                    return;
+                }
+                console.log('查看订单详情');
+            });
+        });
+        
+        // 操作按钮点击
+        const actionBtns = document.querySelectorAll('.action-btn');
+        actionBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation(); // 阻止事件冒泡
+                const action = this.textContent;
+                console.log('执行操作:', action);
+                
+                // 根据不同操作执行不同逻辑
+                switch(action) {
+                    case '立即支付':
+                        console.log('跳转支付页面');
+                        break;
+                    case '查看详情':
+                        console.log('跳转订单详情');
+                        break;
+                    case '去评价':
+                        console.log('跳转评价页面');
+                        break;
+                    case '再次预订':
+                        console.log('跳转店铺详情');
+                        break;
+                }
+            });
+        });
+        
+        // 快速扫码
+        document.querySelector('.quick-btn').addEventListener('click', function() {
+            console.log('打开扫码功能');
+        });
+        
+        // 模拟下拉刷新
+        let startY = 0;
+        let pulling = false;
+        
+        document.addEventListener('touchstart', function(e) {
+            if (window.scrollY === 0) {
+                startY = e.touches[0].pageY;
+                pulling = true;
+            }
+        });
+        
+        document.addEventListener('touchmove', function(e) {
+            if (!pulling) return;
+            
+            const currentY = e.touches[0].pageY;
+            const diff = currentY - startY;
+            
+            if (diff > 0 && window.scrollY === 0) {
+                e.preventDefault();
+                // 这里可以添加下拉刷新的视觉效果
+            }
+        });
+        
+        document.addEventListener('touchend', function(e) {
+            if (!pulling) return;
+            pulling = false;
+            
+            // 触发刷新
+            console.log('刷新订单列表');
+        });
+    </script>
+</body>
+</html>

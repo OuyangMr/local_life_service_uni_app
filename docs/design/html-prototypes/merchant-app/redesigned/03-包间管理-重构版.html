@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>包间管理 - 商户端</title>
+    <style>
+        /* 设计系统变量 */
+        :root {
+            /* 品牌色 */
+            --primary: #FF6B35;
+            --primary-light: #FF8F66;
+            --primary-dark: #E5602F;
+            
+            /* 功能色 */
+            --success: #52C41A;
+            --warning: #FAAD14;
+            --error: #F5222D;
+            --info: #1890FF;
+            
+            /* 中性色 */
+            --gray-1: #FFFFFF;
+            --gray-2: #FAFAFA;
+            --gray-3: #F5F5F5;
+            --gray-4: #E8E8E8;
+            --gray-5: #D9D9D9;
+            --gray-6: #BFBFBF;
+            --gray-7: #8C8C8C;
+            --gray-8: #595959;
+            --gray-9: #262626;
+            --gray-10: #000000;
+            
+            /* 间距 */
+            --spacing-1: 4px;
+            --spacing-2: 8px;
+            --spacing-3: 12px;
+            --spacing-4: 16px;
+            --spacing-5: 20px;
+            --spacing-6: 24px;
+            --spacing-8: 32px;
+            --spacing-10: 40px;
+            
+            /* 圆角 */
+            --radius-sm: 4px;
+            --radius-base: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-2xl: 24px;
+            --radius-full: 9999px;
+            
+            /* 阴影 */
+            --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-2: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-3: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+            --shadow-primary: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+        
+        /* 基础样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: var(--gray-9);
+            background-color: var(--gray-2);
+            overflow-x: hidden;
+        }
+        
+        /* 容器布局 */
+        .app-container {
+            min-height: 100vh;
+            max-width: 430px;
+            margin: 0 auto;
+            background-color: var(--gray-2);
+            position: relative;
+            padding-bottom: 80px;
+        }
+        
+        /* 顶部导航 */
+        .header {
+            background-color: var(--gray-1);
+            padding: env(safe-area-inset-top) var(--spacing-4) var(--spacing-4);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-1);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-9);
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: var(--spacing-3);
+        }
+        
+        .add-btn {
+            padding: var(--spacing-2) var(--spacing-4);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: var(--gray-1);
+            border: none;
+            border-radius: var(--radius-2xl);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+            box-shadow: var(--shadow-primary);
+        }
+        
+        /* 状态统计 */
+        .status-overview {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-2);
+            padding: var(--spacing-3) 0;
+        }
+        
+        .status-item {
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .status-count {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-1);
+        }
+        
+        .status-label {
+            font-size: 12px;
+            color: var(--gray-7);
+        }
+        
+        .status-item:nth-child(1) .status-count {
+            color: var(--gray-9);
+        }
+        
+        .status-item:nth-child(2) .status-count {
+            color: var(--success);
+        }
+        
+        .status-item:nth-child(3) .status-count {
+            color: var(--primary);
+        }
+        
+        .status-item:nth-child(4) .status-count {
+            color: var(--info);
+        }
+        
+        /* 楼层切换 */
+        .floor-tabs {
+            display: flex;
+            gap: var(--spacing-2);
+            padding: var(--spacing-3) 0;
+            border-bottom: 1px solid var(--gray-4);
+        }
+        
+        .floor-tab {
+            padding: var(--spacing-2) var(--spacing-4);
+            border-radius: var(--radius-2xl);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background-color: var(--gray-3);
+            color: var(--gray-8);
+            border: 1px solid transparent;
+        }
+        
+        .floor-tab.active {
+            background-color: var(--primary);
+            color: var(--gray-1);
+            box-shadow: var(--shadow-primary);
+        }
+        
+        /* 包间网格 */
+        .rooms-container {
+            padding: var(--spacing-4);
+        }
+        
+        .rooms-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-3);
+        }
+        
+        .room-card {
+            background-color: var(--gray-1);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-4);
+            box-shadow: var(--shadow-2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .room-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-3);
+        }
+        
+        /* 包间状态指示器 */
+        .room-status-indicator {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+        
+        .status-available .room-status-indicator {
+            background-color: var(--success);
+        }
+        
+        .status-occupied .room-status-indicator {
+            background-color: var(--primary);
+        }
+        
+        .status-cleaning .room-status-indicator {
+            background-color: var(--info);
+        }
+        
+        .status-maintenance .room-status-indicator {
+            background-color: var(--gray-5);
+        }
+        
+        /* 包间信息 */
+        .room-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .room-number {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gray-9);
+        }
+        
+        .room-type {
+            font-size: 12px;
+            color: var(--gray-7);
+            margin-top: var(--spacing-1);
+        }
+        
+        .room-status {
+            padding: var(--spacing-1) var(--spacing-3);
+            border-radius: var(--radius-2xl);
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-text-available {
+            background-color: rgba(82, 196, 26, 0.1);
+            color: var(--success);
+        }
+        
+        .status-text-occupied {
+            background-color: rgba(255, 107, 53, 0.1);
+            color: var(--primary);
+        }
+        
+        .status-text-cleaning {
+            background-color: rgba(24, 144, 255, 0.1);
+            color: var(--info);
+        }
+        
+        .status-text-maintenance {
+            background-color: rgba(189, 189, 189, 0.1);
+            color: var(--gray-7);
+        }
+        
+        /* 包间详情 */
+        .room-details {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-2);
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+            font-size: 13px;
+            color: var(--gray-7);
+        }
+        
+        .detail-icon {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* 包间操作 */
+        .room-actions {
+            display: flex;
+            gap: var(--spacing-2);
+            margin-top: var(--spacing-3);
+            padding-top: var(--spacing-3);
+            border-top: 1px solid var(--gray-4);
+        }
+        
+        .room-action-btn {
+            flex: 1;
+            padding: var(--spacing-2);
+            border-radius: var(--radius-base);
+            font-size: 13px;
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid var(--gray-4);
+            background-color: var(--gray-1);
+            color: var(--gray-8);
+        }
+        
+        .room-action-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .room-action-btn.primary {
+            background-color: var(--primary);
+            color: var(--gray-1);
+            border-color: var(--primary);
+        }
+        
+        /* 使用中的包间信息 */
+        .usage-info {
+            background-color: var(--gray-3);
+            border-radius: var(--radius-base);
+            padding: var(--spacing-3);
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .usage-customer {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+            margin-bottom: var(--spacing-2);
+        }
+        
+        .customer-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-9);
+        }
+        
+        .usage-time {
+            font-size: 12px;
+            color: var(--gray-7);
+        }
+        
+        .usage-progress {
+            margin-top: var(--spacing-2);
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background-color: var(--gray-4);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            transition: width 0.3s ease;
+        }
+        
+        /* 快速操作面板 */
+        .quick-actions {
+            position: fixed;
+            bottom: 80px;
+            right: var(--spacing-4);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-3);
+            z-index: 90;
+        }
+        
+        .quick-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: var(--gray-1);
+            box-shadow: var(--shadow-3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .quick-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .quick-btn.scan {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: var(--gray-1);
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 430px;
+            background-color: var(--gray-1);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            padding: var(--spacing-2) 0 env(safe-area-inset-bottom);
+            z-index: 100;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-1);
+            padding: var(--spacing-2) 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .nav-item.active {
+            color: var(--primary);
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            transition: transform 0.2s ease;
+        }
+        
+        .nav-item:active .nav-icon {
+            transform: scale(0.9);
+        }
+        
+        .nav-label {
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 375px) {
+            .rooms-grid {
+                gap: var(--spacing-2);
+            }
+            
+            .room-card {
+                padding: var(--spacing-3);
+            }
+            
+            .room-number {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航 -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="header-title">包间管理</h1>
+                <div class="header-actions">
+                    <button class="add-btn">
+                        <span>+</span>
+                        <span>添加包间</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 状态统计 -->
+            <div class="status-overview">
+                <div class="status-item">
+                    <div class="status-count">20</div>
+                    <div class="status-label">总包间</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-count">8</div>
+                    <div class="status-label">空闲</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-count">10</div>
+                    <div class="status-label">使用中</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-count">2</div>
+                    <div class="status-label">清洁中</div>
+                </div>
+            </div>
+            
+            <!-- 楼层切换 -->
+            <div class="floor-tabs">
+                <div class="floor-tab active">全部</div>
+                <div class="floor-tab">1楼</div>
+                <div class="floor-tab">2楼</div>
+                <div class="floor-tab">3楼</div>
+            </div>
+        </header>
+        
+        <!-- 包间列表 -->
+        <div class="rooms-container">
+            <div class="rooms-grid">
+                <!-- 空闲包间 -->
+                <div class="room-card status-available">
+                    <div class="room-status-indicator"></div>
+                    <div class="room-header">
+                        <div>
+                            <h3 class="room-number">A01</h3>
+                            <p class="room-type">小型包间</p>
+                        </div>
+                        <span class="room-status status-text-available">空闲</span>
+                    </div>
+                    <div class="room-details">
+                        <div class="detail-item">
+                            <span class="detail-icon">👥</span>
+                            <span>2-4人</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">💰</span>
+                            <span>¥98/小时</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">⏰</span>
+                            <span>已空闲2小时</span>
+                        </div>
+                    </div>
+                    <div class="room-actions">
+                        <button class="room-action-btn">编辑</button>
+                        <button class="room-action-btn primary">快速开台</button>
+                    </div>
+                </div>
+                
+                <!-- 使用中包间 -->
+                <div class="room-card status-occupied">
+                    <div class="room-status-indicator"></div>
+                    <div class="room-header">
+                        <div>
+                            <h3 class="room-number">A02</h3>
+                            <p class="room-type">小型包间</p>
+                        </div>
+                        <span class="room-status status-text-occupied">使用中</span>
+                    </div>
+                    <div class="usage-info">
+                        <div class="usage-customer">
+                            <span>👤</span>
+                            <span class="customer-name">张先生</span>
+                        </div>
+                        <div class="usage-time">
+                            开始时间：18:30 | 已使用：1.5小时
+                        </div>
+                        <div class="usage-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 50%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="room-actions">
+                        <button class="room-action-btn">查看</button>
+                        <button class="room-action-btn">结账</button>
+                    </div>
+                </div>
+                
+                <!-- 清洁中包间 -->
+                <div class="room-card status-cleaning">
+                    <div class="room-status-indicator"></div>
+                    <div class="room-header">
+                        <div>
+                            <h3 class="room-number">B01</h3>
+                            <p class="room-type">中型包间</p>
+                        </div>
+                        <span class="room-status status-text-cleaning">清洁中</span>
+                    </div>
+                    <div class="room-details">
+                        <div class="detail-item">
+                            <span class="detail-icon">👥</span>
+                            <span>5-8人</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">💰</span>
+                            <span>¥198/小时</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">🧹</span>
+                            <span>预计10分钟完成</span>
+                        </div>
+                    </div>
+                    <div class="room-actions">
+                        <button class="room-action-btn">完成清洁</button>
+                    </div>
+                </div>
+                
+                <!-- 更多包间 -->
+                <div class="room-card status-occupied">
+                    <div class="room-status-indicator"></div>
+                    <div class="room-header">
+                        <div>
+                            <h3 class="room-number">B02</h3>
+                            <p class="room-type">中型包间</p>
+                        </div>
+                        <span class="room-status status-text-occupied">使用中</span>
+                    </div>
+                    <div class="usage-info">
+                        <div class="usage-customer">
+                            <span>👤</span>
+                            <span class="customer-name">李女士</span>
+                        </div>
+                        <div class="usage-time">
+                            开始时间：19:00 | 已使用：1小时
+                        </div>
+                        <div class="usage-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 33%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="room-actions">
+                        <button class="room-action-btn">查看</button>
+                        <button class="room-action-btn">结账</button>
+                    </div>
+                </div>
+                
+                <div class="room-card status-available">
+                    <div class="room-status-indicator"></div>
+                    <div class="room-header">
+                        <div>
+                            <h3 class="room-number">C01</h3>
+                            <p class="room-type">大型包间</p>
+                        </div>
+                        <span class="room-status status-text-available">空闲</span>
+                    </div>
+                    <div class="room-details">
+                        <div class="detail-item">
+                            <span class="detail-icon">👥</span>
+                            <span>10-15人</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">💰</span>
+                            <span>¥398/小时</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">⏰</span>
+                            <span>已空闲30分钟</span>
+                        </div>
+                    </div>
+                    <div class="room-actions">
+                        <button class="room-action-btn">编辑</button>
+                        <button class="room-action-btn primary">快速开台</button>
+                    </div>
+                </div>
+                
+                <div class="room-card status-maintenance">
+                    <div class="room-status-indicator"></div>
+                    <div class="room-header">
+                        <div>
+                            <h3 class="room-number">C02</h3>
+                            <p class="room-type">大型包间</p>
+                        </div>
+                        <span class="room-status status-text-maintenance">维护中</span>
+                    </div>
+                    <div class="room-details">
+                        <div class="detail-item">
+                            <span class="detail-icon">👥</span>
+                            <span>10-15人</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">🔧</span>
+                            <span>设备维护中</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">📅</span>
+                            <span>预计明天完成</span>
+                        </div>
+                    </div>
+                    <div class="room-actions">
+                        <button class="room-action-btn">查看详情</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 快速操作 -->
+        <div class="quick-actions">
+            <div class="quick-btn scan">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 3h18v18H3zM9 9h6v6H9z"/>
+                </svg>
+            </div>
+        </div>
+        
+        <!-- 底部导航 -->
+        <nav class="bottom-nav">
+            <div class="nav-container">
+                <div class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">数据</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-label">订单</span>
+                </div>
+                <div class="nav-item active">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-label">包间</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">🍽️</span>
+                    <span class="nav-label">菜单</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label">设置</span>
+                </div>
+            </div>
+        </nav>
+    </div>
+    
+    <script>
+        // 楼层切换
+        const floorTabs = document.querySelectorAll('.floor-tab');
+        floorTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                floorTabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                const floor = this.textContent;
+                console.log('切换到:', floor);
+                filterRooms(floor);
+            });
+        });
+        
+        // 状态统计点击
+        const statusItems = document.querySelectorAll('.status-item');
+        statusItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const label = this.querySelector('.status-label').textContent;
+                console.log('筛选:', label);
+            });
+        });
+        
+        // 包间卡片点击
+        const roomCards = document.querySelectorAll('.room-card');
+        roomCards.forEach(card => {
+            card.addEventListener('click', function(e) {
+                // 如果点击的是按钮，不触发卡片点击
+                if (e.target.closest('.room-actions')) {
+                    return;
+                }
+                
+                const roomNumber = this.querySelector('.room-number').textContent;
+                console.log('查看包间详情:', roomNumber);
+            });
+        });
+        
+        // 包间操作按钮
+        document.querySelectorAll('.room-action-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const action = this.textContent;
+                const card = this.closest('.room-card');
+                const roomNumber = card.querySelector('.room-number').textContent;
+                
+                console.log(`${action}: ${roomNumber}`);
+                
+                switch(action) {
+                    case '快速开台':
+                        showQuickStart(roomNumber);
+                        break;
+                    case '完成清洁':
+                        completeClean(card);
+                        break;
+                    case '结账':
+                        showCheckout(roomNumber);
+                        break;
+                }
+            });
+        });
+        
+        // 快速开台
+        function showQuickStart(roomNumber) {
+            console.log('快速开台:', roomNumber);
+            // 实际应用中会弹出快速开台面板
+        }
+        
+        // 完成清洁
+        function completeClean(card) {
+            // 更新状态
+            card.className = 'room-card status-available';
+            const indicator = card.querySelector('.room-status-indicator');
+            const status = card.querySelector('.room-status');
+            status.className = 'room-status status-text-available';
+            status.textContent = '空闲';
+            
+            // 更新详情
+            const details = card.querySelector('.room-details');
+            details.innerHTML = `
+                <div class="detail-item">
+                    <span class="detail-icon">👥</span>
+                    <span>${details.querySelector('.detail-item').textContent.trim()}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-icon">💰</span>
+                    <span>${details.querySelectorAll('.detail-item')[1].textContent.trim()}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-icon">⏰</span>
+                    <span>刚刚清洁完成</span>
+                </div>
+            `;
+            
+            // 更新操作按钮
+            const actions = card.querySelector('.room-actions');
+            actions.innerHTML = `
+                <button class="room-action-btn">编辑</button>
+                <button class="room-action-btn primary">快速开台</button>
+            `;
+        }
+        
+        // 结账
+        function showCheckout(roomNumber) {
+            console.log('结账:', roomNumber);
+            // 实际应用中会弹出结账面板
+        }
+        
+        // 扫码功能
+        document.querySelector('.quick-btn.scan').addEventListener('click', function() {
+            console.log('打开扫码功能');
+        });
+        
+        // 添加包间
+        document.querySelector('.add-btn').addEventListener('click', function() {
+            console.log('添加新包间');
+        });
+        
+        // 底部导航
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.addEventListener('click', function() {
+                navItems.forEach(n => n.classList.remove('active'));
+                this.classList.add('active');
+                
+                const label = this.querySelector('.nav-label').textContent;
+                console.log('切换到:', label);
+            });
+        });
+        
+        // 筛选包间
+        function filterRooms(floor) {
+            const cards = document.querySelectorAll('.room-card');
+            cards.forEach(card => {
+                card.style.opacity = '0.5';
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                }, 300);
+            });
+        }
+        
+        // 模拟实时状态更新
+        setInterval(() => {
+            // 更新使用时间
+            document.querySelectorAll('.usage-time').forEach(time => {
+                // 这里可以更新实际使用时间
+            });
+            
+            // 更新进度条
+            document.querySelectorAll('.progress-fill').forEach(bar => {
+                const currentWidth = parseFloat(bar.style.width);
+                if (currentWidth < 100) {
+                    bar.style.width = (currentWidth + 0.5) + '%';
+                }
+            });
+        }, 60000); // 每分钟更新一次
+    </script>
+</body>
+</html>

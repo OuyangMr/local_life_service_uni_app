@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>订单详情 - 本地生活服务</title>
+    <style>
+        /* 复用设计系统变量 */
+        :root {
+            /* 品牌主色 - 活力橙 */
+            --primary: #ff6b35;
+            --primary-light: #ff8c5a;
+            --primary-dark: #e55a2b;
+            
+            /* 辅助色 - 深蓝 */
+            --secondary: #2e3b5a;
+            --secondary-light: #3a4a6b;
+            --secondary-dark: #1e2a3e;
+            
+            /* 功能色 */
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+            
+            /* 中性色 */
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            /* 背景色 */
+            --background-primary: #ffffff;
+            --background-secondary: #f9fafb;
+            --surface: #ffffff;
+            
+            /* 文字颜色 */
+            --text-primary: var(--gray-900);
+            --text-secondary: var(--gray-600);
+            
+            /* 间距 */
+            --spacing-1: 4px;
+            --spacing-2: 8px;
+            --spacing-3: 12px;
+            --spacing-4: 16px;
+            --spacing-5: 20px;
+            --spacing-6: 24px;
+            --spacing-8: 32px;
+            --spacing-10: 40px;
+            
+            /* 圆角 - 更圆润的设计 */
+            --radius-sm: 8px;
+            --radius-base: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-2xl: 24px;
+            --radius-full: 50%;
+            --radius-meituan-card: 14px;
+            --radius-meituan-button: 20px;
+            
+            /* 阴影 */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-base: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+            --shadow-xl: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* 暗黑模式 */
+        [data-theme="dark"] {
+            --primary: #ffb085;
+            --primary-light: #ffc299;
+            --primary-dark: #ff9e71;
+            
+            --secondary: #8b9dc3;
+            --secondary-light: #a0b1d6;
+            --secondary-dark: #7689b0;
+            
+            --success: #34d399;
+            --warning: #fbbf24;
+            --error: #f87171;
+            --info: #60a5fa;
+            
+            --background-primary: #0f1419;
+            --background-secondary: #1c2128;
+            --surface: #1c2128;
+            
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            
+            --gray-50: #0f1419;
+            --gray-100: #1c2128;
+            --gray-200: #2d3748;
+            --gray-300: #4a5568;
+            --gray-400: #718096;
+            --gray-500: #a0aec0;
+            --gray-600: #cbd5e0;
+            --gray-700: #e2e8f0;
+            --gray-800: #f7fafc;
+            --gray-900: #ffffff;
+            
+            --shadow-base: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* 基础样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            font-size: 14px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background-color: var(--background-secondary);
+            color: var(--text-primary);
+            line-height: 1.4;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        /* 顶部导航栏 */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background-color: var(--surface);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--spacing-3) var(--spacing-4);
+            height: 56px;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+        }
+        
+        .back-btn {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .back-btn:active {
+            background-color: var(--gray-100);
+            transform: scale(0.95);
+        }
+        
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        /* 主内容区域 */
+        .main-content {
+            margin-top: 56px;
+            padding-bottom: 80px;
+        }
+        
+        /* 订单状态卡片 */
+        .status-card {
+            background-color: var(--surface);
+            padding: var(--spacing-6) var(--spacing-4);
+            margin-bottom: var(--spacing-3);
+            text-align: center;
+        }
+        
+        .status-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto var(--spacing-3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--success);
+            border-radius: var(--radius-full);
+            animation: pulse 1.5s infinite;
+        }
+        
+        .status-icon svg {
+            width: 32px;
+            height: 32px;
+            color: white;
+        }
+        
+        .status-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-2);
+        }
+        
+        .status-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-4);
+        }
+        
+        .order-number {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        /* 进度条 */
+        .progress-section {
+            background-color: var(--surface);
+            padding: var(--spacing-4);
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .progress-line {
+            position: absolute;
+            top: 20px;
+            left: 40px;
+            right: 40px;
+            height: 2px;
+            background-color: var(--gray-200);
+            z-index: 0;
+        }
+        
+        .progress-line-active {
+            position: absolute;
+            top: 20px;
+            left: 40px;
+            width: 50%;
+            height: 2px;
+            background-color: var(--success);
+            z-index: 1;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-step {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-2);
+        }
+        
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            background-color: var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .step-icon.active {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .step-icon.current {
+            background-color: var(--primary);
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .step-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: center;
+            white-space: nowrap;
+        }
+        
+        .step-time {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        
+        /* 预计时间 */
+        .eta-section {
+            background-color: var(--surface);
+            padding: var(--spacing-4);
+            margin-bottom: var(--spacing-3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .eta-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+        }
+        
+        .eta-icon {
+            width: 48px;
+            height: 48px;
+            background-color: var(--gray-100);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .eta-text {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .eta-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .eta-time {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .location-info {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        /* 商品清单 */
+        .order-items-section {
+            background-color: var(--surface);
+            padding: var(--spacing-4);
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-3);
+            padding-bottom: var(--spacing-3);
+            border-bottom: 1px solid var(--gray-100);
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .store-name {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .order-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+            padding: var(--spacing-2) 0;
+        }
+        
+        .item-icon {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+        
+        .item-info {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .item-name {
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        
+        .item-quantity {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        /* 操作按钮 */
+        .action-section {
+            background-color: var(--surface);
+            padding: var(--spacing-4);
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-3);
+        }
+        
+        .action-btn {
+            padding: var(--spacing-3);
+            border: 1px solid var(--gray-300);
+            background-color: var(--surface);
+            border-radius: var(--radius-meituan-button);
+            font-size: 14px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-2);
+        }
+        
+        .action-btn:hover {
+            background-color: var(--gray-50);
+        }
+        
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .action-btn.primary {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .action-btn.primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .action-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        /* 动画 */
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 20px rgba(16, 185, 129, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+        
+        /* 实时更新动画 */
+        .update-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-1);
+            font-size: 12px;
+            color: var(--success);
+            margin-top: var(--spacing-2);
+        }
+        
+        .update-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--success);
+            border-radius: var(--radius-full);
+            animation: blink 1.5s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+        
+        /* 响应式设计 */
+        @media (min-width: 768px) {
+            .main-content {
+                max-width: 600px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <button class="back-btn" onclick="window.history.back()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                    </svg>
+                </button>
+                <h1 class="page-title">订单详情</h1>
+            </div>
+        </div>
+    </header>
+    
+    <!-- 主内容区域 -->
+    <div class="main-content">
+        <!-- 订单状态 -->
+        <div class="status-card">
+            <div class="status-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+            </div>
+            <h2 class="status-title">订单已下单</h2>
+            <p class="status-desc">商家已接单，正在为您准备商品</p>
+            <p class="order-number">订单号：#2025091900123</p>
+        </div>
+        
+        <!-- 进度条 -->
+        <div class="progress-section">
+            <div class="progress-bar">
+                <div class="progress-line"></div>
+                <div class="progress-line-active"></div>
+                
+                <div class="progress-step">
+                    <div class="step-icon active">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                    </div>
+                    <span class="step-label">已下单</span>
+                    <span class="step-time">14:30</span>
+                </div>
+                
+                <div class="progress-step">
+                    <div class="step-icon active">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                    </div>
+                    <span class="step-label">已支付</span>
+                    <span class="step-time">14:31</span>
+                </div>
+                
+                <div class="progress-step">
+                    <div class="step-icon current">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                        </svg>
+                    </div>
+                    <span class="step-label">制作中</span>
+                    <span class="step-time">--:--</span>
+                </div>
+                
+                <div class="progress-step">
+                    <div class="step-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+                        </svg>
+                    </div>
+                    <span class="step-label">配送中</span>
+                    <span class="step-time">--:--</span>
+                </div>
+                
+                <div class="progress-step">
+                    <div class="step-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                        </svg>
+                    </div>
+                    <span class="step-label">已送达</span>
+                    <span class="step-time">--:--</span>
+                </div>
+            </div>
+            
+            <div class="update-indicator">
+                <span class="update-dot"></span>
+                <span>实时更新中</span>
+            </div>
+        </div>
+        
+        <!-- 预计送达时间 -->
+        <div class="eta-section">
+            <div class="eta-info">
+                <div class="eta-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/><path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                    </svg>
+                </div>
+                <div class="eta-text">
+                    <span class="eta-label">预计送达</span>
+                    <span class="eta-time">12分钟后</span>
+                </div>
+            </div>
+            <div class="location-info">
+                <span>配送至：包间A</span>
+            </div>
+        </div>
+        
+        <!-- 商品清单 -->
+        <div class="order-items-section">
+            <div class="section-header">
+                <h3 class="section-title">商品清单</h3>
+                <span class="store-name">星光KTV</span>
+            </div>
+            
+            <div class="order-item">
+                <span class="item-icon">🍷</span>
+                <div class="item-info">
+                    <span class="item-name">青岛啤酒 纯生</span>
+                    <span class="item-quantity">x2</span>
+                </div>
+            </div>
+            
+            <div class="order-item">
+                <span class="item-icon">🍖</span>
+                <div class="item-info">
+                    <span class="item-name">薯片</span>
+                    <span class="item-quantity">x1</span>
+                </div>
+            </div>
+            
+            <div class="order-item">
+                <span class="item-icon">🍰</span>
+                <div class="item-info">
+                    <span class="item-name">果盘</span>
+                    <span class="item-quantity">x1</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 操作按钮 -->
+        <div class="action-section">
+            <div class="action-buttons">
+                <button class="action-btn" onclick="contactMerchant()">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                    </svg>
+                    <span>联系商家</span>
+                </button>
+                <button class="action-btn primary" onclick="rushOrder()">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.73 3H8.27L3 8.27v7.46L8.27 21h7.46L21 15.73V8.27L15.73 3zM12 17.3c-.72 0-1.3-.58-1.3-1.3 0-.72.58-1.3 1.3-1.3.72 0 1.3.58 1.3 1.3 0 .72-.58 1.3-1.3 1.3zm1-4.3h-2V7h2v6z"/>
+                    </svg>
+                    <span>催单</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 初始化主题
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme-preference');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+        
+        initTheme();
+        
+        // 模拟订单状态更新
+        let currentStep = 2;
+        const totalSteps = 5;
+        const progressSteps = document.querySelectorAll('.progress-step');
+        const progressLineActive = document.querySelector('.progress-line-active');
+        
+        function updateProgress() {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                
+                // 更新进度条
+                const progressPercent = ((currentStep - 1) / (totalSteps - 1)) * 100;
+                progressLineActive.style.width = progressPercent + '%';
+                
+                // 更新步骤状态
+                progressSteps.forEach((step, index) => {
+                    const icon = step.querySelector('.step-icon');
+                    const time = step.querySelector('.step-time');
+                    
+                    if (index < currentStep) {
+                        icon.classList.add('active');
+                        icon.classList.remove('current');
+                        if (time.textContent === '--:--') {
+                            const now = new Date();
+                            time.textContent = now.getHours().toString().padStart(2, '0') + ':' + 
+                                            now.getMinutes().toString().padStart(2, '0');
+                        }
+                    } else if (index === currentStep) {
+                        icon.classList.add('current');
+                        icon.classList.remove('active');
+                    }
+                });
+                
+                // 更新状态文本
+                updateStatusText();
+                
+                // 更新预计时间
+                updateETA();
+            }
+        }
+        
+        function updateStatusText() {
+            const statusTitle = document.querySelector('.status-title');
+            const statusDesc = document.querySelector('.status-desc');
+            
+            switch (currentStep) {
+                case 3:
+                    statusTitle.textContent = '制作中';
+                    statusDesc.textContent = '商家正在准备您的商品';
+                    break;
+                case 4:
+                    statusTitle.textContent = '配送中';
+                    statusDesc.textContent = '服务员正在送往您的包间';
+                    break;
+                case 5:
+                    statusTitle.textContent = '已送达';
+                    statusDesc.textContent = '商品已送达，祝您用餐愉快';
+                    break;
+            }
+        }
+        
+        function updateETA() {
+            const etaTime = document.querySelector('.eta-time');
+            const remainingTime = Math.max(0, 15 - (currentStep - 2) * 5);
+            
+            if (currentStep >= 5) {
+                etaTime.textContent = '已送达';
+            } else {
+                etaTime.textContent = remainingTime + '分钟后';
+            }
+        }
+        
+        // 每10秒模拟一次状态更新
+        setInterval(updateProgress, 10000);
+        
+        // 联系商家
+        function contactMerchant() {
+            alert('正在连接商家...\n电话：010-88888888');
+        }
+        
+        // 催单
+        function rushOrder() {
+            const btn = event.target.closest('.action-btn');
+            btn.disabled = true;
+            btn.textContent = '已催单';
+            btn.style.backgroundColor = 'var(--gray-200)';
+            btn.style.color = 'var(--text-secondary)';
+            
+            showToast('催单成功，商家会尽快为您配送');
+        }
+        
+        // 显示提示
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 24px;
+                font-size: 14px;
+                z-index: 3000;
+                animation: fadeIn 0.3s ease;
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 2000);
+        }
+        
+        // 添加动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes fadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

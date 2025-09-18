@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>本地生活服务 - 首页</title>
+    <style>
+        /* 设计系统变量 */
+        :root {
+            /* 品牌色 */
+            --primary: #FF6B35;
+            --primary-light: #FF8F66;
+            --primary-dark: #E5602F;
+            
+            /* 功能色 */
+            --success: #52C41A;
+            --warning: #FAAD14;
+            --error: #F5222D;
+            --info: #1890FF;
+            
+            /* 中性色 */
+            --gray-1: #FFFFFF;
+            --gray-2: #FAFAFA;
+            --gray-3: #F5F5F5;
+            --gray-4: #E8E8E8;
+            --gray-5: #D9D9D9;
+            --gray-6: #BFBFBF;
+            --gray-7: #8C8C8C;
+            --gray-8: #595959;
+            --gray-9: #262626;
+            --gray-10: #000000;
+            
+            /* VIP色彩 */
+            --vip-gold: #FFD700;
+            --vip-gradient: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            
+            /* 间距 */
+            --spacing-1: 4px;
+            --spacing-2: 8px;
+            --spacing-3: 12px;
+            --spacing-4: 16px;
+            --spacing-5: 20px;
+            --spacing-6: 24px;
+            --spacing-8: 32px;
+            --spacing-10: 40px;
+            
+            /* 圆角 */
+            --radius-sm: 4px;
+            --radius-base: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-2xl: 24px;
+            --radius-full: 9999px;
+            
+            /* 阴影 */
+            --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-2: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-3: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+            --shadow-primary: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+        
+        /* 基础样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: var(--gray-9);
+            background-color: var(--gray-2);
+            overflow-x: hidden;
+        }
+        
+        /* 容器布局 */
+        .app-container {
+            min-height: 100vh;
+            max-width: 430px;
+            margin: 0 auto;
+            background-color: var(--gray-1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 顶部导航 */
+        .top-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            padding: env(safe-area-inset-top) var(--spacing-4) var(--spacing-4);
+            color: var(--gray-1);
+        }
+        
+        .nav-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .location-selector {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .location-icon {
+            width: 16px;
+            height: 16px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+        
+        .nav-actions {
+            display: flex;
+            gap: var(--spacing-4);
+        }
+        
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .nav-icon:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 8px;
+            height: 8px;
+            background-color: var(--error);
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+        }
+        
+        /* 搜索栏 */
+        .search-bar {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-3) var(--spacing-4);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+            box-shadow: var(--shadow-2);
+        }
+        
+        .search-icon {
+            width: 20px;
+            height: 20px;
+            opacity: 0.4;
+        }
+        
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            color: var(--gray-9);
+            background: transparent;
+        }
+        
+        .search-input::placeholder {
+            color: var(--gray-6);
+        }
+        
+        .voice-icon {
+            width: 20px;
+            height: 20px;
+            opacity: 0.4;
+            cursor: pointer;
+        }
+        
+        /* 快速入口 */
+        .quick-entries {
+            padding: var(--spacing-5) var(--spacing-4) var(--spacing-4);
+            background-color: var(--gray-1);
+        }
+        
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-3);
+        }
+        
+        .quick-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-2);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .quick-item:active {
+            transform: scale(0.95);
+        }
+        
+        .quick-icon-wrapper {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            transition: all 0.2s ease;
+        }
+        
+        .quick-item:nth-child(1) .quick-icon-wrapper {
+            background: linear-gradient(135deg, #FF6B35 0%, #FF8F66 100%);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+        
+        .quick-item:nth-child(2) .quick-icon-wrapper {
+            background: linear-gradient(135deg, #1890FF 0%, #40A9FF 100%);
+            box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+        }
+        
+        .quick-item:nth-child(3) .quick-icon-wrapper {
+            background: linear-gradient(135deg, #52C41A 0%, #73D13D 100%);
+            box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3);
+        }
+        
+        .quick-item:nth-child(4) .quick-icon-wrapper {
+            background: var(--vip-gradient);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+        }
+        
+        .quick-label {
+            font-size: 12px;
+            color: var(--gray-8);
+        }
+        
+        /* 推荐模块 */
+        .section {
+            padding: var(--spacing-4);
+            background-color: var(--gray-1);
+            margin-bottom: var(--spacing-2);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-4);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-9);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+        }
+        
+        .section-icon {
+            font-size: 20px;
+        }
+        
+        .section-more {
+            font-size: 14px;
+            color: var(--gray-7);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+        }
+        
+        /* 店铺卡片 */
+        .store-card {
+            background-color: var(--gray-1);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-2);
+            margin-bottom: var(--spacing-4);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .store-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-3);
+        }
+        
+        .store-image-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 比例 */
+            overflow: hidden;
+        }
+        
+        .store-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .store-card:hover .store-image {
+            transform: scale(1.05);
+        }
+        
+        .store-badges {
+            position: absolute;
+            top: var(--spacing-3);
+            left: var(--spacing-3);
+            display: flex;
+            gap: var(--spacing-2);
+        }
+        
+        .badge {
+            padding: var(--spacing-1) var(--spacing-2);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+        
+        .badge-hot {
+            background-color: rgba(255, 107, 53, 0.9);
+            color: var(--gray-1);
+        }
+        
+        .badge-vip {
+            background: var(--vip-gradient);
+            color: var(--gray-9);
+        }
+        
+        .badge-discount {
+            background-color: rgba(245, 34, 45, 0.9);
+            color: var(--gray-1);
+        }
+        
+        .store-info {
+            padding: var(--spacing-4);
+        }
+        
+        .store-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-2);
+        }
+        
+        .store-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-9);
+            margin-bottom: var(--spacing-1);
+        }
+        
+        .store-rating {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+            font-size: 14px;
+            color: var(--warning);
+        }
+        
+        .store-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+            font-size: 13px;
+            color: var(--gray-7);
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .store-meta-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+        }
+        
+        .store-features {
+            display: flex;
+            gap: var(--spacing-2);
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .feature-tag {
+            padding: var(--spacing-1) var(--spacing-2);
+            background-color: var(--gray-3);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            color: var(--gray-8);
+        }
+        
+        .store-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: var(--spacing-3);
+            border-top: 1px solid var(--gray-4);
+        }
+        
+        .store-price {
+            display: flex;
+            align-items: baseline;
+            gap: var(--spacing-2);
+        }
+        
+        .price-original {
+            font-size: 13px;
+            color: var(--gray-6);
+            text-decoration: line-through;
+        }
+        
+        .price-current {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .price-vip {
+            font-size: 12px;
+            color: var(--vip-gold);
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 165, 0, 0.1) 100%);
+            padding: 2px 6px;
+            border-radius: var(--radius-sm);
+        }
+        
+        .store-action {
+            background-color: var(--primary);
+            color: var(--gray-1);
+            border: none;
+            padding: var(--spacing-2) var(--spacing-4);
+            border-radius: var(--radius-2xl);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .store-action:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-primary);
+        }
+        
+        .store-action:active {
+            transform: translateY(0);
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 430px;
+            background-color: var(--gray-1);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            padding: var(--spacing-2) 0 env(safe-area-inset-bottom);
+            z-index: 100;
+        }
+        
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-1);
+            padding: var(--spacing-2);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .nav-item.active {
+            color: var(--primary);
+        }
+        
+        .nav-item-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-item.active .nav-item-icon {
+            transform: scale(1.1);
+        }
+        
+        .nav-item-label {
+            font-size: 11px;
+            color: var(--gray-7);
+        }
+        
+        .nav-item.active .nav-item-label {
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        /* 骨架屏 */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 375px) {
+            .quick-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: var(--spacing-2);
+            }
+            
+            .quick-icon-wrapper {
+                width: 48px;
+                height: 48px;
+                font-size: 24px;
+            }
+            
+            .quick-label {
+                font-size: 11px;
+            }
+        }
+        
+        /* 安全区域适配 */
+        @supports (padding: env(safe-area-inset-bottom)) {
+            .app-container {
+                padding-bottom: calc(60px + env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航 -->
+        <header class="top-nav">
+            <div class="nav-content">
+                <div class="location-selector">
+                    <div class="location-icon">📍</div>
+                    <span>朝阳区三里屯</span>
+                    <span style="font-size: 12px;">▼</span>
+                </div>
+                <div class="nav-actions">
+                    <div class="nav-icon">
+                        🔔
+                        <span class="notification-badge"></span>
+                    </div>
+                    <div class="nav-icon">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 8v4l2 2'/%3E%3C/svg%3E" alt="用户" style="width: 20px; height: 20px;">
+                    </div>
+                </div>
+            </div>
+            <div class="search-bar">
+                <div class="search-icon">🔍</div>
+                <input type="text" class="search-input" placeholder="搜索店铺、包间、优惠...">
+                <div class="voice-icon">🎤</div>
+            </div>
+        </header>
+        
+        <!-- 快速入口 -->
+        <section class="quick-entries fade-in">
+            <div class="quick-grid">
+                <div class="quick-item">
+                    <div class="quick-icon-wrapper">📷</div>
+                    <span class="quick-label">扫码点单</span>
+                </div>
+                <div class="quick-item">
+                    <div class="quick-icon-wrapper">📅</div>
+                    <span class="quick-label">立即预订</span>
+                </div>
+                <div class="quick-item">
+                    <div class="quick-icon-wrapper">🛵</div>
+                    <span class="quick-label">外卖配送</span>
+                </div>
+                <div class="quick-item">
+                    <div class="quick-icon-wrapper">👑</div>
+                    <span class="quick-label">会员特权</span>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 猜你喜欢 -->
+        <section class="section fade-in">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="section-icon">💝</span>
+                    猜你喜欢
+                </h2>
+                <span class="section-more">更多 →</span>
+            </div>
+            <div class="store-list">
+                <div class="store-card">
+                    <div class="store-image-wrapper">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='225' viewBox='0 0 400 225'%3E%3Crect width='400' height='225' fill='%23FF6B35'/%3E%3Ctext x='50%25' y='50%25' font-size='24' fill='white' text-anchor='middle' dy='.3em'%3E星光KTV（三里屯店）%3C/text%3E%3C/svg%3E" alt="星光KTV" class="store-image">
+                        <div class="store-badges">
+                            <span class="badge badge-hot">🔥 热门</span>
+                            <span class="badge badge-vip">VIP专享</span>
+                        </div>
+                    </div>
+                    <div class="store-info">
+                        <div class="store-header">
+                            <div>
+                                <h3 class="store-name">星光KTV（三里屯店）</h3>
+                                <div class="store-rating">
+                                    ⭐ 4.8 <span style="color: var(--gray-7); font-size: 12px;">(2.3k)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="store-meta">
+                            <span class="store-meta-item">📍 500m</span>
+                            <span class="store-meta-item">⏰ 营业至凌晨2点</span>
+                            <span class="store-meta-item">🎵 嗨唱时光</span>
+                        </div>
+                        <div class="store-features">
+                            <span class="feature-tag">生日优惠</span>
+                            <span class="feature-tag">免费停车</span>
+                            <span class="feature-tag">豪华包间</span>
+                        </div>
+                        <div class="store-footer">
+                            <div class="store-price">
+                                <span class="price-original">¥198</span>
+                                <span class="price-current">¥148/时</span>
+                                <span class="price-vip">VIP¥128</span>
+                            </div>
+                            <button class="store-action">立即预订</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 附近热门 -->
+        <section class="section fade-in">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="section-icon">🔥</span>
+                    附近热门
+                </h2>
+                <span class="section-more">查看地图 →</span>
+            </div>
+            <div class="store-list">
+                <div class="store-card">
+                    <div class="store-image-wrapper">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='225' viewBox='0 0 400 225'%3E%3Crect width='400' height='225' fill='%231890FF'/%3E%3Ctext x='50%25' y='50%25' font-size='24' fill='white' text-anchor='middle' dy='.3em'%3E悦茶轩（工体店）%3C/text%3E%3C/svg%3E" alt="悦茶轩" class="store-image">
+                        <div class="store-badges">
+                            <span class="badge badge-discount">限时8折</span>
+                        </div>
+                    </div>
+                    <div class="store-info">
+                        <div class="store-header">
+                            <div>
+                                <h3 class="store-name">悦茶轩（工体店）</h3>
+                                <div class="store-rating">
+                                    ⭐ 4.9 <span style="color: var(--gray-7); font-size: 12px;">(1.8k)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="store-meta">
+                            <span class="store-meta-item">📍 1.2km</span>
+                            <span class="store-meta-item">⏰ 营业至22:00</span>
+                            <span class="store-meta-item">🍵 品茶雅座</span>
+                        </div>
+                        <div class="store-features">
+                            <span class="feature-tag">茶艺表演</span>
+                            <span class="feature-tag">商务洽谈</span>
+                            <span class="feature-tag">棋牌室</span>
+                        </div>
+                        <div class="store-footer">
+                            <div class="store-price">
+                                <span class="price-original">¥88</span>
+                                <span class="price-current">¥68/位</span>
+                            </div>
+                            <button class="store-action">立即预订</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 今日特惠 -->
+        <section class="section fade-in" style="padding-bottom: 80px;">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="section-icon">💰</span>
+                    今日特惠
+                </h2>
+                <span class="section-more">全部优惠 →</span>
+            </div>
+            <div class="store-list">
+                <div class="store-card">
+                    <div class="store-image-wrapper">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='225' viewBox='0 0 400 225'%3E%3Crect width='400' height='225' fill='%2352C41A'/%3E%3Ctext x='50%25' y='50%25' font-size='24' fill='white' text-anchor='middle' dy='.3em'%3E漫咖啡（CBD店）%3C/text%3E%3C/svg%3E" alt="漫咖啡" class="store-image">
+                        <div class="store-badges">
+                            <span class="badge badge-discount">今日5折</span>
+                        </div>
+                    </div>
+                    <div class="store-info">
+                        <div class="store-header">
+                            <div>
+                                <h3 class="store-name">漫咖啡（CBD店）</h3>
+                                <div class="store-rating">
+                                    ⭐ 4.7 <span style="color: var(--gray-7); font-size: 12px;">(956)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="store-meta">
+                            <span class="store-meta-item">📍 2.0km</span>
+                            <span class="store-meta-item">⏰ 24小时营业</span>
+                            <span class="store-meta-item">☕ 精品咖啡</span>
+                        </div>
+                        <div class="store-features">
+                            <span class="feature-tag">WiFi办公</span>
+                            <span class="feature-tag">深夜营业</span>
+                            <span class="feature-tag">宠物友好</span>
+                        </div>
+                        <div class="store-footer">
+                            <div class="store-price">
+                                <span class="price-original">¥68</span>
+                                <span class="price-current">¥34/位</span>
+                            </div>
+                            <button class="store-action">立即抢购</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 底部导航 -->
+        <nav class="bottom-nav">
+            <div class="nav-grid">
+                <div class="nav-item active">
+                    <div class="nav-item-icon">🏠</div>
+                    <span class="nav-item-label">首页</span>
+                </div>
+                <div class="nav-item">
+                    <div class="nav-item-icon">📂</div>
+                    <span class="nav-item-label">分类</span>
+                </div>
+                <div class="nav-item">
+                    <div class="nav-item-icon">📋</div>
+                    <span class="nav-item-label">订单</span>
+                </div>
+                <div class="nav-item">
+                    <div class="nav-item-icon">👤</div>
+                    <span class="nav-item-label">我的</span>
+                </div>
+            </div>
+        </nav>
+    </div>
+    
+    <script>
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const fadeElements = document.querySelectorAll('.fade-in');
+            fadeElements.forEach((el, index) => {
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                }, index * 100);
+            });
+        });
+        
+        // 快速入口点击效果
+        const quickItems = document.querySelectorAll('.quick-item');
+        quickItems.forEach(item => {
+            item.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 200);
+            });
+        });
+        
+        // 搜索框焦点效果
+        const searchInput = document.querySelector('.search-input');
+        const searchBar = document.querySelector('.search-bar');
+        
+        searchInput.addEventListener('focus', function() {
+            searchBar.style.boxShadow = '0 2px 8px rgba(255, 107, 53, 0.2)';
+        });
+        
+        searchInput.addEventListener('blur', function() {
+            searchBar.style.boxShadow = 'var(--shadow-2)';
+        });
+        
+        // 底部导航点击效果
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.addEventListener('click', function() {
+                navItems.forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // 模拟下拉刷新
+        let startY = 0;
+        let isPulling = false;
+        
+        document.addEventListener('touchstart', function(e) {
+            if (window.scrollY === 0) {
+                startY = e.touches[0].pageY;
+                isPulling = true;
+            }
+        });
+        
+        document.addEventListener('touchmove', function(e) {
+            if (isPulling) {
+                const currentY = e.touches[0].pageY;
+                const diff = currentY - startY;
+                
+                if (diff > 0 && diff < 150) {
+                    // 可以在这里添加下拉刷新的视觉反馈
+                }
+            }
+        });
+        
+        document.addEventListener('touchend', function() {
+            if (isPulling) {
+                isPulling = false;
+                // 执行刷新操作
+            }
+        });
+    </script>
+</body>
+</html>

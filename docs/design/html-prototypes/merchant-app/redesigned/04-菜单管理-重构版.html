@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>菜单管理 - 商户端</title>
+    <style>
+        /* 设计系统变量 */
+        :root {
+            /* 品牌色 */
+            --primary: #FF6B35;
+            --primary-light: #FF8F66;
+            --primary-dark: #E5602F;
+            
+            /* 功能色 */
+            --success: #52C41A;
+            --warning: #FAAD14;
+            --error: #F5222D;
+            --info: #1890FF;
+            
+            /* 中性色 */
+            --gray-1: #FFFFFF;
+            --gray-2: #FAFAFA;
+            --gray-3: #F5F5F5;
+            --gray-4: #E8E8E8;
+            --gray-5: #D9D9D9;
+            --gray-6: #BFBFBF;
+            --gray-7: #8C8C8C;
+            --gray-8: #595959;
+            --gray-9: #262626;
+            --gray-10: #000000;
+            
+            /* 间距 */
+            --spacing-1: 4px;
+            --spacing-2: 8px;
+            --spacing-3: 12px;
+            --spacing-4: 16px;
+            --spacing-5: 20px;
+            --spacing-6: 24px;
+            --spacing-8: 32px;
+            --spacing-10: 40px;
+            
+            /* 圆角 */
+            --radius-sm: 4px;
+            --radius-base: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-2xl: 24px;
+            --radius-full: 9999px;
+            
+            /* 阴影 */
+            --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-2: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-3: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+            --shadow-primary: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+        
+        /* 基础样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: var(--gray-9);
+            background-color: var(--gray-2);
+            overflow-x: hidden;
+        }
+        
+        /* 容器布局 */
+        .app-container {
+            min-height: 100vh;
+            max-width: 430px;
+            margin: 0 auto;
+            background-color: var(--gray-2);
+            position: relative;
+            padding-bottom: 80px;
+        }
+        
+        /* 顶部导航 */
+        .header {
+            background-color: var(--gray-1);
+            padding: env(safe-area-inset-top) var(--spacing-4) var(--spacing-4);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-1);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-9);
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: var(--spacing-3);
+        }
+        
+        .add-btn {
+            padding: var(--spacing-2) var(--spacing-4);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: var(--gray-1);
+            border: none;
+            border-radius: var(--radius-2xl);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+            box-shadow: var(--shadow-primary);
+        }
+        
+        /* 搜索栏 */
+        .search-bar {
+            position: relative;
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: var(--spacing-3) var(--spacing-4) var(--spacing-3) var(--spacing-10);
+            border: 1px solid var(--gray-4);
+            border-radius: var(--radius-2xl);
+            font-size: 14px;
+            background-color: var(--gray-3);
+            transition: all 0.2s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: var(--gray-1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: var(--spacing-4);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-6);
+            font-size: 16px;
+        }
+        
+        /* 分类选择 */
+        .category-tabs {
+            display: flex;
+            gap: var(--spacing-2);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: var(--spacing-2);
+        }
+        
+        .category-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .category-tab {
+            flex-shrink: 0;
+            padding: var(--spacing-2) var(--spacing-4);
+            border-radius: var(--radius-2xl);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background-color: var(--gray-3);
+            color: var(--gray-8);
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+        
+        .category-tab.active {
+            background-color: var(--primary);
+            color: var(--gray-1);
+            box-shadow: var(--shadow-primary);
+        }
+        
+        /* 菜品列表 */
+        .menu-container {
+            padding: var(--spacing-4);
+        }
+        
+        .menu-section {
+            margin-bottom: var(--spacing-6);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-9);
+        }
+        
+        .section-count {
+            font-size: 14px;
+            color: var(--gray-7);
+        }
+        
+        /* 菜品卡片 */
+        .menu-item {
+            background-color: var(--gray-1);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-4);
+            margin-bottom: var(--spacing-3);
+            box-shadow: var(--shadow-2);
+            display: flex;
+            gap: var(--spacing-4);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .menu-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-3);
+        }
+        
+        /* 菜品图片 */
+        .item-image {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius-base);
+            background-color: var(--gray-3);
+            flex-shrink: 0;
+            object-fit: cover;
+        }
+        
+        /* 菜品信息 */
+        .item-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-2);
+        }
+        
+        .item-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-9);
+            flex: 1;
+        }
+        
+        .item-status {
+            padding: var(--spacing-1) var(--spacing-3);
+            border-radius: var(--radius-2xl);
+            font-size: 12px;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+        
+        .status-available {
+            background-color: rgba(82, 196, 26, 0.1);
+            color: var(--success);
+        }
+        
+        .status-soldout {
+            background-color: rgba(189, 189, 189, 0.1);
+            color: var(--gray-7);
+        }
+        
+        .item-desc {
+            font-size: 13px;
+            color: var(--gray-7);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: var(--spacing-2);
+        }
+        
+        .item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .item-price {
+            display: flex;
+            align-items: baseline;
+            gap: var(--spacing-2);
+        }
+        
+        .price-current {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .price-original {
+            font-size: 14px;
+            color: var(--gray-6);
+            text-decoration: line-through;
+        }
+        
+        .item-sales {
+            font-size: 12px;
+            color: var(--gray-7);
+        }
+        
+        /* 菜品操作 */
+        .item-actions {
+            display: flex;
+            gap: var(--spacing-2);
+        }
+        
+        .action-toggle {
+            width: 44px;
+            height: 24px;
+            border-radius: var(--radius-2xl);
+            background-color: var(--gray-4);
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .action-toggle.active {
+            background-color: var(--success);
+        }
+        
+        .toggle-handle {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--gray-1);
+            box-shadow: var(--shadow-2);
+            transition: transform 0.3s ease;
+        }
+        
+        .action-toggle.active .toggle-handle {
+            transform: translateX(20px);
+        }
+        
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--gray-4);
+            background-color: var(--gray-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        /* 添加菜品悬浮按钮 */
+        .fab {
+            position: fixed;
+            bottom: 100px;
+            right: var(--spacing-4);
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: var(--gray-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: var(--shadow-3);
+            transition: all 0.3s ease;
+            z-index: 90;
+        }
+        
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+        }
+        
+        /* 批量操作栏 */
+        .batch-actions {
+            position: fixed;
+            bottom: 80px;
+            left: 0;
+            right: 0;
+            background-color: var(--gray-1);
+            padding: var(--spacing-3) var(--spacing-4);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 80;
+        }
+        
+        .batch-actions.show {
+            display: flex;
+        }
+        
+        .batch-info {
+            font-size: 14px;
+            color: var(--gray-8);
+        }
+        
+        .batch-btns {
+            display: flex;
+            gap: var(--spacing-3);
+        }
+        
+        .batch-btn {
+            padding: var(--spacing-2) var(--spacing-4);
+            border-radius: var(--radius-base);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid var(--gray-4);
+            background-color: var(--gray-1);
+            color: var(--gray-8);
+        }
+        
+        .batch-btn.danger {
+            color: var(--error);
+            border-color: var(--error);
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 430px;
+            background-color: var(--gray-1);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            padding: var(--spacing-2) 0 env(safe-area-inset-bottom);
+            z-index: 100;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-1);
+            padding: var(--spacing-2) 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .nav-item.active {
+            color: var(--primary);
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            transition: transform 0.2s ease;
+        }
+        
+        .nav-item:active .nav-icon {
+            transform: scale(0.9);
+        }
+        
+        .nav-label {
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 375px) {
+            .menu-item {
+                padding: var(--spacing-3);
+            }
+            
+            .item-image {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .item-name {
+                font-size: 15px;
+            }
+            
+            .price-current {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航 -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="header-title">菜单管理</h1>
+                <div class="header-actions">
+                    <button class="add-btn">
+                        <span>+</span>
+                        <span>添加菜品</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 搜索栏 -->
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="search" class="search-input" placeholder="搜索菜品名称">
+            </div>
+            
+            <!-- 分类选择 -->
+            <div class="category-tabs">
+                <div class="category-tab active">全部 (48)</div>
+                <div class="category-tab">饮料 (12)</div>
+                <div class="category-tab">小食 (18)</div>
+                <div class="category-tab">果盘 (8)</div>
+                <div class="category-tab">套餐 (10)</div>
+            </div>
+        </header>
+        
+        <!-- 菜品列表 -->
+        <div class="menu-container">
+            <!-- 热销推荐 -->
+            <div class="menu-section">
+                <div class="section-header">
+                    <h3 class="section-title">热销推荐</h3>
+                    <span class="section-count">共6个</span>
+                </div>
+                
+                <!-- 菜品项 1 -->
+                <div class="menu-item">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' fill='%23FF6B35' rx='8'/%3E%3Ctext x='50%25' y='50%25' font-size='14' fill='white' text-anchor='middle' dy='.3em'%3E果盘%3C/text%3E%3C/svg%3E" alt="精品果盘" class="item-image">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <h4 class="item-name">精品果盘</h4>
+                            <span class="item-status status-available">在售</span>
+                        </div>
+                        <p class="item-desc">新鲜时令水果，精心搭配，包含西瓜、哈密瓜、葡萄、橙子等</p>
+                        <div class="item-footer">
+                            <div class="item-price">
+                                <span class="price-current">¥68</span>
+                                <span class="price-original">¥88</span>
+                            </div>
+                            <span class="item-sales">月售128份</span>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <div class="action-toggle active">
+                            <div class="toggle-handle"></div>
+                        </div>
+                        <div class="action-btn">✏️</div>
+                    </div>
+                </div>
+                
+                <!-- 菜品项 2 -->
+                <div class="menu-item">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' fill='%231890FF' rx='8'/%3E%3Ctext x='50%25' y='50%25' font-size='14' fill='white' text-anchor='middle' dy='.3em'%3E饮料%3C/text%3E%3C/svg%3E" alt="经典套餐" class="item-image">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <h4 class="item-name">欢唱畅饮套餐</h4>
+                            <span class="item-status status-available">在售</span>
+                        </div>
+                        <p class="item-desc">包含啤酒6瓶+软饮4瓶+小食拼盘，适合4-6人</p>
+                        <div class="item-footer">
+                            <div class="item-price">
+                                <span class="price-current">¥168</span>
+                                <span class="price-original">¥228</span>
+                            </div>
+                            <span class="item-sales">月售86份</span>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <div class="action-toggle active">
+                            <div class="toggle-handle"></div>
+                        </div>
+                        <div class="action-btn">✏️</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 饮料专区 -->
+            <div class="menu-section">
+                <div class="section-header">
+                    <h3 class="section-title">饮料专区</h3>
+                    <span class="section-count">共12个</span>
+                </div>
+                
+                <!-- 菜品项 3 -->
+                <div class="menu-item">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' fill='%2352C41A' rx='8'/%3E%3Ctext x='50%25' y='50%25' font-size='14' fill='white' text-anchor='middle' dy='.3em'%3E啤酒%3C/text%3E%3C/svg%3E" alt="青岛啤酒" class="item-image">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <h4 class="item-name">青岛啤酒</h4>
+                            <span class="item-status status-available">在售</span>
+                        </div>
+                        <p class="item-desc">经典青岛啤酒，500ml/瓶</p>
+                        <div class="item-footer">
+                            <div class="item-price">
+                                <span class="price-current">¥15</span>
+                            </div>
+                            <span class="item-sales">月售326瓶</span>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <div class="action-toggle active">
+                            <div class="toggle-handle"></div>
+                        </div>
+                        <div class="action-btn">✏️</div>
+                    </div>
+                </div>
+                
+                <!-- 菜品项 4 -->
+                <div class="menu-item">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' fill='%23FAAD14' rx='8'/%3E%3Ctext x='50%25' y='50%25' font-size='14' fill='white' text-anchor='middle' dy='.3em'%3E果汁%3C/text%3E%3C/svg%3E" alt="鲜榨橙汁" class="item-image">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <h4 class="item-name">鲜榨橙汁</h4>
+                            <span class="item-status status-soldout">已售罄</span>
+                        </div>
+                        <p class="item-desc">100%鲜榨橙汁，不添加任何添加剂</p>
+                        <div class="item-footer">
+                            <div class="item-price">
+                                <span class="price-current">¥28</span>
+                            </div>
+                            <span class="item-sales">月售156杯</span>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <div class="action-toggle">
+                            <div class="toggle-handle"></div>
+                        </div>
+                        <div class="action-btn">✏️</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 小食专区 -->
+            <div class="menu-section">
+                <div class="section-header">
+                    <h3 class="section-title">小食专区</h3>
+                    <span class="section-count">共18个</span>
+                </div>
+                
+                <!-- 菜品项 5 -->
+                <div class="menu-item">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' fill='%23F5222D' rx='8'/%3E%3Ctext x='50%25' y='50%25' font-size='14' fill='white' text-anchor='middle' dy='.3em'%3E薯条%3C/text%3E%3C/svg%3E" alt="黄金薯条" class="item-image">
+                    <div class="item-info">
+                        <div class="item-header">
+                            <h4 class="item-name">黄金薯条</h4>
+                            <span class="item-status status-available">在售</span>
+                        </div>
+                        <p class="item-desc">香脆可口的黄金薯条，配番茄酱</p>
+                        <div class="item-footer">
+                            <div class="item-price">
+                                <span class="price-current">¥22</span>
+                            </div>
+                            <span class="item-sales">月售218份</span>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <div class="action-toggle active">
+                            <div class="toggle-handle"></div>
+                        </div>
+                        <div class="action-btn">✏️</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 添加菜品悬浮按钮 -->
+        <div class="fab">+</div>
+        
+        <!-- 批量操作栏 -->
+        <div class="batch-actions">
+            <span class="batch-info">已选择3个菜品</span>
+            <div class="batch-btns">
+                <button class="batch-btn">批量上架</button>
+                <button class="batch-btn">批量下架</button>
+                <button class="batch-btn danger">删除</button>
+            </div>
+        </div>
+        
+        <!-- 底部导航 -->
+        <nav class="bottom-nav">
+            <div class="nav-container">
+                <div class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">数据</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-label">订单</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-label">包间</span>
+                </div>
+                <div class="nav-item active">
+                    <span class="nav-icon">🍽️</span>
+                    <span class="nav-label">菜单</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label">设置</span>
+                </div>
+            </div>
+        </nav>
+    </div>
+    
+    <script>
+        // 分类切换
+        const categoryTabs = document.querySelectorAll('.category-tab');
+        categoryTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                categoryTabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                const category = this.textContent.split(' ')[0];
+                console.log('切换到分类:', category);
+                filterItems(category);
+            });
+        });
+        
+        // 搜索功能
+        const searchInput = document.querySelector('.search-input');
+        searchInput.addEventListener('input', function(e) {
+            const keyword = e.target.value.trim();
+            console.log('搜索:', keyword);
+            if (keyword) {
+                searchItems(keyword);
+            }
+        });
+        
+        // 菜品状态切换
+        document.querySelectorAll('.action-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                this.classList.toggle('active');
+                
+                const menuItem = this.closest('.menu-item');
+                const itemName = menuItem.querySelector('.item-name').textContent;
+                const isActive = this.classList.contains('active');
+                
+                // 更新状态标签
+                const statusEl = menuItem.querySelector('.item-status');
+                if (isActive) {
+                    statusEl.className = 'item-status status-available';
+                    statusEl.textContent = '在售';
+                } else {
+                    statusEl.className = 'item-status status-soldout';
+                    statusEl.textContent = '已下架';
+                }
+                
+                console.log(`${itemName}: ${isActive ? '上架' : '下架'}`);
+            });
+        });
+        
+        // 编辑按钮
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const menuItem = this.closest('.menu-item');
+                const itemName = menuItem.querySelector('.item-name').textContent;
+                console.log('编辑菜品:', itemName);
+            });
+        });
+        
+        // 菜品卡片点击
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                // 如果点击的是操作按钮区域，不触发卡片点击
+                if (e.target.closest('.item-actions')) {
+                    return;
+                }
+                
+                const itemName = this.querySelector('.item-name').textContent;
+                console.log('查看菜品详情:', itemName);
+            });
+        });
+        
+        // 添加菜品
+        document.querySelector('.add-btn').addEventListener('click', function() {
+            console.log('添加新菜品');
+        });
+        
+        document.querySelector('.fab').addEventListener('click', function() {
+            console.log('快速添加菜品');
+        });
+        
+        // 底部导航
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.addEventListener('click', function() {
+                navItems.forEach(n => n.classList.remove('active'));
+                this.classList.add('active');
+                
+                const label = this.querySelector('.nav-label').textContent;
+                console.log('切换到:', label);
+            });
+        });
+        
+        // 筛选菜品
+        function filterItems(category) {
+            const items = document.querySelectorAll('.menu-item');
+            items.forEach(item => {
+                item.style.opacity = '0.5';
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    // 实际应用中根据分类显示/隐藏
+                }, 300);
+            });
+        }
+        
+        // 搜索菜品
+        function searchItems(keyword) {
+            const items = document.querySelectorAll('.menu-item');
+            items.forEach(item => {
+                const name = item.querySelector('.item-name').textContent.toLowerCase();
+                const desc = item.querySelector('.item-desc').textContent.toLowerCase();
+                const searchTerm = keyword.toLowerCase();
+                
+                if (name.includes(searchTerm) || desc.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        // 模拟批量选择（实际应用中需要完善）
+        let selectedCount = 0;
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Control' || e.key === 'Meta') {
+                // 启用多选模式
+                document.querySelectorAll('.menu-item').forEach(item => {
+                    item.addEventListener('click', handleMultiSelect);
+                });
+            }
+        });
+        
+        document.addEventListener('keyup', function(e) {
+            if (e.key === 'Control' || e.key === 'Meta') {
+                // 取消多选模式
+                document.querySelectorAll('.menu-item').forEach(item => {
+                    item.removeEventListener('click', handleMultiSelect);
+                });
+            }
+        });
+        
+        function handleMultiSelect(e) {
+            e.preventDefault();
+            this.classList.toggle('selected');
+            selectedCount = document.querySelectorAll('.menu-item.selected').length;
+            
+            const batchActions = document.querySelector('.batch-actions');
+            if (selectedCount > 0) {
+                batchActions.classList.add('show');
+                batchActions.querySelector('.batch-info').textContent = `已选择${selectedCount}个菜品`;
+            } else {
+                batchActions.classList.remove('show');
+            }
+        }
+        
+        // 批量操作按钮
+        document.querySelectorAll('.batch-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const action = this.textContent;
+                console.log(`批量操作: ${action}, 共${selectedCount}个菜品`);
+                
+                // 清除选中状态
+                document.querySelectorAll('.menu-item.selected').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                selectedCount = 0;
+                document.querySelector('.batch-actions').classList.remove('show');
+            });
+        });
+    </script>
+</body>
+</html>

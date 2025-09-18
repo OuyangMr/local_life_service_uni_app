@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>个人中心</title>
+    <style>
+        /* 设计系统变量 */
+        :root {
+            /* 品牌色 */
+            --primary: #FF6B35;
+            --primary-light: #FF8F66;
+            --primary-dark: #E5602F;
+            
+            /* 功能色 */
+            --success: #52C41A;
+            --warning: #FAAD14;
+            --error: #F5222D;
+            --info: #1890FF;
+            
+            /* 中性色 */
+            --gray-1: #FFFFFF;
+            --gray-2: #FAFAFA;
+            --gray-3: #F5F5F5;
+            --gray-4: #E8E8E8;
+            --gray-5: #D9D9D9;
+            --gray-6: #BFBFBF;
+            --gray-7: #8C8C8C;
+            --gray-8: #595959;
+            --gray-9: #262626;
+            --gray-10: #000000;
+            
+            /* VIP色彩 */
+            --vip-gold: #FFD700;
+            --vip-gradient: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            
+            /* 间距 */
+            --spacing-1: 4px;
+            --spacing-2: 8px;
+            --spacing-3: 12px;
+            --spacing-4: 16px;
+            --spacing-5: 20px;
+            --spacing-6: 24px;
+            --spacing-8: 32px;
+            --spacing-10: 40px;
+            
+            /* 圆角 */
+            --radius-sm: 4px;
+            --radius-base: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-2xl: 24px;
+            --radius-full: 9999px;
+            
+            /* 阴影 */
+            --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-2: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-3: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+            --shadow-primary: 0 4px 12px rgba(255, 107, 53, 0.3);
+            --shadow-vip: 0 8px 24px rgba(255, 215, 0, 0.3);
+        }
+        
+        /* 基础样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: var(--gray-9);
+            background-color: var(--gray-2);
+            overflow-x: hidden;
+        }
+        
+        /* 容器布局 */
+        .app-container {
+            min-height: 100vh;
+            max-width: 430px;
+            margin: 0 auto;
+            background-color: var(--gray-2);
+            position: relative;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        /* 顶部背景 */
+        .profile-header {
+            position: relative;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            padding: env(safe-area-inset-top) 0 var(--spacing-10);
+            overflow: hidden;
+        }
+        
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        
+        .header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-4) var(--spacing-4) var(--spacing-6);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-1);
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: var(--spacing-3);
+        }
+        
+        .header-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--gray-1);
+            font-size: 18px;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* 用户信息 */
+        .user-info {
+            padding: 0 var(--spacing-4);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .user-basic {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-4);
+            margin-bottom: var(--spacing-4);
+        }
+        
+        .user-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background-color: var(--gray-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+        
+        .avatar-vip {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 24px;
+            height: 24px;
+            background: var(--vip-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            border: 2px solid var(--gray-1);
+        }
+        
+        .user-details {
+            flex: 1;
+            color: var(--gray-1);
+        }
+        
+        .user-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-1);
+        }
+        
+        .user-id {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        /* VIP卡片 */
+        .vip-card {
+            background: var(--vip-gradient);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-4);
+            margin: 0 var(--spacing-4) calc(-1 * var(--spacing-6));
+            box-shadow: var(--shadow-vip);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .vip-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%);
+        }
+        
+        .vip-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .vip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .vip-title {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gray-9);
+        }
+        
+        .vip-badge {
+            font-size: 20px;
+        }
+        
+        .vip-expiry {
+            font-size: 13px;
+            color: rgba(0,0,0,0.7);
+        }
+        
+        .vip-benefits {
+            display: flex;
+            justify-content: space-between;
+            gap: var(--spacing-3);
+        }
+        
+        .benefit-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .benefit-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-9);
+            margin-bottom: var(--spacing-1);
+        }
+        
+        .benefit-label {
+            font-size: 12px;
+            color: rgba(0,0,0,0.7);
+        }
+        
+        /* 功能入口 */
+        .quick-entries {
+            background-color: var(--gray-1);
+            border-radius: var(--radius-xl);
+            margin: var(--spacing-4);
+            padding: var(--spacing-4);
+            margin-top: var(--spacing-8);
+            box-shadow: var(--shadow-2);
+        }
+        
+        .entries-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-4);
+        }
+        
+        .entry-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-2);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .entry-item:active {
+            transform: scale(0.95);
+        }
+        
+        .entry-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
+            background-color: var(--gray-3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        
+        .entry-item:hover .entry-icon {
+            background-color: rgba(255, 107, 53, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .entry-label {
+            font-size: 13px;
+            color: var(--gray-8);
+            text-align: center;
+        }
+        
+        /* 功能列表 */
+        .function-section {
+            margin: var(--spacing-4);
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-9);
+            margin-bottom: var(--spacing-3);
+            padding: 0 var(--spacing-1);
+        }
+        
+        .function-list {
+            background-color: var(--gray-1);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-2);
+        }
+        
+        .function-item {
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-4);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .function-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: var(--spacing-4);
+            right: 0;
+            height: 1px;
+            background-color: var(--gray-4);
+        }
+        
+        .function-item:active {
+            background-color: var(--gray-3);
+        }
+        
+        .function-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-base);
+            background-color: var(--gray-3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: var(--spacing-3);
+        }
+        
+        .function-content {
+            flex: 1;
+        }
+        
+        .function-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--gray-9);
+            margin-bottom: var(--spacing-1);
+        }
+        
+        .function-desc {
+            font-size: 13px;
+            color: var(--gray-7);
+        }
+        
+        .function-extra {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+        }
+        
+        .function-badge {
+            padding: 2px 8px;
+            background-color: var(--error);
+            color: var(--gray-1);
+            border-radius: var(--radius-2xl);
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .function-arrow {
+            width: 20px;
+            height: 20px;
+            color: var(--gray-6);
+        }
+        
+        /* 营销横幅 */
+        .promotion-banner {
+            margin: var(--spacing-4);
+            background: linear-gradient(135deg, #FF6B35 0%, #FF8F66 100%);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-4);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-4);
+            box-shadow: var(--shadow-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .promotion-banner:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+        }
+        
+        .promotion-icon {
+            width: 56px;
+            height: 56px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+        
+        .promotion-content {
+            flex: 1;
+            color: var(--gray-1);
+        }
+        
+        .promotion-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-1);
+        }
+        
+        .promotion-desc {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        
+        .promotion-action {
+            background-color: var(--gray-1);
+            color: var(--primary);
+            padding: var(--spacing-2) var(--spacing-4);
+            border-radius: var(--radius-2xl);
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 375px) {
+            .user-avatar {
+                width: 64px;
+                height: 64px;
+            }
+            
+            .user-name {
+                font-size: 18px;
+            }
+            
+            .entries-grid {
+                gap: var(--spacing-3);
+            }
+            
+            .entry-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 20px;
+            }
+            
+            .entry-label {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部背景 -->
+        <div class="profile-header">
+            <nav class="header-nav">
+                <h1 class="header-title">个人中心</h1>
+                <div class="header-actions">
+                    <div class="header-icon">📨</div>
+                    <div class="header-icon">⚙️</div>
+                </div>
+            </nav>
+            
+            <!-- 用户信息 -->
+            <div class="user-info">
+                <div class="user-basic">
+                    <div class="user-avatar">
+                        👤
+                        <div class="avatar-vip">👑</div>
+                    </div>
+                    <div class="user-details">
+                        <h2 class="user-name">张小明</h2>
+                        <p class="user-id">ID: 168888</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- VIP卡片 -->
+            <div class="vip-card">
+                <div class="vip-content">
+                    <div class="vip-header">
+                        <div class="vip-title">
+                            <span class="vip-badge">👑</span>
+                            <span>黄金VIP会员</span>
+                        </div>
+                        <span class="vip-expiry">2025.12.31到期</span>
+                    </div>
+                    <div class="vip-benefits">
+                        <div class="benefit-item">
+                            <div class="benefit-value">15%</div>
+                            <div class="benefit-label">专享折扣</div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-value">3680</div>
+                            <div class="benefit-label">累计积分</div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-value">¥2.5k</div>
+                            <div class="benefit-label">已省金额</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 快捷入口 -->
+        <div class="quick-entries">
+            <div class="entries-grid">
+                <div class="entry-item">
+                    <div class="entry-icon">🎟️</div>
+                    <span class="entry-label">优惠券</span>
+                </div>
+                <div class="entry-item">
+                    <div class="entry-icon">💰</div>
+                    <span class="entry-label">钱包</span>
+                </div>
+                <div class="entry-item">
+                    <div class="entry-icon">🌟</div>
+                    <span class="entry-label">收藏</span>
+                </div>
+                <div class="entry-item">
+                    <div class="entry-icon">⏰</div>
+                    <span class="entry-label">历史</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 营销横幅 -->
+        <div class="promotion-banner">
+            <div class="promotion-icon">🎁</div>
+            <div class="promotion-content">
+                <h3 class="promotion-title">邀请好友得红包</h3>
+                <p class="promotion-desc">每邀请1位好友，双方各得50元红包</p>
+            </div>
+            <span class="promotion-action">去邀请</span>
+        </div>
+        
+        <!-- 服务功能 -->
+        <div class="function-section">
+            <h3 class="section-title">我的服务</h3>
+            <div class="function-list">
+                <div class="function-item">
+                    <div class="function-icon">📋</div>
+                    <div class="function-content">
+                        <p class="function-name">我的订单</p>
+                        <p class="function-desc">查看全部订单</p>
+                    </div>
+                    <div class="function-extra">
+                        <span class="function-badge">3</span>
+                        <svg class="function-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="function-item">
+                    <div class="function-icon">💳</div>
+                    <div class="function-content">
+                        <p class="function-name">会员中心</p>
+                        <p class="function-desc">续费升级，查看权益</p>
+                    </div>
+                    <div class="function-extra">
+                        <svg class="function-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="function-item">
+                    <div class="function-icon">🎁</div>
+                    <div class="function-content">
+                        <p class="function-name">积分商城</p>
+                        <p class="function-desc">3680积分可兑换</p>
+                    </div>
+                    <div class="function-extra">
+                        <svg class="function-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 其他功能 -->
+        <div class="function-section">
+            <h3 class="section-title">其他功能</h3>
+            <div class="function-list">
+                <div class="function-item">
+                    <div class="function-icon">📍</div>
+                    <div class="function-content">
+                        <p class="function-name">地址管理</p>
+                        <p class="function-desc">管理收货地址</p>
+                    </div>
+                    <div class="function-extra">
+                        <svg class="function-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="function-item">
+                    <div class="function-icon">🔒</div>
+                    <div class="function-content">
+                        <p class="function-name">账号安全</p>
+                        <p class="function-desc">修改密码，绑定手机</p>
+                    </div>
+                    <div class="function-extra">
+                        <svg class="function-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="function-item">
+                    <div class="function-icon">💬</div>
+                    <div class="function-content">
+                        <p class="function-name">意见反馈</p>
+                        <p class="function-desc">您的建议对我们很重要</p>
+                    </div>
+                    <div class="function-extra">
+                        <svg class="function-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="function-item">
+                    <div class="function-icon">❓</div>
+                    <div class="function-content">
+                        <p class="function-name">帮助中心</p>
+                        <p class="function-desc">常见问题解答</p>
+                    </div>
+                    <div class="function-extra">
+                        <svg class="function-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="function-item">
+                    <div class="function-icon">📖</div>
+                    <div class="function-content">
+                        <p class="function-name">关于我们</p>
+                        <p class="function-desc">了解更多</p>
+                    </div>
+                    <div class="function-extra">
+                        <svg class="function-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 退出登录按钮 -->
+        <div style="padding: var(--spacing-6) var(--spacing-4) var(--spacing-10);">
+            <button style="width: 100%; padding: var(--spacing-3); background-color: var(--gray-1); border: 1px solid var(--gray-4); border-radius: var(--radius-lg); font-size: 16px; font-weight: 500; color: var(--gray-8); cursor: pointer; transition: all 0.2s ease;">
+                退出登录
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // 快捷入口点击
+        const entryItems = document.querySelectorAll('.entry-item');
+        entryItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const label = this.querySelector('.entry-label').textContent;
+                console.log('点击了:', label);
+            });
+        });
+        
+        // 功能列表点击
+        const functionItems = document.querySelectorAll('.function-item');
+        functionItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const name = this.querySelector('.function-name').textContent;
+                console.log('进入:', name);
+                
+                // 添加点击动画
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 100);
+            });
+        });
+        
+        // VIP卡片点击
+        document.querySelector('.vip-card').addEventListener('click', function() {
+            console.log('进入会员中心');
+        });
+        
+        // 营销横幅点击
+        document.querySelector('.promotion-banner').addEventListener('click', function() {
+            console.log('进入邀请好友页面');
+        });
+        
+        // 退出登录
+        document.querySelector('button').addEventListener('click', function() {
+            if (confirm('确定要退出登录吗？')) {
+                console.log('执行退出登录');
+            }
+        });
+        
+        // 模拟消息红点
+        setTimeout(() => {
+            const messageIcon = document.querySelector('.header-icon');
+            const badge = document.createElement('span');
+            badge.style.cssText = `
+                position: absolute;
+                top: 6px;
+                right: 6px;
+                width: 8px;
+                height: 8px;
+                background-color: var(--error);
+                border-radius: 50%;
+                border: 2px solid var(--primary);
+            `;
+            messageIcon.style.position = 'relative';
+            messageIcon.appendChild(badge);
+        }, 2000);
+    </script>
+</body>
+</html>

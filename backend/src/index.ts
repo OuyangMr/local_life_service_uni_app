@@ -11,11 +11,7 @@ import { config } from '@/config/app';
 import { logger } from '@/utils/logger';
 import { connectDatabase } from '@/config/database';
 import { connectRedis } from '@/config/redis';
-import { 
-  errorHandler, 
-  notFoundHandler, 
-  setupGlobalErrorHandlers 
-} from '@/middleware/errorHandler';
+import { errorHandler, notFoundHandler, setupGlobalErrorHandlers } from '@/middleware/errorHandler';
 import { expressRateLimit, speedLimiter } from '@/middleware/rateLimiter';
 import { authMiddleware } from '@/middleware/auth';
 
@@ -46,13 +42,13 @@ class Application {
     this.io = new SocketIOServer(this.server, {
       cors: {
         origin: config.cors.origins,
-        credentials: config.cors.credentials
-      }
+        credentials: config.cors.credentials,
+      },
     });
 
     // 设置全局异常处理
     setupGlobalErrorHandlers();
-    
+
     // 信任代理
     this.app.set('trust proxy', true);
 
@@ -65,31 +61,37 @@ class Application {
   private initializeMiddleware(): void {
     // 安全中间件
     this.app.use(helmet());
-    
+
     // CORS配置
-    this.app.use(cors({
-      origin: config.cors.origins,
-      credentials: config.cors.credentials,
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-    }));
+    this.app.use(
+      cors({
+        origin: config.cors.origins,
+        credentials: config.cors.credentials,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+      })
+    );
 
     // 压缩响应
     this.app.use(compression());
 
     // 请求日志
-    this.app.use(morgan('combined', { 
-      stream: { write: (message) => logger.info(message.trim()) }
-    }));
+    this.app.use(
+      morgan('combined', {
+        stream: { write: (message) => logger.info(message.trim()) },
+      })
+    );
 
     // 请求体解析
-    this.app.use(express.json({ 
-      limit: '10mb',
-      verify: (req, res, buf) => {
-        // 存储原始请求体以便签名验证
-        (req as any).rawBody = buf;
-      }
-    }));
+    this.app.use(
+      express.json({
+        limit: '10mb',
+        verify: (req, res, buf) => {
+          // 存储原始请求体以便签名验证
+          (req as any).rawBody = buf;
+        },
+      })
+    );
     this.app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
     // 限流
@@ -111,7 +113,7 @@ class Application {
           environment: config.env,
           version: '1.0.0',
           database: 'connected', // 可以添加数据库连接检查
-          redis: 'connected',     // 可以添加Redis连接检查
+          redis: 'connected', // 可以添加Redis连接检查
           memory: {
             used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
             total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
@@ -194,8 +196,8 @@ class Application {
             health: {
               'GET /health': '健康检查',
               'GET /': '根路由信息',
-            }
-          }
+            },
+          },
         });
       });
     }
@@ -209,29 +211,9 @@ class Application {
   }
 
   private initializeSocket(): void {
-    this.io.on('connection', (socket) => {
-      logger.info(`客户端连接: ${socket.id}`);
-
-      // 加入房间（按商户分组）
-      socket.on('join-store', (storeId: string) => {
-        socket.join(`store-${storeId}`);
-        logger.info(`客户端 ${socket.id} 加入商户 ${storeId} 房间`);
-      });
-
-      // 监听订单状态更新
-      socket.on('order-update', (data) => {
-        socket.to(`store-${data.storeId}`).emit('order-status-changed', data);
-      });
-
-      // 监听包间状态更新
-      socket.on('room-update', (data) => {
-        socket.to(`store-${data.storeId}`).emit('room-status-changed', data);
-      });
-
-      socket.on('disconnect', () => {
-        logger.info(`客户端断开连接: ${socket.id}`);
-      });
-    });
+    // 初始化完整的WebSocket服务器
+    const webSocketServer = initWebSocketServer(this.server);
+    logger.info('✅ WebSocket服务器初始化完成');
   }
 
   public async start(): Promise<void> {
@@ -261,7 +243,6 @@ class Application {
 
       // 优雅关闭
       this.setupGracefulShutdown();
-
     } catch (error) {
       logger.error('❌ 服务器启动失败:', error);
       process.exit(1);
@@ -271,7 +252,7 @@ class Application {
   private setupGracefulShutdown(): void {
     const shutdown = (signal: string) => {
       logger.info(`📡 收到 ${signal} 信号，开始优雅关闭...`);
-      
+
       this.server.close(() => {
         logger.info('✅ HTTP服务器已关闭');
         process.exit(0);

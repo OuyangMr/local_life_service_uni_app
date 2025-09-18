@@ -11,14 +11,14 @@ const mongoOptions = {
   minPoolSize: 2,
   maxIdleTimeMS: 30000,
   serverSelectionTimeoutMS: 5000,
-  
+
   // 重连配置
   retryWrites: true,
   retryReads: true,
-  
+
   // 其他配置
   bufferCommands: false,
-  
+
   // 认证配置 - 移除authSource，让MongoDB自动处理
   // authSource: 'admin'
 };
@@ -30,14 +30,14 @@ export const connectDatabase = async (): Promise<void> => {
   try {
     // 设置 Mongoose 配置
     mongoose.set('strictQuery', true);
-    
+
     // 连接数据库
     await mongoose.connect(config.database.uri, mongoOptions);
-    
+
     logger.info('✅ MongoDB 连接成功', {
       host: config.database.host,
       database: config.database.database,
-      connectionState: mongoose.connection.readyState
+      connectionState: mongoose.connection.readyState,
     });
 
     // 监听连接事件
@@ -52,7 +52,6 @@ export const connectDatabase = async (): Promise<void> => {
     mongoose.connection.on('reconnected', () => {
       logger.info('🔄 MongoDB 重新连接成功');
     });
-
   } catch (error) {
     logger.error('❌ MongoDB 连接失败:', error);
     throw error;
@@ -80,7 +79,7 @@ export const getDatabaseStatus = () => {
     0: 'disconnected',
     1: 'connected',
     2: 'connecting',
-    3: 'disconnecting'
+    3: 'disconnecting',
   };
 
   return {
@@ -88,7 +87,7 @@ export const getDatabaseStatus = () => {
     host: mongoose.connection.host,
     port: mongoose.connection.port,
     database: mongoose.connection.name,
-    isConnected: mongoose.connection.readyState === 1
+    isConnected: mongoose.connection.readyState === 1,
   };
 };
 
@@ -100,25 +99,29 @@ export const healthCheck = async (): Promise<{
   details: any;
 }> => {
   try {
-    // 执行简单的 ping 操作
-    await mongoose.connection.db.admin().ping();
-    
+    // 执行简单的 ping 操作（在严格模式下，db 可能为 undefined，需显式校验）
+    const db = mongoose.connection.db;
+    if (!db) {
+      throw new Error('Database not connected');
+    }
+    await db.admin().ping();
+
     const dbStatus = getDatabaseStatus();
-    
+
     return {
       status: 'healthy',
       details: {
         ...dbStatus,
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     };
   } catch (error) {
     return {
       status: 'unhealthy',
       details: {
-        error: error.message,
-        timestamp: new Date().toISOString()
-      }
+        error: error instanceof Error ? error.message : String(error),
+        timestamp: new Date().toISOString(),
+      },
     };
   }
 };

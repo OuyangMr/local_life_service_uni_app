@@ -3,10 +3,20 @@
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "husky": "^9.1.7",
+    "lint-staged": "^15.5.2",
+    "prettier": "^3.6.2",
     "sass": "^1.92.1",
     "ts-jest": "^29.4.2"
   },
   "scripts": {
     "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,vue}": [
+      "prettier --write"
+    ],
+    "*.{json,md,scss,css,yml,yaml}": [
+      "prettier --write"
+    ]
   }
 }

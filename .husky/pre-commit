@@ -1,8 +1,12 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-if npm run | grep -qE "^\s*test\b"; then
-  npm test
+if command -v npx >/dev/null 2>&1 && npx --yes lint-staged --version >/dev/null 2>&1; then
+  npx --yes lint-staged
 else
-  echo "husky: no root test script; skipping tests"
+  if npm run | grep -qE "^\s*test\b"; then
+    npm test
+  else
+    echo "husky: lint-staged not available and no root test script; skipping"
+  fi
 fi

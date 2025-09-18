@@ -1,0 +1,40 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Context7 MCP 集成规范
+
+## 使用要求
+
+【必须】遵循：
+- 首次引入/升级/替换第三方库，必须通过 Context7 MCP 获取官方文档
+- 实现复杂功能、调试、重构、优化时，先查阅 Context7 文档
+
+## 流程
+
+【必须】按顺序执行：
+1. 先 `resolve-library-id` 获取库 ID
+2. 再 `get-library-docs` 获取详细文档
+3. 严格按文档实现
+
+## 示例
+
+```ts
+// 步骤1: resolve-library-id("pinia")
+// 步骤2: get-library-docs({ context7CompatibleLibraryID: "/pinia/pinia" })
+// 步骤3: 按文档实现
+import { defineStore } from 'pinia';
+export const useAppStore = defineStore('app', { ... });
+```
+
+## 🔍 检查清单
+- [ ] **[P0]** 是否已通过 Context7 MCP 获取最新官方文档？
+- [ ] **[P0]** 项目中库版本与文档版本是否一致？
+- [ ] **[P0]** 是否严格按文档实现核心功能和 API 调用？
+- [ ] **[P0]** 是否遵循文档推荐的最佳实践？
+- [ ] **[P0]** TypeScript 类型定义是否与文档兼容？
+- [ ] **[P0]** 是否实现文档建议的错误处理？
+- [ ] **[P0]** 是否关注并采用文档性能优化建议？
+- [ ] **[P0]** 如涉及 UI，是否遵循可访问性指南？
+

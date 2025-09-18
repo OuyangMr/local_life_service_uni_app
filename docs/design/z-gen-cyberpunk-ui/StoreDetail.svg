@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="390" height="844" viewBox="0 0 390 844" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 - 深空蓝 -->
+  <rect width="390" height="844" fill="#001220"/>
+  
+  <!-- 定义 -->
+  <defs>
+    <pattern id="grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#FF0055" stroke-width="0.5" opacity="0.1"/>
+    </pattern>
+    
+    <!-- 霓虹发光效果 -->
+    <filter id="neonGlow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- 强烈霓虹发光 -->
+    <filter id="strongNeonGlow">
+      <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- 玻璃拟态效果 -->
+    <filter id="glassmorphism" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="10"/>
+      <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.3 0"/>
+    </filter>
+    
+    <!-- 渐变 -->
+    <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF0055;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF3366;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="darkGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#001220;stop-opacity:0.5" />
+      <stop offset="100%" style="stop-color:#001220;stop-opacity:0.9" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 网格背景 -->
+  <rect width="390" height="844" fill="url(#grid)"/>
+  
+  <!-- 顶部状态栏 -->
+  <rect x="0" y="0" width="390" height="44" fill="#001220" opacity="0.8"/>
+  <text x="20" y="30" font-family="SF Pro Display, Poppins" font-size="14" fill="#FFFFFF">9:41</text>
+  <g transform="translate(350, 18)">
+    <rect x="0" y="6" width="3" height="4" rx="0.5" fill="#FFFFFF"/>
+    <rect x="4" y="4" width="3" height="6" rx="0.5" fill="#FFFFFF"/>
+    <rect x="8" y="2" width="3" height="8" rx="0.5" fill="#FFFFFF"/>
+    <rect x="12" y="0" width="3" height="10" rx="0.5" fill="#FFFFFF"/>
+    <rect x="20" y="2" width="20" height="8" rx="2" fill="none" stroke="#FFFFFF" stroke-width="1"/>
+    <rect x="22" y="4" width="10" height="4" rx="0.5" fill="#FFFFFF"/>
+  </g>
+  
+  <!-- 导航栏 -->
+  <rect x="0" y="44" width="390" height="56" fill="#001220" opacity="0.9"/>
+  <rect x="0" y="99" width="390" height="1" fill="#FF0055" opacity="0.3"/>
+  
+  <!-- 返回按钮 -->
+  <g transform="translate(20, 64)">
+    <path d="M12 4L4 12L12 20" stroke="#FF0055" stroke-width="2" stroke-linecap="round" filter="url(#neonGlow)"/>
+  </g>
+  
+  <!-- 店铺名称 -->
+  <text x="195" y="76" font-family="思源黑体" font-size="18" fill="#FFFFFF" text-anchor="middle">星空 KTV</text>
+  
+  <!-- 分享和收藏按钮 -->
+  <g transform="translate(320, 64)">
+    <rect x="0" y="0" width="24" height="24" rx="12" fill="#FFFFFF" opacity="0.1"/>
+    <path d="M12 16V8M8 12L12 8L16 12" stroke="#FF0055" stroke-width="2" stroke-linecap="round" filter="url(#neonGlow)"/>
+  </g>
+  
+  <g transform="translate(354, 64)">
+    <rect x="0" y="0" width="24" height="24" rx="12" fill="#FFFFFF" opacity="0.1"/>
+    <path d="M12 8C10.5 5 6 5 6 9C6 13 12 17 12 17S18 13 18 9C18 5 13.5 5 12 8Z" stroke="#FF0055" stroke-width="2" fill="none" filter="url(#neonGlow)"/>
+  </g>
+  
+  <!-- 视频展示区 -->
+  <g transform="translate(0, 100)">
+    <rect x="0" y="0" width="390" height="220" fill="#000000"/>
+    <!-- 视频播放按钮 -->
+    <circle cx="195" cy="110" r="40" fill="#FFFFFF" opacity="0.1" filter="url(#glassmorphism)"/>
+    <circle cx="195" cy="110" r="40" stroke="#FF0055" stroke-width="2" fill="none" filter="url(#strongNeonGlow)"/>
+    <path d="M185 95L210 110L185 125V95Z" fill="#FF0055" filter="url(#strongNeonGlow)"/>
+    
+    <!-- 视频标题 -->
+    <rect x="0" y="160" width="390" height="60" fill="url(#darkGradient)"/>
+    <text x="20" y="190" font-family="思源黑体" font-size="16" fill="#FFFFFF">豪华包间环境展示</text>
+    <text x="20" y="210" font-family="Poppins" font-size="12" fill="#FFFFFF" opacity="0.6">20秒预览 • 点击播放完整视频</text>
+  </g>
+  
+  <!-- 基础信息卡片 -->
+  <g transform="translate(20, 340)">
+    <rect x="0" y="0" width="350" height="80" rx="8" fill="#FFFFFF" opacity="0.05" filter="url(#glassmorphism)"/>
+    <rect x="0" y="0" width="350" height="80" rx="8" fill="none" stroke="#FF0055" stroke-width="1" opacity="0.3" filter="url(#neonGlow)"/>
+    
+    <!-- 评分 -->
+    <g transform="translate(20, 20)">
+      <text font-family="Poppins" font-size="24" fill="#FF0055" filter="url(#neonGlow)">⭐ 4.8</text>
+      <text x="0" y="30" font-family="思源黑体" font-size="12" fill="#FFFFFF" opacity="0.6">2.3k评价</text>
+    </g>
+    
+    <!-- 地址 -->
+    <g transform="translate(100, 20)">
+      <text font-family="思源黑体" font-size="14" fill="#FFFFFF">📍 朝阳区三里屯</text>
+      <text x="0" y="30" font-family="Poppins" font-size="12" fill="#FF0055" opacity="0.8">1.2km</text>
+    </g>
+    
+    <!-- 电话 -->
+    <g transform="translate(230, 20)">
+      <rect x="-10" y="-5" width="100" height="30" rx="15" fill="#FF0055" opacity="0.2"/>
+      <text x="40" y="10" font-family="思源黑体" font-size="14" fill="#FFFFFF" text-anchor="middle">📞 一键拨号</text>
+    </g>
+    
+    <!-- 营业时间 -->
+    <text x="20" y="60" font-family="思源黑体" font-size="12" fill="#00FF88">🕐 营业中 14:00-次日04:00</text>
+  </g>
+  
+  <!-- 包间选择标题 -->
+  <g transform="translate(20, 440)">
+    <text font-family="思源黑体" font-size="18" fill="#FFFFFF">💡 包间选择</text>
+    <rect x="120" y="-15" width="60" height="24" rx="12" fill="#00FF88" opacity="0.2"/>
+    <text x="150" y="0" font-family="Poppins" font-size="12" fill="#00FF88" text-anchor="middle">12间可订</text>
+  </g>
+  
+  <!-- 包间类型筛选 -->
+  <g transform="translate(20, 470)">
+    <!-- 小型包间 - 选中状态 -->
+    <rect x="0" y="0" width="110" height="36" rx="18" fill="#FF0055" opacity="0.2"/>
+    <rect x="0" y="0" width="110" height="36" rx="18" fill="none" stroke="#FF0055" stroke-width="1" filter="url(#neonGlow)"/>
+    <text x="55" y="24" font-family="思源黑体" font-size="12" fill="#FFFFFF" text-anchor="middle">🟢 小型(2-4人)</text>
+    
+    <!-- 中型包间 -->
+    <rect x="120" y="0" width="110" height="36" rx="18" fill="#FFFFFF" opacity="0.05"/>
+    <rect x="120" y="0" width="110" height="36" rx="18" fill="none" stroke="#FFFFFF" stroke-width="1" opacity="0.3"/>
+    <text x="175" y="24" font-family="思源黑体" font-size="12" fill="#FFFFFF" text-anchor="middle" opacity="0.8">🟡 中型(5-8人)</text>
+    
+    <!-- 大型包间 -->
+    <rect x="240" y="0" width="110" height="36" rx="18" fill="#FFFFFF" opacity="0.05"/>
+    <rect x="240" y="0" width="110" height="36" rx="18" fill="none" stroke="#FFFFFF" stroke-width="1" opacity="0.3"/>
+    <text x="295" y="24" font-family="思源黑体" font-size="12" fill="#FFFFFF" text-anchor="middle" opacity="0.8">🔴 大型(9+人)</text>
+  </g>
+  
+  <!-- 包间网格 -->
+  <g transform="translate(20, 520)">
+    <!-- 包间A - 可预订 -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="165" height="120" rx="8" fill="#FFFFFF" opacity="0.05"/>
+      <rect x="0" y="0" width="165" height="120" rx="8" fill="none" stroke="#00FF88" stroke-width="1" opacity="0.5" filter="url(#neonGlow)"/>
+      
+      <text x="82" y="30" font-family="思源黑体" font-size="16" fill="#FFFFFF" text-anchor="middle">包间 A</text>
+      <circle cx="82" cy="50" r="8" fill="#00FF88" filter="url(#neonGlow)"/>
+      <text x="82" y="75" font-family="思源黑体" font-size="12" fill="#00FF88" text-anchor="middle">可预订</text>
+      <text x="82" y="95" font-family="Poppins" font-size="18" fill="#FF0055" text-anchor="middle" filter="url(#neonGlow)">¥188/时</text>
+    </g>
+    
+    <!-- 包间B - 使用中 -->
+    <g transform="translate(185, 0)">
+      <rect x="0" y="0" width="165" height="120" rx="8" fill="#FFFFFF" opacity="0.05"/>
+      <rect x="0" y="0" width="165" height="120" rx="8" fill="none" stroke="#FF0055" stroke-width="1" opacity="0.3"/>
+      
+      <text x="82" y="30" font-family="思源黑体" font-size="16" fill="#FFFFFF" text-anchor="middle">包间 B</text>
+      <circle cx="82" cy="50" r="8" fill="#FF0055" opacity="0.5"/>
+      <text x="82" y="75" font-family="思源黑体" font-size="12" fill="#FF0055" text-anchor="middle" opacity="0.8">使用中</text>
+      <text x="82" y="95" font-family="Poppins" font-size="14" fill="#FFFFFF" text-anchor="middle" opacity="0.5">预计21:00空闲</text>
+    </g>
+    
+    <!-- 包间C - 可预订 -->
+    <g transform="translate(0, 140)">
+      <rect x="0" y="0" width="165" height="120" rx="8" fill="#FFFFFF" opacity="0.05"/>
+      <rect x="0" y="0" width="165" height="120" rx="8" fill="none" stroke="#00FF88" stroke-width="1" opacity="0.5" filter="url(#neonGlow)"/>
+      
+      <text x="82" y="30" font-family="思源黑体" font-size="16" fill="#FFFFFF" text-anchor="middle">包间 C</text>
+      <circle cx="82" cy="50" r="8" fill="#00FF88" filter="url(#neonGlow)"/>
+      <text x="82" y="75" font-family="思源黑体" font-size="12" fill="#00FF88" text-anchor="middle">可预订</text>
+      <text x="82" y="95" font-family="Poppins" font-size="18" fill="#FF0055" text-anchor="middle" filter="url(#neonGlow)">¥268/时</text>
+    </g>
+    
+    <!-- 包间D - 维护中 -->
+    <g transform="translate(185, 140)">
+      <rect x="0" y="0" width="165" height="120" rx="8" fill="#FFFFFF" opacity="0.05"/>
+      <rect x="0" y="0" width="165" height="120" rx="8" fill="none" stroke="#FFA500" stroke-width="1" opacity="0.3"/>
+      
+      <text x="82" y="30" font-family="思源黑体" font-size="16" fill="#FFFFFF" text-anchor="middle">包间 D</text>
+      <circle cx="82" cy="50" r="8" fill="#FFA500" opacity="0.5"/>
+      <text x="82" y="75" font-family="思源黑体" font-size="12" fill="#FFA500" text-anchor="middle" opacity="0.8">维护中</text>
+      <text x="82" y="95" font-family="Poppins" font-size="14" fill="#FFFFFF" text-anchor="middle" opacity="0.5">暂不可用</text>
+    </g>
+  </g>
+  
+  <!-- 悬浮预订按钮 -->
+  <g transform="translate(20, 760)">
+    <rect x="0" y="0" width="350" height="56" rx="28" fill="url(#primaryGradient)" filter="url(#strongNeonGlow)"/>
+    <text x="175" y="36" font-family="思源黑体" font-size="18" fill="#FFFFFF" text-anchor="middle" font-weight="bold">立即预订</text>
+  </g>
+  
+  <!-- 装饰性霓虹粒子 -->
+  <circle cx="80" cy="250" r="3" fill="#FF0055" opacity="0.6" filter="url(#neonGlow)">
+    <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="310" cy="500" r="2" fill="#00FF88" opacity="0.5" filter="url(#neonGlow)">
+    <animate attributeName="opacity" values="0.5;0.9;0.5" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="150" cy="700" r="2.5" fill="#FF0055" opacity="0.7" filter="url(#neonGlow)">
+    <animate attributeName="opacity" values="0.7;1;0.7" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+</svg>

@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="390" height="844" viewBox="0 0 390 844" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 - 深空蓝 -->
+  <rect width="390" height="844" fill="#001220"/>
+  
+  <!-- 网格背景 -->
+  <defs>
+    <pattern id="grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#FF0055" stroke-width="0.5" opacity="0.1"/>
+    </pattern>
+    
+    <!-- 霓虹发光效果 -->
+    <filter id="neonGlow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- 玻璃拟态效果 -->
+    <filter id="glassmorphism" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="10"/>
+      <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.3 0"/>
+    </filter>
+    
+    <!-- 渐变 -->
+    <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF0055;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF3366;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 网格背景应用 -->
+  <rect width="390" height="844" fill="url(#grid)"/>
+  
+  <!-- 顶部状态栏 -->
+  <rect x="0" y="0" width="390" height="44" fill="#001220" opacity="0.8"/>
+  <text x="20" y="30" font-family="SF Pro Display, Poppins" font-size="14" fill="#FFFFFF">9:41</text>
+  <g transform="translate(350, 18)">
+    <!-- 信号图标 -->
+    <rect x="0" y="6" width="3" height="4" rx="0.5" fill="#FFFFFF"/>
+    <rect x="4" y="4" width="3" height="6" rx="0.5" fill="#FFFFFF"/>
+    <rect x="8" y="2" width="3" height="8" rx="0.5" fill="#FFFFFF"/>
+    <rect x="12" y="0" width="3" height="10" rx="0.5" fill="#FFFFFF"/>
+    <!-- 电池图标 -->
+    <rect x="20" y="2" width="20" height="8" rx="2" fill="none" stroke="#FFFFFF" stroke-width="1"/>
+    <rect x="22" y="4" width="10" height="4" rx="0.5" fill="#FFFFFF"/>
+  </g>
+  
+  <!-- 导航栏 - 玻璃拟态 -->
+  <rect x="0" y="44" width="390" height="80" fill="#FFFFFF" opacity="0.05" filter="url(#glassmorphism)"/>
+  <rect x="0" y="44" width="390" height="80" fill="none" stroke="#FF0055" stroke-width="0.5" opacity="0.3"/>
+  
+  <!-- 搜索框 -->
+  <rect x="20" y="64" width="280" height="40" rx="8" fill="#FFFFFF" opacity="0.1"/>
+  <rect x="20" y="64" width="280" height="40" rx="8" fill="none" stroke="#FF0055" stroke-width="1" opacity="0.5" filter="url(#neonGlow)"/>
+  <text x="40" y="88" font-family="思源黑体, Source Han Sans" font-size="14" fill="#FFFFFF" opacity="0.6">搜索店铺、美食、活动...</text>
+  
+  <!-- 定位和消息图标 -->
+  <g transform="translate(310, 74)">
+    <!-- 定位图标 -->
+    <path d="M10 10C10 12.76 7.5 17 7.5 17S2.5 12.76 2.5 10C2.5 7.24 4.74 5 7.5 5C10.26 5 12.5 7.24 12.5 10Z" stroke="#FF0055" stroke-width="2" fill="none" filter="url(#neonGlow)"/>
+    <circle cx="7.5" cy="10" r="1.5" fill="#FF0055"/>
+  </g>
+  
+  <g transform="translate(340, 74)">
+    <!-- 消息图标 -->
+    <rect x="0" y="0" width="20" height="20" rx="4" stroke="#FF0055" stroke-width="2" fill="none" filter="url(#neonGlow)"/>
+    <circle cx="16" cy="4" r="4" fill="#FF0055"/>
+  </g>
+  
+  <!-- 分类导航 - 大卡片 -->
+  <g transform="translate(20, 140)">
+    <!-- KTV卡片 -->
+    <rect x="0" y="0" width="110" height="100" rx="8" fill="#FFFFFF" opacity="0.05"/>
+    <rect x="0" y="0" width="110" height="100" rx="8" fill="none" stroke="#FF0055" stroke-width="1" opacity="0.5" filter="url(#neonGlow)"/>
+    <text x="55" y="50" font-family="Poppins" font-size="24" fill="#FF0055" text-anchor="middle" filter="url(#neonGlow)">🎤</text>
+    <text x="55" y="80" font-family="思源黑体" font-size="14" fill="#FFFFFF" text-anchor="middle">KTV</text>
+    
+    <!-- 茶楼卡片 -->
+    <rect x="120" y="0" width="110" height="100" rx="8" fill="#FFFFFF" opacity="0.05"/>
+    <rect x="120" y="0" width="110" height="100" rx="8" fill="none" stroke="#FF0055" stroke-width="1" opacity="0.5" filter="url(#neonGlow)"/>
+    <text x="175" y="50" font-family="Poppins" font-size="24" fill="#FF0055" text-anchor="middle" filter="url(#neonGlow)">🍵</text>
+    <text x="175" y="80" font-family="思源黑体" font-size="14" fill="#FFFFFF" text-anchor="middle">茶楼</text>
+    
+    <!-- 咖啡厅卡片 -->
+    <rect x="240" y="0" width="110" height="100" rx="8" fill="#FFFFFF" opacity="0.05"/>
+    <rect x="240" y="0" width="110" height="100" rx="8" fill="none" stroke="#FF0055" stroke-width="1" opacity="0.5" filter="url(#neonGlow)"/>
+    <text x="295" y="50" font-family="Poppins" font-size="24" fill="#FF0055" text-anchor="middle" filter="url(#neonGlow)">☕</text>
+    <text x="295" y="80" font-family="思源黑体" font-size="14" fill="#FFFFFF" text-anchor="middle">咖啡厅</text>
+  </g>
+  
+  <!-- 快速筛选 -->
+  <g transform="translate(20, 260)">
+    <rect x="0" y="0" width="165" height="36" rx="18" fill="#FFFFFF" opacity="0.1"/>
+    <rect x="0" y="0" width="165" height="36" rx="18" fill="none" stroke="#FF0055" stroke-width="1" opacity="0.5" filter="url(#neonGlow)"/>
+    <text x="20" y="24" font-family="思源黑体" font-size="14" fill="#FFFFFF">📍 附近商家</text>
+    
+    <rect x="185" y="0" width="165" height="36" rx="18" fill="#FF0055" opacity="0.2"/>
+    <rect x="185" y="0" width="165" height="36" rx="18" fill="none" stroke="#FF0055" stroke-width="1" filter="url(#neonGlow)"/>
+    <text x="205" y="24" font-family="思源黑体" font-size="14" fill="#FFFFFF">🔥 热门推荐</text>
+  </g>
+  
+  <!-- 店铺卡片列表 -->
+  <g transform="translate(20, 316)">
+    <!-- 店铺卡片1 -->
+    <rect x="0" y="0" width="350" height="140" rx="8" fill="#FFFFFF" opacity="0.05"/>
+    <rect x="0" y="0" width="350" height="140" rx="8" fill="none" stroke="#FF0055" stroke-width="1" opacity="0.3" filter="url(#neonGlow)"/>
+    
+    <!-- 店铺图片区域 -->
+    <rect x="10" y="10" width="120" height="80" rx="4" fill="#FF0055" opacity="0.1"/>
+    <text x="70" y="50" font-family="Poppins" font-size="12" fill="#FFFFFF" text-anchor="middle" opacity="0.6">店铺图片</text>
+    
+    <!-- 店铺信息 -->
+    <text x="140" y="30" font-family="思源黑体" font-size="16" fill="#FFFFFF">星空KTV</text>
+    <g transform="translate(140, 40)">
+      <text x="0" y="0" font-family="Poppins" font-size="14" fill="#FF0055">⭐ 4.8</text>
+      <text x="50" y="0" font-family="思源黑体" font-size="12" fill="#FFFFFF" opacity="0.6">📍 1.2km</text>
+    </g>
+    
+    <!-- 状态标签 -->
+    <rect x="140" y="60" width="80" height="24" rx="12" fill="#00FF88" opacity="0.2"/>
+    <text x="155" y="76" font-family="思源黑体" font-size="12" fill="#00FF88">🟢 12间可订</text>
+    
+    <rect x="230" y="60" width="80" height="24" rx="12" fill="#FF0055" opacity="0.2"/>
+    <text x="245" y="76" font-family="思源黑体" font-size="12" fill="#FF0055">📹 视频预览</text>
+    
+    <!-- 价格信息 -->
+    <text x="140" y="110" font-family="Poppins" font-size="20" fill="#FF0055" filter="url(#neonGlow)">¥188</text>
+    <text x="190" y="110" font-family="思源黑体" font-size="12" fill="#FFFFFF" opacity="0.6">/小时起</text>
+  </g>
+  
+  <!-- 店铺卡片2 -->
+  <g transform="translate(20, 476)">
+    <rect x="0" y="0" width="350" height="140" rx="8" fill="#FFFFFF" opacity="0.05"/>
+    <rect x="0" y="0" width="350" height="140" rx="8" fill="none" stroke="#FF0055" stroke-width="1" opacity="0.3" filter="url(#neonGlow)"/>
+    
+    <!-- 店铺图片区域 -->
+    <rect x="10" y="10" width="120" height="80" rx="4" fill="#FF0055" opacity="0.1"/>
+    <text x="70" y="50" font-family="Poppins" font-size="12" fill="#FFFFFF" text-anchor="middle" opacity="0.6">店铺图片</text>
+    
+    <!-- 店铺信息 -->
+    <text x="140" y="30" font-family="思源黑体" font-size="16" fill="#FFFFFF">未来茶馆</text>
+    <g transform="translate(140, 40)">
+      <text x="0" y="0" font-family="Poppins" font-size="14" fill="#FF0055">⭐ 4.9</text>
+      <text x="50" y="0" font-family="思源黑体" font-size="12" fill="#FFFFFF" opacity="0.6">📍 0.8km</text>
+    </g>
+    
+    <!-- 状态标签 -->
+    <rect x="140" y="60" width="80" height="24" rx="12" fill="#00FF88" opacity="0.2"/>
+    <text x="155" y="76" font-family="思源黑体" font-size="12" fill="#00FF88">🟢 8间可订</text>
+    
+    <rect x="230" y="60" width="80" height="24" rx="12" fill="#FFA500" opacity="0.2"/>
+    <text x="245" y="76" font-family="思源黑体" font-size="12" fill="#FFA500">🎯 新店特惠</text>
+    
+    <!-- 价格信息 -->
+    <text x="140" y="110" font-family="Poppins" font-size="20" fill="#FF0055" filter="url(#neonGlow)">¥88</text>
+    <text x="185" y="110" font-family="思源黑体" font-size="12" fill="#FFFFFF" opacity="0.6">/人起</text>
+  </g>
+  
+  <!-- 底部Tab栏 - 全圆角玻璃Dock -->
+  <g transform="translate(20, 744)">
+    <!-- 玻璃背景 -->
+    <rect x="0" y="0" width="350" height="70" rx="35" fill="#FFFFFF" opacity="0.08" filter="url(#glassmorphism)"/>
+    <rect x="0" y="0" width="350" height="70" rx="35" fill="none" stroke="#FF0055" stroke-width="1" opacity="0.5" filter="url(#neonGlow)"/>
+    
+    <!-- Tab项 -->
+    <!-- 首页 - 激活状态 -->
+    <g transform="translate(40, 10)">
+      <rect x="-20" y="-5" width="40" height="40" rx="20" fill="#FF0055" opacity="0.2"/>
+      <path d="M0 10L10 0L20 10V25C20 26.1 19.1 27 18 27H2C0.9 27 0 26.1 0 25V10Z" fill="#FF0055" filter="url(#neonGlow)"/>
+      <text x="10" y="50" font-family="思源黑体" font-size="10" fill="#FF0055" text-anchor="middle">首页</text>
+    </g>
+    
+    <!-- 发现 -->
+    <g transform="translate(110, 10)">
+      <circle cx="10" cy="13" r="10" stroke="#FFFFFF" stroke-width="2" fill="none" opacity="0.5"/>
+      <circle cx="15" cy="18" r="5" stroke="#FFFFFF" stroke-width="2" fill="none" opacity="0.5"/>
+      <text x="10" y="50" font-family="思源黑体" font-size="10" fill="#FFFFFF" text-anchor="middle" opacity="0.6">发现</text>
+    </g>
+    
+    <!-- 发布 -->
+    <g transform="translate(175, 5)">
+      <rect x="-15" y="-5" width="50" height="50" rx="25" fill="#FF0055" filter="url(#neonGlow)"/>
+      <path d="M10 5V25M0 15H20" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    
+    <!-- 订单 -->
+    <g transform="translate(240, 10)">
+      <rect x="0" y="5" width="20" height="20" rx="2" stroke="#FFFFFF" stroke-width="2" fill="none" opacity="0.5"/>
+      <path d="M5 10H15M5 15H15" stroke="#FFFFFF" stroke-width="1.5" opacity="0.5"/>
+      <text x="10" y="50" font-family="思源黑体" font-size="10" fill="#FFFFFF" text-anchor="middle" opacity="0.6">订单</text>
+    </g>
+    
+    <!-- 我的 -->
+    <g transform="translate(300, 10)">
+      <circle cx="10" cy="10" r="8" stroke="#FFFFFF" stroke-width="2" fill="none" opacity="0.5"/>
+      <path d="M5 23C5 20 7 18 10 18C13 18 15 20 15 23" stroke="#FFFFFF" stroke-width="2" fill="none" opacity="0.5"/>
+      <text x="10" y="50" font-family="思源黑体" font-size="10" fill="#FFFFFF" text-anchor="middle" opacity="0.6">我的</text>
+    </g>
+  </g>
+  
+  <!-- 悬浮的霓虹粒子效果 -->
+  <circle cx="50" cy="200" r="2" fill="#FF0055" opacity="0.6" filter="url(#neonGlow)">
+    <animate attributeName="cy" values="200;180;200" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="320" cy="400" r="1.5" fill="#00FF88" opacity="0.5" filter="url(#neonGlow)">
+    <animate attributeName="cy" values="400;380;400" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.5;0.9;0.5" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="200" cy="600" r="2.5" fill="#FF0055" opacity="0.7" filter="url(#neonGlow)">
+    <animate attributeName="cy" values="600;580;600" dur="2.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.7;1;0.7" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+</svg>

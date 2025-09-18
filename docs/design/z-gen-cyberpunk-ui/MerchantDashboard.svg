@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="390" height="844" viewBox="0 0 390 844" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 - 深空蓝 -->
+  <rect width="390" height="844" fill="#001220"/>
+  
+  <!-- 定义 -->
+  <defs>
+    <pattern id="grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#FF0055" stroke-width="0.5" opacity="0.1"/>
+    </pattern>
+    
+    <!-- 霓虹发光效果 -->
+    <filter id="neonGlow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- 数据发光效果 -->
+    <filter id="dataGlow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- 玻璃拟态效果 -->
+    <filter id="glassmorphism" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="10"/>
+      <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.3 0"/>
+    </filter>
+    
+    <!-- 渐变 -->
+    <linearGradient id="successGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00FF88;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00CC66;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="warningGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFA500;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF8C00;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 网格背景 -->
+  <rect width="390" height="844" fill="url(#grid)"/>
+  
+  <!-- 顶部状态栏 -->
+  <rect x="0" y="0" width="390" height="44" fill="#001220" opacity="0.8"/>
+  <text x="20" y="30" font-family="SF Pro Display, Poppins" font-size="14" fill="#FFFFFF">9:41</text>
+  <g transform="translate(350, 18)">
+    <rect x="0" y="6" width="3" height="4" rx="0.5" fill="#FFFFFF"/>
+    <rect x="4" y="4" width="3" height="6" rx="0.5" fill="#FFFFFF"/>
+    <rect x="8" y="2" width="3" height="8" rx="0.5" fill="#FFFFFF"/>
+    <rect x="12" y="0" width="3" height="10" rx="0.5" fill="#FFFFFF"/>
+    <rect x="20" y="2" width="20" height="8" rx="2" fill="none" stroke="#FFFFFF" stroke-width="1"/>
+    <rect x="22" y="4" width="16" height="4" rx="0.5" fill="#00FF88"/>
+  </g>
+  
+  <!-- 导航栏 -->
+  <rect x="0" y="44" width="390" height="80" fill="#FFFFFF" opacity="0.05" filter="url(#glassmorphism)"/>
+  <rect x="0" y="123" width="390" height="1" fill="#FF0055" opacity="0.3"/>
+  
+  <!-- 欢迎文字 -->
+  <text x="20" y="76" font-family="思源黑体" font-size="14" fill="#FFFFFF" opacity="0.6">下午好，管理员</text>
+  <text x="20" y="100" font-family="思源黑体" font-size="20" fill="#FFFFFF">星空 KTV 控制台</text>
+  
+  <!-- 通知图标 -->
+  <g transform="translate(340, 74)">
+    <rect x="0" y="0" width="36" height="36" rx="18" fill="#FFFFFF" opacity="0.1"/>
+    <path d="M18 8C16 8 14 10 14 12V16L12 18H24L22 16V12C22 10 20 8 18 8Z" stroke="#FF0055" stroke-width="2" fill="none" filter="url(#neonGlow)"/>
+    <circle cx="18" cy="22" r="2" fill="#FF0055" filter="url(#neonGlow)"/>
+    <!-- 通知红点 -->
+    <circle cx="28" cy="8" r="5" fill="#FF0055" filter="url(#dataGlow)"/>
+    <text x="28" y="12" font-family="Poppins" font-size="8" fill="#FFFFFF" text-anchor="middle">3</text>
+  </g>
+  
+  <!-- 今日概览 -->
+  <text x="20" y="155" font-family="思源黑体" font-size="18" fill="#FFFFFF">📊 今日概览</text>
+  
+  <!-- 数据卡片 -->
+  <g transform="translate(20, 175)">
+    <!-- 营收卡片 -->
+    <g>
+      <rect x="0" y="0" width="165" height="100" rx="8" fill="#FFFFFF" opacity="0.05" filter="url(#glassmorphism)"/>
+      <rect x="0" y="0" width="165" height="100" rx="8" fill="none" stroke="#00FF88" stroke-width="1" opacity="0.5" filter="url(#neonGlow)"/>
+      
+      <text x="15" y="30" font-family="思源黑体" font-size="14" fill="#FFFFFF" opacity="0.8">💰 营收</text>
+      <text x="15" y="60" font-family="Poppins" font-size="24" fill="#00FF88" font-weight="bold" filter="url(#dataGlow)">¥3,580</text>
+      <rect x="15" y="70" width="40" height="20" rx="10" fill="#00FF88" opacity="0.2"/>
+      <text x="35" y="83" font-family="Poppins" font-size="12" fill="#00FF88" text-anchor="middle">📈 +12%</text>
+    </g>
+    
+    <!-- 订单卡片 -->
+    <g transform="translate(185, 0)">
+      <rect x="0" y="0" width="165" height="100" rx="8" fill="#FFFFFF" opacity="0.05" filter="url(#glassmorphism)"/>
+      <rect x="0" y="0" width="165" height="100" rx="8" fill="none" stroke="#FF0055" stroke-width="1" opacity="0.5" filter="url(#neonGlow)"/>
+      
+      <text x="15" y="30" font-family="思源黑体" font-size="14" fill="#FFFFFF" opacity="0.8">📋 订单</text>
+      <text x="15" y="60" font-family="Poppins" font-size="24" fill="#FF0055" font-weight="bold" filter="url(#dataGlow)">45单</text>
+      <text x="15" y="83" font-family="思源黑体" font-size="12" fill="#FFFFFF" opacity="0.6">👥 客流: 126人</text>
+    </g>
+  </g>
+  
+  <!-- 包间状态总览 -->
+  <g transform="translate(20, 295)">
+    <rect x="0" y="0" width="350" height="120" rx="8" fill="#FFFFFF" opacity="0.05" filter="url(#glassmorphism)"/>
+    <rect x="0" y="0" width="350" height="120" rx="8" fill="none" stroke="#FF0055" stroke-width="1" opacity="0.3" filter="url(#neonGlow)"/>
+    
+    <text x="15" y="30" font-family="思源黑体" font-size="16" fill="#FFFFFF">🏠 包间状态</text>
+    <rect x="265" y="12" width="70" height="24" rx="12" fill="#FF0055" opacity="0.2"/>
+    <text x="300" y="28" font-family="Poppins" font-size="12" fill="#FF0055" text-anchor="middle">12/15 使用中</text>
+    
+    <!-- 包间状态指示器 -->
+    <g transform="translate(15, 50)">
+      <!-- 使用中的包间 -->
+      <circle cx="10" cy="10" r="8" fill="#FF0055" filter="url(#neonGlow)"/>
+      <circle cx="35" cy="10" r="8" fill="#FF0055" filter="url(#neonGlow)"/>
+      <circle cx="60" cy="10" r="8" fill="#FF0055" filter="url(#neonGlow)"/>
+      <circle cx="85" cy="10" r="8" fill="#FF0055" filter="url(#neonGlow)"/>
+      <circle cx="110" cy="10" r="8" fill="#FF0055" filter="url(#neonGlow)"/>
+      <circle cx="135" cy="10" r="8" fill="#FF0055" filter="url(#neonGlow)"/>
+      
+      <!-- 维护中 -->
+      <circle cx="160" cy="10" r="8" fill="#FFA500" filter="url(#neonGlow)"/>
+      
+      <!-- 可用包间 -->
+      <circle cx="185" cy="10" r="8" fill="#00FF88" filter="url(#neonGlow)"/>
+      <circle cx="210" cy="10" r="8" fill="#00FF88" filter="url(#neonGlow)"/>
+      <circle cx="235" cy="10" r="8" fill="#00FF88" filter="url(#neonGlow)"/>
+      <circle cx="260" cy="10" r="8" fill="#00FF88" filter="url(#neonGlow)"/>
+      <circle cx="285" cy="10" r="8" fill="#00FF88" filter="url(#neonGlow)"/>
+      <circle cx="310" cy="10" r="8" fill="#00FF88" filter="url(#neonGlow)"/>
+    </g>
+    
+    <!-- 图例 -->
+    <g transform="translate(15, 85)">
+      <circle cx="5" cy="5" r="5" fill="#FF0055"/>
+      <text x="15" y="8" font-family="思源黑体" font-size="10" fill="#FFFFFF" opacity="0.8">使用中</text>
+      
+      <circle cx="75" cy="5" r="5" fill="#FFA500"/>
+      <text x="85" y="8" font-family="思源黑体" font-size="10" fill="#FFFFFF" opacity="0.8">维护中</text>
+      
+      <circle cx="145" cy="5" r="5" fill="#00FF88"/>
+      <text x="155" y="8" font-family="思源黑体" font-size="10" fill="#FFFFFF" opacity="0.8">可用</text>
+    </g>
+  </g>
+  
+  <!-- 新订单提醒 -->
+  <g transform="translate(20, 435)">
+    <text font-family="思源黑体" font-size="18" fill="#FFFFFF">🔔 新订单</text>
+    <rect x="90" y="-15" width="30" height="24" rx="12" fill="#FF0055" filter="url(#dataGlow)"/>
+    <text x="105" y="0" font-family="Poppins" font-size="14" fill="#FFFFFF" text-anchor="middle" font-weight="bold">3</text>
+    
+    <text x="280" y="0" font-family="思源黑体" font-size="14" fill="#FF0055" filter="url(#neonGlow)">[查看全部]</text>
+  </g>
+  
+  <!-- 订单列表 -->
+  <g transform="translate(20, 465)">
+    <!-- 订单1 - 点单 -->
+    <rect x="0" y="0" width="350" height="70" rx="8" fill="#FFFFFF" opacity="0.05"/>
+    <rect x="0" y="0" width="350" height="70" rx="8" fill="none" stroke="#FF0055" stroke-width="1" filter="url(#neonGlow)"/>
+    
+    <rect x="10" y="10" width="50" height="20" rx="10" fill="#FF0055" opacity="0.3"/>
+    <text x="35" y="24" font-family="思源黑体" font-size="10" fill="#FF0055" text-anchor="middle" font-weight="bold">紧急</text>
+    
+    <text x="70" y="25" font-family="思源黑体" font-size="14" fill="#FFFFFF">🍷 点单订单</text>
+    <text x="70" y="45" font-family="思源黑体" font-size="12" fill="#FFFFFF" opacity="0.6">📍 包间A | ⏰ 3分钟前</text>
+    <text x="70" y="60" font-family="Poppins" font-size="12" fill="#FF0055">啤酒x2 薯片x1</text>
+    
+    <!-- 订单2 - 预订 -->
+    <g transform="translate(0, 80)">
+      <rect x="0" y="0" width="350" height="70" rx="8" fill="#FFFFFF" opacity="0.05"/>
+      <rect x="0" y="0" width="350" height="70" rx="8" fill="none" stroke="#00FF88" stroke-width="1" opacity="0.5" filter="url(#neonGlow)"/>
+      
+      <rect x="10" y="10" width="50" height="20" rx="10" fill="#00FF88" opacity="0.3"/>
+      <text x="35" y="24" font-family="思源黑体" font-size="10" fill="#00FF88" text-anchor="middle">新订单</text>
+      
+      <text x="70" y="25" font-family="思源黑体" font-size="14" fill="#FFFFFF">🎤 预订订单</text>
+      <text x="70" y="45" font-family="思源黑体" font-size="12" fill="#FFFFFF" opacity="0.6">📍 包间C | ⏰ 今晚8:00</text>
+      <text x="70" y="60" font-family="思源黑体" font-size="12" fill="#FFFFFF" opacity="0.8">👥 6人 | 💰 ¥288</text>
+    </g>
+  </g>
+  
+  <!-- 快捷操作 -->
+  <g transform="translate(20, 680)">
+    <text font-family="思源黑体" font-size="18" fill="#FFFFFF">⚡ 快捷操作</text>
+    
+    <g transform="translate(0, 30)">
+      <!-- 释放包间 -->
+      <rect x="0" y="0" width="106" height="50" rx="8" fill="#FFFFFF" opacity="0.05"/>
+      <rect x="0" y="0" width="106" height="50" rx="8" fill="none" stroke="#00FF88" stroke-width="1" opacity="0.5" filter="url(#neonGlow)"/>
+      <text x="53" y="30" font-family="思源黑体" font-size="12" fill="#00FF88" text-anchor="middle">释放包间</text>
+      
+      <!-- 添加商品 -->
+      <rect x="116" y="0" width="106" height="50" rx="8" fill="#FFFFFF" opacity="0.05"/>
+      <rect x="116" y="0" width="106" height="50" rx="8" fill="none" stroke="#FF0055" stroke-width="1" opacity="0.5" filter="url(#neonGlow)"/>
+      <text x="169" y="30" font-family="思源黑体" font-size="12" fill="#FF0055" text-anchor="middle">添加商品</text>
+      
+      <!-- 查看报表 -->
+      <rect x="232" y="0" width="106" height="50" rx="8" fill="#FFFFFF" opacity="0.05"/>
+      <rect x="232" y="0" width="106" height="50" rx="8" fill="none" stroke="#FFA500" stroke-width="1" opacity="0.5" filter="url(#neonGlow)"/>
+      <text x="285" y="30" font-family="思源黑体" font-size="12" fill="#FFA500" text-anchor="middle">查看报表</text>
+    </g>
+  </g>
+  
+  <!-- 底部导航 -->
+  <rect x="0" y="784" width="390" height="60" fill="#FFFFFF" opacity="0.05" filter="url(#glassmorphism)"/>
+  <rect x="0" y="784" width="390" height="1" fill="#FF0055" opacity="0.3"/>
+  
+  <g transform="translate(0, 794)">
+    <!-- 仪表盘 - 激活 -->
+    <g transform="translate(40, 0)">
+      <rect x="-5" y="-5" width="40" height="40" rx="8" fill="#FF0055" opacity="0.2"/>
+      <rect x="0" y="0" width="30" height="30" rx="4" stroke="#FF0055" stroke-width="2" fill="none" filter="url(#neonGlow)"/>
+      <circle cx="8" cy="8" r="2" fill="#FF0055"/>
+      <circle cx="22" cy="8" r="2" fill="#FF0055"/>
+      <rect x="8" y="15" width="14" height="8" rx="2" fill="#FF0055"/>
+      <text x="15" y="45" font-family="思源黑体" font-size="10" fill="#FF0055" text-anchor="middle">仪表盘</text>
+    </g>
+    
+    <!-- 订单管理 -->
+    <g transform="translate(120, 0)">
+      <rect x="0" y="0" width="30" height="30" rx="4" stroke="#FFFFFF" stroke-width="1.5" fill="none" opacity="0.5"/>
+      <path d="M7 10H23M7 15H23M7 20H18" stroke="#FFFFFF" stroke-width="1.5" opacity="0.5"/>
+      <text x="15" y="45" font-family="思源黑体" font-size="10" fill="#FFFFFF" text-anchor="middle" opacity="0.6">订单</text>
+    </g>
+    
+    <!-- 商品管理 -->
+    <g transform="translate(200, 0)">
+      <rect x="0" y="5" width="30" height="20" rx="2" stroke="#FFFFFF" stroke-width="1.5" fill="none" opacity="0.5"/>
+      <path d="M10 5V2M20 5V2" stroke="#FFFFFF" stroke-width="1.5" opacity="0.5"/>
+      <text x="15" y="45" font-family="思源黑体" font-size="10" fill="#FFFFFF" text-anchor="middle" opacity="0.6">商品</text>
+    </g>
+    
+    <!-- 数据分析 -->
+    <g transform="translate(280, 0)">
+      <path d="M5 25L10 15L15 20L25 5" stroke="#FFFFFF" stroke-width="1.5" fill="none" opacity="0.5"/>
+      <text x="15" y="45" font-family="思源黑体" font-size="10" fill="#FFFFFF" text-anchor="middle" opacity="0.6">数据</text>
+    </g>
+  </g>
+  
+  <!-- 数据动画粒子 -->
+  <circle cx="100" cy="300" r="2" fill="#00FF88" opacity="0.6" filter="url(#neonGlow)">
+    <animate attributeName="cy" values="300;280;300" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="280" cy="450" r="1.5" fill="#FF0055" opacity="0.5" filter="url(#neonGlow)">
+    <animate attributeName="opacity" values="0.5;0.9;0.5" dur="2s" repeatCount="indefinite"/>
+  </circle>
+</svg>

@@ -14,7 +14,7 @@
     "lint:fix": "eslint src/**/*.ts --fix",
     "db:migrate": "node migrations/migration-runner.js migrate",
     "db:rollback": "node migrations/migration-runner.js rollback",
-    "db:seed": "ts-node -r tsconfig-paths/register src/database/seeds/index.ts",
+    "db:seed": "ts-node --transpile-only -r tsconfig-paths/register src/database/seeds/index.ts",
     "db:status": "node migrations/migration-runner.js status",
     "docker:build": "docker build -t local-life-backend .",
     "docker:run": "docker run -p 3000:3000 local-life-backend"

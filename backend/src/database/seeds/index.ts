@@ -1,4 +1,6 @@
 import { connectDatabase, closeDatabase, mongoose } from '../../config/database';
+// eslint-disable-next-line no-console
+console.log('[seed] module loaded');
 import { User } from '../../models/User';
 import { Store } from '../../models/Store';
 import { Room, RoomStatus } from '../../models/Room';
@@ -43,7 +45,7 @@ async function createStores(ownerId: string): Promise<string[]> {
       phone: '13800000001',
       address: '北京市朝阳区建国门外大街甲6号',
       location: { type: 'Point' as const, coordinates: [116.4603, 39.9146] },
-      businessHours: { open: '10:00', close: '02:00', isClosed: false },
+      businessHours: { open: '10:00', close: '23:30', isClosed: false },
       images: ['https://picsum.photos/seed/store1/800/400'],
       tags: ['商务聚会', '停车方便'],
       rating: 4.6,
@@ -64,7 +66,7 @@ async function createStores(ownerId: string): Promise<string[]> {
       phone: '13900000002',
       address: '北京市海淀区成府路45号',
       location: { type: 'Point' as const, coordinates: [116.3343, 39.9999] },
-      businessHours: { open: '12:00', close: '03:00', isClosed: false },
+      businessHours: { open: '12:00', close: '23:00', isClosed: false },
       images: ['https://picsum.photos/seed/store2/800/400'],
       tags: ['学生党', '性价比'],
       rating: 4.3,
@@ -200,8 +202,12 @@ async function seed(): Promise<CreatedRefs> {
 }
 
 async function main() {
+  // eslint-disable-next-line no-console
+  console.log('Seed start: connecting to MongoDB...');
   try {
     await connectDatabase();
+    // eslint-disable-next-line no-console
+    console.log('MongoDB connected. Seeding data...');
     const result = await seed();
     // eslint-disable-next-line no-console
     console.log('✅ 种子数据导入完成:', {
@@ -221,7 +227,13 @@ async function main() {
   }
 }
 
-// 仅在直接运行时执行
-if (require.main === module) {
-  main().then(() => process.exit());
-}
+// 始终执行（确保脚本通过 ts-node 运行时不会因 require.main 判断差异而跳过）
+main()
+  .then(() => {
+    // eslint-disable-next-line no-console
+    console.log('[seed] done');
+  })
+  .catch((err) => {
+    // eslint-disable-next-line no-console
+    console.error('[seed] error', err);
+  });

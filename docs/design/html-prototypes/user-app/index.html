@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>本地生活服务 - 首页</title>
+    <style>
+        /* 设计系统变量 */
+        :root {
+            /* 品牌主色 - 活力橙 */
+            --primary: #ff6b35;
+            --primary-light: #ff8c5a;
+            --primary-dark: #e55a2b;
+            
+            /* 辅助色 - 深蓝 */
+            --secondary: #2e3b5a;
+            --secondary-light: #3a4a6b;
+            --secondary-dark: #1e2a3e;
+            
+            /* 功能色 */
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+            
+            /* 中性色 */
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            /* 背景色 */
+            --background-primary: #ffffff;
+            --background-secondary: #f9fafb;
+            --surface: #ffffff;
+            
+            /* 文字颜色 */
+            --text-primary: var(--gray-900);
+            --text-secondary: var(--gray-600);
+            
+            /* 间距 */
+            --spacing-1: 4px;
+            --spacing-2: 8px;
+            --spacing-3: 12px;
+            --spacing-4: 16px;
+            --spacing-5: 20px;
+            --spacing-6: 24px;
+            --spacing-8: 32px;
+            --spacing-10: 40px;
+            
+            /* 圆角 - 更圆润的设计 */
+            --radius-sm: 8px;
+            --radius-base: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-2xl: 24px;
+            --radius-full: 50%;
+            --radius-meituan-card: 14px;
+            --radius-meituan-button: 20px;
+            
+            /* 阴影 */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-base: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+            --shadow-xl: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* 暗黑模式 */
+        [data-theme="dark"] {
+            --primary: #ffb085;
+            --primary-light: #ffc299;
+            --primary-dark: #ff9e71;
+            
+            --secondary: #8b9dc3;
+            --secondary-light: #a0b1d6;
+            --secondary-dark: #7689b0;
+            
+            --success: #34d399;
+            --warning: #fbbf24;
+            --error: #f87171;
+            --info: #60a5fa;
+            
+            --background-primary: #0f1419;
+            --background-secondary: #1c2128;
+            --surface: #1c2128;
+            
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            
+            --gray-50: #0f1419;
+            --gray-100: #1c2128;
+            --gray-200: #2d3748;
+            --gray-300: #4a5568;
+            --gray-400: #718096;
+            --gray-500: #a0aec0;
+            --gray-600: #cbd5e0;
+            --gray-700: #e2e8f0;
+            --gray-800: #f7fafc;
+            --gray-900: #ffffff;
+            
+            --shadow-base: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* 基础样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            font-size: 14px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background-color: var(--background-secondary);
+            color: var(--text-primary);
+            line-height: 1.4;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        /* 顶部导航栏 */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: var(--surface);
+            box-shadow: var(--shadow-sm);
+            padding: var(--spacing-3) var(--spacing-4);
+            transition: all 0.3s ease;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+        }
+        
+        /* 搜索栏 */
+        .search-bar {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            background-color: var(--gray-100);
+            border-radius: var(--radius-meituan-button);
+            padding: var(--spacing-2) var(--spacing-4);
+            transition: all 0.3s ease;
+        }
+        
+        .search-bar:focus-within {
+            background-color: var(--gray-200);
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+        
+        .search-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: var(--spacing-2);
+            opacity: 0.6;
+        }
+        
+        .search-input {
+            flex: 1;
+            border: none;
+            background: none;
+            outline: none;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        
+        .search-input::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        /* 定位按钮 */
+        .location-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+            padding: var(--spacing-2) var(--spacing-3);
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s ease;
+        }
+        
+        .location-btn:active {
+            transform: scale(0.98);
+            background-color: var(--gray-100);
+        }
+        
+        /* 主题切换按钮 */
+        .theme-toggle {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .theme-toggle:hover {
+            background-color: var(--gray-100);
+        }
+        
+        .theme-toggle:active {
+            transform: scale(0.98);
+        }
+        
+        /* 类目卡片区域 */
+        .category-section {
+            padding: var(--spacing-5) var(--spacing-4);
+            background-color: var(--surface);
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-4);
+        }
+        
+        .category-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-5) var(--spacing-3);
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            border-radius: var(--radius-meituan-card);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 100px;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .category-card:active {
+            transform: scale(0.98);
+        }
+        
+        .category-icon {
+            font-size: 32px;
+            margin-bottom: var(--spacing-2);
+        }
+        
+        .category-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        /* KTV类目特殊样式 */
+        .category-card.ktv {
+            background: linear-gradient(135deg, #ff6b3533 0%, #ff8c5a33 100%);
+        }
+        
+        /* 快速筛选标签 */
+        .filter-tabs {
+            padding: var(--spacing-3) var(--spacing-4);
+            background-color: var(--surface);
+            display: flex;
+            gap: var(--spacing-4);
+            border-bottom: 1px solid var(--gray-200);
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .filter-tab {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+            padding: var(--spacing-2) var(--spacing-3);
+            background: none;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-meituan-button);
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        
+        .filter-tab.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .filter-tab:active {
+            transform: scale(0.98);
+        }
+        
+        /* 店铺列表 */
+        .store-list {
+            padding: 0 var(--spacing-4) var(--spacing-8);
+        }
+        
+        .store-card {
+            background-color: var(--surface);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-base);
+            margin-bottom: var(--spacing-4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        
+        .store-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .store-card:active {
+            transform: scale(0.99);
+        }
+        
+        /* 店铺图片 */
+        .store-image-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 比例 */
+            overflow: hidden;
+            background-color: var(--gray-200);
+        }
+        
+        .store-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* 视频预览标签 */
+        .video-badge {
+            position: absolute;
+            bottom: var(--spacing-3);
+            right: var(--spacing-3);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+            padding: var(--spacing-1) var(--spacing-2);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+        }
+        
+        /* 店铺信息 */
+        .store-info {
+            padding: var(--spacing-4);
+        }
+        
+        .store-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .store-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-1);
+        }
+        
+        .store-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+            color: var(--warning);
+        }
+        
+        /* 包间状态 */
+        .room-status {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+            margin-bottom: var(--spacing-3);
+            font-size: 14px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: var(--radius-full);
+            background-color: var(--success);
+        }
+        
+        .room-count {
+            color: var(--success);
+            font-weight: 500;
+        }
+        
+        /* 操作按钮 */
+        .store-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-3);
+        }
+        
+        .action-btn {
+            padding: var(--spacing-3) var(--spacing-4);
+            border: none;
+            border-radius: var(--radius-meituan-button);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        
+        .action-btn.primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .action-btn.primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .action-btn.secondary {
+            background-color: var(--gray-100);
+            color: var(--text-primary);
+        }
+        
+        .action-btn.secondary:hover {
+            background-color: var(--gray-200);
+        }
+        
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+        
+        /* 加载更多 */
+        .load-more {
+            text-align: center;
+            padding: var(--spacing-5);
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        /* 响应式设计 */
+        @media (min-width: 768px) {
+            .category-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .store-list {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: var(--spacing-4);
+            }
+            
+            .store-card {
+                margin-bottom: 0;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .store-list {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .store-card {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* 骨架屏 */
+        .skeleton {
+            background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-100) 50%, var(--gray-200) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="header-content">
+            <!-- 搜索栏 -->
+            <div class="search-bar">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-input" placeholder="搜索店铺、包间">
+            </div>
+            
+            <!-- 定位按钮 -->
+            <button class="location-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                </svg>
+                <span>北京</span>
+            </button>
+            
+            <!-- 主题切换按钮 -->
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-10c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z" id="sun-icon"/>
+                    <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.88-.1-1.36-.1z" id="moon-icon" style="display:none"/>
+                </svg>
+            </button>
+        </div>
+    </header>
+    
+    <!-- 类目选择 -->
+    <section class="category-section">
+        <div class="category-grid">
+            <div class="category-card ktv">
+                <div class="category-icon">🎤</div>
+                <div class="category-name">KTV</div>
+            </div>
+            <div class="category-card">
+                <div class="category-icon">🍵</div>
+                <div class="category-name">茶楼</div>
+            </div>
+            <div class="category-card">
+                <div class="category-icon">☕</div>
+                <div class="category-name">咖啡</div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 快速筛选 -->
+    <div class="filter-tabs">
+        <button class="filter-tab active">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+            </svg>
+            附近商家
+        </button>
+        <button class="filter-tab">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67z"/>
+            </svg>
+            热门推荐
+        </button>
+    </div>
+    
+    <!-- 店铺列表 -->
+    <div class="store-list">
+        <!-- 店铺卡片 1 -->
+        <div class="store-card">
+            <div class="store-image-container">
+                <img src="https://via.placeholder.com/400x225/ff6b35/ffffff?text=KTV环境" alt="星光KTV" class="store-image">
+                <div class="video-badge">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    视频预览
+                </div>
+            </div>
+            <div class="store-info">
+                <div class="store-header">
+                    <div>
+                        <h3 class="store-name">星光KTV（望京店）</h3>
+                        <div class="store-meta">
+                            <div class="rating">
+                                <span>⭐</span>
+                                <span>4.8</span>
+                            </div>
+                            <span>📍 1.2km</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="room-status">
+                    <span class="status-dot"></span>
+                    <span class="room-count">12间可预订</span>
+                </div>
+                <div class="store-actions">
+                    <button class="action-btn primary">立即预订</button>
+                    <button class="action-btn secondary">扫码点单</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 店铺卡片 2 -->
+        <div class="store-card">
+            <div class="store-image-container">
+                <img src="https://via.placeholder.com/400x225/3b82f6/ffffff?text=豪华包间" alt="麦乐迪KTV" class="store-image">
+                <div class="video-badge">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    视频预览
+                </div>
+            </div>
+            <div class="store-info">
+                <div class="store-header">
+                    <div>
+                        <h3 class="store-name">麦乐迪量贩KTV</h3>
+                        <div class="store-meta">
+                            <div class="rating">
+                                <span>⭐</span>
+                                <span>4.6</span>
+                            </div>
+                            <span>📍 2.5km</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="room-status">
+                    <span class="status-dot"></span>
+                    <span class="room-count">8间可预订</span>
+                </div>
+                <div class="store-actions">
+                    <button class="action-btn primary">立即预订</button>
+                    <button class="action-btn secondary">扫码点单</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 店铺卡片 3 -->
+        <div class="store-card">
+            <div class="store-image-container">
+                <img src="https://via.placeholder.com/400x225/10b981/ffffff?text=主题包间" alt="纯K" class="store-image">
+                <div class="video-badge">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    视频预览
+                </div>
+            </div>
+            <div class="store-info">
+                <div class="store-header">
+                    <div>
+                        <h3 class="store-name">纯K（三里屯店）</h3>
+                        <div class="store-meta">
+                            <div class="rating">
+                                <span>⭐</span>
+                                <span>4.9</span>
+                            </div>
+                            <span>📍 3.8km</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="room-status">
+                    <span class="status-dot" style="background-color: var(--warning)"></span>
+                    <span class="room-count" style="color: var(--warning)">仅剩3间</span>
+                </div>
+                <div class="store-actions">
+                    <button class="action-btn primary">立即预订</button>
+                    <button class="action-btn secondary">扫码点单</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 加载更多 -->
+    <div class="load-more">
+        <span>下拉加载更多</span>
+    </div>
+    
+    <script>
+        // 主题切换功能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', newTheme);
+            
+            // 切换图标
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
+            
+            if (newTheme === 'dark') {
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+            } else {
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
+            }
+            
+            // 保存用户偏好
+            localStorage.setItem('theme-preference', newTheme);
+        }
+        
+        // 初始化主题
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme-preference');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+            
+            document.documentElement.setAttribute('data-theme', theme);
+            
+            // 设置正确的图标
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
+            
+            if (theme === 'dark') {
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+            }
+        }
+        
+        // 页面加载时初始化
+        initTheme();
+        
+        // 监听系统主题变化
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme-preference')) {
+                const newTheme = e.matches ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', newTheme);
+            }
+        });
+        
+        // 模拟点击效果
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // 模拟页面跳转
+        document.querySelectorAll('.store-card').forEach(card => {
+            card.addEventListener('click', function() {
+                console.log('跳转到店铺详情页');
+            });
+        });
+        
+        // 防止事件冒泡
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                console.log('点击了按钮:', this.textContent);
+            });
+        });
+    </script>
+</body>
+</html>

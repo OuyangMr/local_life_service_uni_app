@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>星光KTV - 店铺详情</title>
+    <style>
+        /* 设计系统变量 */
+        :root {
+            /* 品牌色 */
+            --primary: #FF6B35;
+            --primary-light: #FF8F66;
+            --primary-dark: #E5602F;
+            
+            /* 功能色 */
+            --success: #52C41A;
+            --warning: #FAAD14;
+            --error: #F5222D;
+            --info: #1890FF;
+            
+            /* 中性色 */
+            --gray-1: #FFFFFF;
+            --gray-2: #FAFAFA;
+            --gray-3: #F5F5F5;
+            --gray-4: #E8E8E8;
+            --gray-5: #D9D9D9;
+            --gray-6: #BFBFBF;
+            --gray-7: #8C8C8C;
+            --gray-8: #595959;
+            --gray-9: #262626;
+            --gray-10: #000000;
+            
+            /* VIP色彩 */
+            --vip-gold: #FFD700;
+            --vip-gradient: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            
+            /* 间距 */
+            --spacing-1: 4px;
+            --spacing-2: 8px;
+            --spacing-3: 12px;
+            --spacing-4: 16px;
+            --spacing-5: 20px;
+            --spacing-6: 24px;
+            --spacing-8: 32px;
+            --spacing-10: 40px;
+            
+            /* 圆角 */
+            --radius-sm: 4px;
+            --radius-base: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-2xl: 24px;
+            --radius-full: 9999px;
+            
+            /* 阴影 */
+            --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-2: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-3: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+            --shadow-primary: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+        
+        /* 基础样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: var(--gray-9);
+            background-color: var(--gray-2);
+            overflow-x: hidden;
+        }
+        
+        /* 容器布局 */
+        .app-container {
+            min-height: 100vh;
+            max-width: 430px;
+            margin: 0 auto;
+            background-color: var(--gray-1);
+            position: relative;
+            padding-bottom: 80px;
+        }
+        
+        /* 顶部导航 */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 430px;
+            z-index: 100;
+            background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, transparent 100%);
+            padding: env(safe-area-inset-top) var(--spacing-4) var(--spacing-4);
+            transition: all 0.3s ease;
+        }
+        
+        .header.scrolled {
+            background: var(--gray-1);
+            box-shadow: var(--shadow-2);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+        }
+        
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-2);
+        }
+        
+        .header.scrolled .back-btn {
+            background-color: var(--gray-3);
+            box-shadow: none;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .header.scrolled .header-title {
+            color: var(--gray-9);
+            opacity: 1;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: var(--spacing-3);
+        }
+        
+        .header-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            box-shadow: var(--shadow-2);
+        }
+        
+        .header.scrolled .header-icon {
+            background-color: var(--gray-3);
+            box-shadow: none;
+        }
+        
+        /* 轮播图 */
+        .hero-section {
+            position: relative;
+            width: 100%;
+            height: 375px;
+            overflow: hidden;
+        }
+        
+        .hero-slider {
+            display: flex;
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
+        
+        .hero-slide {
+            flex: 0 0 100%;
+            position: relative;
+        }
+        
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .hero-video {
+            position: absolute;
+            bottom: var(--spacing-4);
+            right: var(--spacing-4);
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--gray-1);
+            padding: var(--spacing-2) var(--spacing-3);
+            border-radius: var(--radius-2xl);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+            cursor: pointer;
+        }
+        
+        .hero-indicators {
+            position: absolute;
+            bottom: var(--spacing-4);
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: var(--spacing-2);
+        }
+        
+        .indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .indicator.active {
+            width: 24px;
+            border-radius: 3px;
+            background-color: var(--gray-1);
+        }
+        
+        /* 店铺信息 */
+        .store-info {
+            padding: var(--spacing-5) var(--spacing-4);
+            background-color: var(--gray-1);
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+            margin-top: -var(--spacing-4);
+            position: relative;
+        }
+        
+        .store-header {
+            margin-bottom: var(--spacing-4);
+        }
+        
+        .store-name-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-2);
+        }
+        
+        .store-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-9);
+            flex: 1;
+        }
+        
+        .store-badges {
+            display: flex;
+            gap: var(--spacing-2);
+            flex-shrink: 0;
+        }
+        
+        .vip-badge {
+            background: var(--vip-gradient);
+            color: var(--gray-9);
+            padding: var(--spacing-1) var(--spacing-3);
+            border-radius: var(--radius-2xl);
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+        }
+        
+        .store-rating {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .rating-score {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+            font-size: 16px;
+            color: var(--warning);
+            font-weight: 600;
+        }
+        
+        .rating-count {
+            font-size: 14px;
+            color: var(--gray-7);
+        }
+        
+        .store-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-2);
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .tag {
+            padding: var(--spacing-1) var(--spacing-3);
+            background-color: var(--gray-3);
+            border-radius: var(--radius-2xl);
+            font-size: 13px;
+            color: var(--gray-8);
+        }
+        
+        .tag.primary {
+            background-color: rgba(255, 107, 53, 0.1);
+            color: var(--primary);
+        }
+        
+        /* 快捷信息 */
+        .quick-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-3);
+            padding: var(--spacing-4);
+            background-color: var(--gray-2);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-4);
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-2);
+            text-align: center;
+        }
+        
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            background-color: var(--gray-1);
+        }
+        
+        .info-label {
+            font-size: 12px;
+            color: var(--gray-7);
+        }
+        
+        .info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-9);
+        }
+        
+        /* Tab切换 */
+        .tabs-container {
+            position: sticky;
+            top: 60px;
+            background-color: var(--gray-1);
+            z-index: 50;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .tabs {
+            display: flex;
+            padding: 0 var(--spacing-4);
+            border-bottom: 1px solid var(--gray-4);
+        }
+        
+        .tab {
+            flex: 1;
+            padding: var(--spacing-4) 0;
+            text-align: center;
+            font-size: 15px;
+            color: var(--gray-7);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32px;
+            height: 3px;
+            background-color: var(--primary);
+            border-radius: 2px;
+        }
+        
+        /* Tab内容 */
+        .tab-content {
+            padding: var(--spacing-4);
+            min-height: 400px;
+        }
+        
+        /* 包间列表 */
+        .room-filters {
+            display: flex;
+            gap: var(--spacing-2);
+            margin-bottom: var(--spacing-4);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        .room-filters::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .filter-chip {
+            flex-shrink: 0;
+            padding: var(--spacing-2) var(--spacing-4);
+            border: 1px solid var(--gray-4);
+            border-radius: var(--radius-2xl);
+            font-size: 14px;
+            color: var(--gray-8);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        
+        .filter-chip.active {
+            background-color: var(--primary);
+            color: var(--gray-1);
+            border-color: var(--primary);
+        }
+        
+        .room-grid {
+            display: grid;
+            gap: var(--spacing-4);
+        }
+        
+        .room-card {
+            background-color: var(--gray-1);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .room-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-3);
+        }
+        
+        .room-image-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+        
+        .room-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .room-card:hover .room-image {
+            transform: scale(1.05);
+        }
+        
+        .room-status {
+            position: absolute;
+            top: var(--spacing-3);
+            right: var(--spacing-3);
+            padding: var(--spacing-1) var(--spacing-3);
+            border-radius: var(--radius-2xl);
+            font-size: 12px;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+        
+        .room-status.available {
+            background-color: rgba(82, 196, 26, 0.9);
+            color: var(--gray-1);
+        }
+        
+        .room-status.occupied {
+            background-color: rgba(245, 34, 45, 0.9);
+            color: var(--gray-1);
+        }
+        
+        .room-video-btn {
+            position: absolute;
+            bottom: var(--spacing-3);
+            left: var(--spacing-3);
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--gray-1);
+            padding: var(--spacing-2) var(--spacing-3);
+            border-radius: var(--radius-2xl);
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+        }
+        
+        .room-details {
+            padding: var(--spacing-4);
+        }
+        
+        .room-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-9);
+            margin-bottom: var(--spacing-2);
+        }
+        
+        .room-specs {
+            display: flex;
+            gap: var(--spacing-3);
+            margin-bottom: var(--spacing-3);
+            font-size: 14px;
+            color: var(--gray-7);
+        }
+        
+        .spec-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+        }
+        
+        .room-facilities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-2);
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .facility {
+            padding: var(--spacing-1) var(--spacing-2);
+            background-color: var(--gray-3);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            color: var(--gray-8);
+        }
+        
+        .room-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .price-info {
+            display: flex;
+            align-items: baseline;
+            gap: var(--spacing-2);
+        }
+        
+        .price-current {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .price-unit {
+            font-size: 14px;
+            color: var(--gray-7);
+        }
+        
+        .price-vip {
+            font-size: 12px;
+            color: var(--vip-gold);
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 165, 0, 0.1) 100%);
+            padding: 2px 8px;
+            border-radius: var(--radius-sm);
+        }
+        
+        /* 评价内容 */
+        .review-summary {
+            background-color: var(--gray-2);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-4);
+            margin-bottom: var(--spacing-4);
+        }
+        
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .review-score {
+            display: flex;
+            align-items: baseline;
+            gap: var(--spacing-2);
+        }
+        
+        .score-big {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--warning);
+        }
+        
+        .score-total {
+            font-size: 14px;
+            color: var(--gray-7);
+        }
+        
+        .review-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-2);
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .review-tag {
+            padding: var(--spacing-2) var(--spacing-3);
+            background-color: var(--gray-1);
+            border-radius: var(--radius-2xl);
+            font-size: 13px;
+            color: var(--gray-8);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+        }
+        
+        .tag-count {
+            font-size: 12px;
+            color: var(--gray-6);
+        }
+        
+        /* 底部操作栏 */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 430px;
+            background-color: var(--gray-1);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            padding: var(--spacing-3) var(--spacing-4) calc(var(--spacing-3) + env(safe-area-inset-bottom));
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .bottom-actions {
+            display: flex;
+            gap: var(--spacing-3);
+        }
+        
+        .bottom-icon {
+            width: 44px;
+            height: 44px;
+            border: 1px solid var(--gray-4);
+            border-radius: var(--radius-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background-color: var(--gray-1);
+            font-size: 20px;
+        }
+        
+        .bottom-icon:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .book-now-btn {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: var(--gray-1);
+            border: none;
+            padding: var(--spacing-3) var(--spacing-8);
+            border-radius: var(--radius-2xl);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-primary);
+        }
+        
+        .book-now-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
+        }
+        
+        .book-now-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* 加载动画 */
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        
+        .loading {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 375px) {
+            .store-name {
+                font-size: 20px;
+            }
+            
+            .quick-info {
+                grid-template-columns: repeat(3, 1fr);
+                gap: var(--spacing-2);
+            }
+            
+            .info-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航 -->
+        <header class="header" id="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="back-btn" onclick="history.back()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                    </div>
+                    <h1 class="header-title">星光KTV</h1>
+                </div>
+                <div class="header-actions">
+                    <div class="header-icon">💗</div>
+                    <div class="header-icon">📤</div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- 轮播图 -->
+        <section class="hero-section">
+            <div class="hero-slider">
+                <div class="hero-slide">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='430' height='375' viewBox='0 0 430 375'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23FF6B35;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23FF8F66;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='430' height='375' fill='url(%23grad)'/%3E%3Ctext x='50%25' y='50%25' font-size='28' fill='white' text-anchor='middle' dy='.3em'%3E星光KTV环境展示%3C/text%3E%3C/svg%3E" alt="店铺环境" class="hero-image">
+                </div>
+            </div>
+            <div class="hero-video">
+                <span>▶</span>
+                <span>视频预览</span>
+            </div>
+            <div class="hero-indicators">
+                <span class="indicator active"></span>
+                <span class="indicator"></span>
+                <span class="indicator"></span>
+                <span class="indicator"></span>
+            </div>
+        </section>
+        
+        <!-- 店铺信息 -->
+        <section class="store-info">
+            <div class="store-header">
+                <div class="store-name-row">
+                    <h1 class="store-name">星光KTV（三里屯店）</h1>
+                    <div class="store-badges">
+                        <span class="vip-badge">👑 VIP专享</span>
+                    </div>
+                </div>
+                <div class="store-rating">
+                    <span class="rating-score">⭐ 4.8分</span>
+                    <span class="rating-count">2356条评价</span>
+                    <span style="flex: 1;"></span>
+                    <span style="font-size: 14px; color: var(--success);">营业中</span>
+                </div>
+                <div class="store-tags">
+                    <span class="tag primary">🔥 人气TOP1</span>
+                    <span class="tag">生日优惠</span>
+                    <span class="tag">免费停车</span>
+                    <span class="tag">豪华音响</span>
+                </div>
+            </div>
+            
+            <div class="quick-info">
+                <div class="info-item">
+                    <div class="info-icon">📍</div>
+                    <span class="info-label">距离</span>
+                    <span class="info-value">500m</span>
+                </div>
+                <div class="info-item">
+                    <div class="info-icon">⏰</div>
+                    <span class="info-label">营业时间</span>
+                    <span class="info-value">10:00-02:00</span>
+                </div>
+                <div class="info-item">
+                    <div class="info-icon">📞</div>
+                    <span class="info-label">电话</span>
+                    <span class="info-value">010-8888</span>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Tab切换 -->
+        <div class="tabs-container">
+            <div class="tabs">
+                <div class="tab active" data-tab="rooms">包间选择</div>
+                <div class="tab" data-tab="info">店铺信息</div>
+                <div class="tab" data-tab="reviews">用户评价</div>
+            </div>
+        </div>
+        
+        <!-- Tab内容 -->
+        <div class="tab-content" id="rooms-content">
+            <div class="room-filters">
+                <div class="filter-chip active">全部包间</div>
+                <div class="filter-chip">小型(2-4人)</div>
+                <div class="filter-chip">中型(5-8人)</div>
+                <div class="filter-chip">大型(10人+)</div>
+                <div class="filter-chip">豪华包间</div>
+            </div>
+            
+            <div class="room-grid">
+                <!-- 包间卡片 1 -->
+                <div class="room-card">
+                    <div class="room-image-container">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%23FF6B35'/%3E%3Ctext x='50%25' y='50%25' font-size='24' fill='white' text-anchor='middle' dy='.3em'%3E豪华包间A%3C/text%3E%3C/svg%3E" alt="包间A" class="room-image">
+                        <span class="room-status available">✓ 可预订</span>
+                        <div class="room-video-btn">▶ 实景视频</div>
+                    </div>
+                    <div class="room-details">
+                        <h3 class="room-name">豪华包间A</h3>
+                        <div class="room-specs">
+                            <span class="spec-item">👥 4-6人</span>
+                            <span class="spec-item">📐 20㎡</span>
+                            <span class="spec-item">🎤 专业音响</span>
+                        </div>
+                        <div class="room-facilities">
+                            <span class="facility">65寸大屏</span>
+                            <span class="facility">独立卫生间</span>
+                            <span class="facility">棋牌桌</span>
+                            <span class="facility">沙发床</span>
+                        </div>
+                        <div class="room-price">
+                            <div class="price-info">
+                                <span class="price-current">¥198</span>
+                                <span class="price-unit">/小时</span>
+                                <span class="price-vip">VIP ¥168</span>
+                            </div>
+                            <button class="store-action" style="padding: var(--spacing-2) var(--spacing-4); border-radius: var(--radius-2xl); background-color: var(--primary); color: var(--gray-1); border: none; font-size: 14px; font-weight: 500; cursor: pointer;">立即预订</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 包间卡片 2 -->
+                <div class="room-card">
+                    <div class="room-image-container">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%231890FF'/%3E%3Ctext x='50%25' y='50%25' font-size='24' fill='white' text-anchor='middle' dy='.3em'%3E中型包间B%3C/text%3E%3C/svg%3E" alt="包间B" class="room-image">
+                        <span class="room-status available">✓ 可预订</span>
+                        <div class="room-video-btn">▶ 实景视频</div>
+                    </div>
+                    <div class="room-details">
+                        <h3 class="room-name">中型包间B</h3>
+                        <div class="room-specs">
+                            <span class="spec-item">👥 5-8人</span>
+                            <span class="spec-item">📐 25㎡</span>
+                            <span class="spec-item">🎤 环绕音响</span>
+                        </div>
+                        <div class="room-facilities">
+                            <span class="facility">75寸大屏</span>
+                            <span class="facility">独立卫生间</span>
+                            <span class="facility">吧台</span>
+                            <span class="facility">麻将机</span>
+                        </div>
+                        <div class="room-price">
+                            <div class="price-info">
+                                <span class="price-current">¥298</span>
+                                <span class="price-unit">/小时</span>
+                                <span class="price-vip">VIP ¥258</span>
+                            </div>
+                            <button class="store-action" style="padding: var(--spacing-2) var(--spacing-4); border-radius: var(--radius-2xl); background-color: var(--primary); color: var(--gray-1); border: none; font-size: 14px; font-weight: 500; cursor: pointer;">立即预订</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 包间卡片 3 -->
+                <div class="room-card">
+                    <div class="room-image-container">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%2352C41A'/%3E%3Ctext x='50%25' y='50%25' font-size='24' fill='white' text-anchor='middle' dy='.3em'%3E大型包间C%3C/text%3E%3C/svg%3E" alt="包间C" class="room-image">
+                        <span class="room-status occupied">使用中</span>
+                        <div class="room-video-btn">▶ 实景视频</div>
+                    </div>
+                    <div class="room-details">
+                        <h3 class="room-name">大型包间C</h3>
+                        <div class="room-specs">
+                            <span class="spec-item">👥 10-15人</span>
+                            <span class="spec-item">📐 40㎡</span>
+                            <span class="spec-item">🎤 舞台音响</span>
+                        </div>
+                        <div class="room-facilities">
+                            <span class="facility">85寸大屏</span>
+                            <span class="facility">独立卫生间</span>
+                            <span class="facility">小舞台</span>
+                            <span class="facility">专属服务员</span>
+                        </div>
+                        <div class="room-price">
+                            <div class="price-info">
+                                <span class="price-current">¥498</span>
+                                <span class="price-unit">/小时</span>
+                                <span class="price-vip">VIP ¥428</span>
+                            </div>
+                            <button class="store-action" style="padding: var(--spacing-2) var(--spacing-4); border-radius: var(--radius-2xl); background-color: var(--gray-5); color: var(--gray-1); border: none; font-size: 14px; font-weight: 500;" disabled>使用中</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="info-content" style="display: none;">
+            <div style="padding: var(--spacing-4) 0;">
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: var(--spacing-3);">店铺介绍</h3>
+                <p style="font-size: 14px; line-height: 1.8; color: var(--gray-8); margin-bottom: var(--spacing-4);">
+                    星光KTV三里屯店是北京最受欢迎的KTV品牌之一，位于繁华的三里屯商圈，交通便利，停车方便。店内装修豪华，音响设备采用进口专业品牌，为您提供极致的K歌体验。
+                </p>
+                
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: var(--spacing-3);">特色服务</h3>
+                <div style="display: grid; gap: var(--spacing-3); margin-bottom: var(--spacing-4);">
+                    <div style="display: flex; gap: var(--spacing-3);">
+                        <span style="font-size: 20px;">🎂</span>
+                        <div>
+                            <h4 style="font-size: 15px; font-weight: 600; margin-bottom: var(--spacing-1);">生日派对</h4>
+                            <p style="font-size: 13px; color: var(--gray-7);">提供生日装饰、蛋糕、专属优惠</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: var(--spacing-3);">
+                        <span style="font-size: 20px;">🎤</span>
+                        <div>
+                            <h4 style="font-size: 15px; font-weight: 600; margin-bottom: var(--spacing-1);">专业音响</h4>
+                            <p style="font-size: 13px; color: var(--gray-7);">进口音响设备，录音棚级别音质</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: var(--spacing-3);">
+                        <span style="font-size: 20px;">🍽️</span>
+                        <div>
+                            <h4 style="font-size: 15px; font-weight: 600; margin-bottom: var(--spacing-1);">精美餐饮</h4>
+                            <p style="font-size: 13px; color: var(--gray-7);">提供各类小食、饮品、果盘</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: var(--spacing-3);">联系方式</h3>
+                <div style="background-color: var(--gray-3); padding: var(--spacing-4); border-radius: var(--radius-lg);">
+                    <p style="font-size: 14px; color: var(--gray-8); margin-bottom: var(--spacing-2);">
+                        📍 地址：北京市朝阳区三里屯路19号院3号楼B1层
+                    </p>
+                    <p style="font-size: 14px; color: var(--gray-8); margin-bottom: var(--spacing-2);">
+                        📞 电话：010-88888888
+                    </p>
+                    <p style="font-size: 14px; color: var(--gray-8);">
+                        ⏰ 营业时间：周一至周日 10:00-02:00
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="reviews-content" style="display: none;">
+            <div class="review-summary">
+                <div class="review-header">
+                    <div class="review-score">
+                        <span class="score-big">4.8</span>
+                        <span class="score-total">/5分</span>
+                    </div>
+                    <span style="font-size: 14px; color: var(--gray-7);">2356条评价</span>
+                </div>
+                <div class="review-tags">
+                    <span class="review-tag">
+                        音响效果好 <span class="tag-count">(1823)</span>
+                    </span>
+                    <span class="review-tag">
+                        环境优雅 <span class="tag-count">(1567)</span>
+                    </span>
+                    <span class="review-tag">
+                        服务周到 <span class="tag-count">(1234)</span>
+                    </span>
+                    <span class="review-tag">
+                        位置方便 <span class="tag-count">(987)</span>
+                    </span>
+                </div>
+            </div>
+            
+            <!-- 评价列表 -->
+            <div style="display: grid; gap: var(--spacing-4);">
+                <div style="background-color: var(--gray-1); padding: var(--spacing-4); border-radius: var(--radius-lg); box-shadow: var(--shadow-2);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-3);">
+                        <div style="display: flex; align-items: center; gap: var(--spacing-3);">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background-color: var(--gray-3); display: flex; align-items: center; justify-content: center;">👤</div>
+                            <div>
+                                <div style="font-size: 15px; font-weight: 600;">张小姐</div>
+                                <div style="font-size: 12px; color: var(--gray-7);">VIP会员</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 13px; color: var(--warning);">⭐⭐⭐⭐⭐</div>
+                    </div>
+                    <p style="font-size: 14px; line-height: 1.6; color: var(--gray-8); margin-bottom: var(--spacing-2);">
+                        音响效果真的超级好！和朋友一起来过生日，服务员还送了生日装饰，特别贴心。包间环境也很棒，下次还会再来的~
+                    </p>
+                    <div style="font-size: 12px; color: var(--gray-6);">2024-03-15 包间A</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部操作栏 -->
+        <div class="bottom-bar">
+            <div class="bottom-actions">
+                <div class="bottom-icon">📞</div>
+                <div class="bottom-icon">💬</div>
+            </div>
+            <button class="book-now-btn">立即预订</button>
+        </div>
+    </div>
+    
+    <script>
+        // 页面滚动时改变导航栏样式
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+        
+        // Tab切换
+        const tabs = document.querySelectorAll('.tab');
+        const contents = {
+            'rooms': document.getElementById('rooms-content'),
+            'info': document.getElementById('info-content'),
+            'reviews': document.getElementById('reviews-content')
+        };
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabName = this.getAttribute('data-tab');
+                
+                // 切换Tab样式
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // 切换内容
+                Object.values(contents).forEach(content => {
+                    content.style.display = 'none';
+                });
+                contents[tabName].style.display = 'block';
+            });
+        });
+        
+        // 筛选切换
+        const filterChips = document.querySelectorAll('.filter-chip');
+        filterChips.forEach(chip => {
+            chip.addEventListener('click', function() {
+                filterChips.forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // 轮播图
+        let currentSlide = 0;
+        const indicators = document.querySelectorAll('.indicator');
+        
+        function updateIndicators() {
+            indicators.forEach((indicator, index) => {
+                indicator.classList.toggle('active', index === currentSlide);
+            });
+        }
+        
+        // 模拟自动轮播
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % indicators.length;
+            updateIndicators();
+        }, 3000);
+        
+        // 包间卡片点击效果
+        const roomCards = document.querySelectorAll('.room-card');
+        roomCards.forEach(card => {
+            card.addEventListener('click', function() {
+                // 可以在这里添加进入包间详情的逻辑
+            });
+        });
+    </script>
+</body>
+</html>

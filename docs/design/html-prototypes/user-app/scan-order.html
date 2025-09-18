@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>扫码点单 - 星光KTV 包间A</title>
+    <style>
+        /* 复用设计系统变量 */
+        :root {
+            /* 品牌主色 - 活力橙 */
+            --primary: #ff6b35;
+            --primary-light: #ff8c5a;
+            --primary-dark: #e55a2b;
+            
+            /* 辅助色 - 深蓝 */
+            --secondary: #2e3b5a;
+            --secondary-light: #3a4a6b;
+            --secondary-dark: #1e2a3e;
+            
+            /* 功能色 */
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+            
+            /* 中性色 */
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            /* 背景色 */
+            --background-primary: #ffffff;
+            --background-secondary: #f9fafb;
+            --surface: #ffffff;
+            
+            /* 文字颜色 */
+            --text-primary: var(--gray-900);
+            --text-secondary: var(--gray-600);
+            
+            /* 间距 */
+            --spacing-1: 4px;
+            --spacing-2: 8px;
+            --spacing-3: 12px;
+            --spacing-4: 16px;
+            --spacing-5: 20px;
+            --spacing-6: 24px;
+            --spacing-8: 32px;
+            --spacing-10: 40px;
+            
+            /* 圆角 - 更圆润的设计 */
+            --radius-sm: 8px;
+            --radius-base: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-2xl: 24px;
+            --radius-full: 50%;
+            --radius-meituan-card: 14px;
+            --radius-meituan-button: 20px;
+            
+            /* 阴影 */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-base: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+            --shadow-xl: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* 暗黑模式 */
+        [data-theme="dark"] {
+            --primary: #ffb085;
+            --primary-light: #ffc299;
+            --primary-dark: #ff9e71;
+            
+            --secondary: #8b9dc3;
+            --secondary-light: #a0b1d6;
+            --secondary-dark: #7689b0;
+            
+            --success: #34d399;
+            --warning: #fbbf24;
+            --error: #f87171;
+            --info: #60a5fa;
+            
+            --background-primary: #0f1419;
+            --background-secondary: #1c2128;
+            --surface: #1c2128;
+            
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            
+            --gray-50: #0f1419;
+            --gray-100: #1c2128;
+            --gray-200: #2d3748;
+            --gray-300: #4a5568;
+            --gray-400: #718096;
+            --gray-500: #a0aec0;
+            --gray-600: #cbd5e0;
+            --gray-700: #e2e8f0;
+            --gray-800: #f7fafc;
+            --gray-900: #ffffff;
+            
+            --shadow-base: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* 基础样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            font-size: 14px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background-color: var(--background-secondary);
+            color: var(--text-primary);
+            line-height: 1.4;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding-bottom: 70px;
+        }
+        
+        /* 位置确认条 */
+        .location-bar {
+            background-color: var(--primary);
+            color: white;
+            padding: var(--spacing-3) var(--spacing-4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-2);
+            font-size: 14px;
+        }
+        
+        /* 顶部导航栏 */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: var(--surface);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--spacing-3) var(--spacing-4);
+        }
+        
+        .search-bar {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            background-color: var(--gray-100);
+            border-radius: var(--radius-meituan-button);
+            padding: var(--spacing-2) var(--spacing-3);
+            margin-right: var(--spacing-3);
+        }
+        
+        .search-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: var(--spacing-2);
+            opacity: 0.6;
+        }
+        
+        .search-input {
+            flex: 1;
+            border: none;
+            background: none;
+            outline: none;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        
+        .cart-icon-wrapper {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .cart-icon {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .cart-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background-color: var(--error);
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: var(--radius-full);
+            min-width: 18px;
+            text-align: center;
+        }
+        
+        /* 分类标签栏 */
+        .category-tabs {
+            position: sticky;
+            top: 60px;
+            z-index: 90;
+            background-color: var(--surface);
+            display: flex;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding: var(--spacing-3) var(--spacing-4);
+            gap: var(--spacing-3);
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .category-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .category-tab {
+            flex-shrink: 0;
+            padding: var(--spacing-2) var(--spacing-4);
+            background-color: var(--gray-100);
+            border: none;
+            border-radius: var(--radius-meituan-button);
+            font-size: 14px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        
+        .category-tab.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .category-tab:active {
+            transform: scale(0.95);
+        }
+        
+        /* 商品列表 */
+        .product-list {
+            padding: var(--spacing-4);
+        }
+        
+        .product-section {
+            margin-bottom: var(--spacing-6);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-3);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+        }
+        
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: var(--spacing-3);
+        }
+        
+        .product-card {
+            background-color: var(--surface);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-base);
+            display: flex;
+            gap: var(--spacing-3);
+            padding: var(--spacing-3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .product-card:active {
+            transform: scale(0.99);
+        }
+        
+        .product-image {
+            width: 100px;
+            height: 100px;
+            border-radius: var(--radius-base);
+            object-fit: cover;
+            background-color: var(--gray-200);
+            flex-shrink: 0;
+        }
+        
+        .product-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .product-header {
+            flex: 1;
+        }
+        
+        .product-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-1);
+        }
+        
+        .product-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-2);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .product-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+            color: var(--warning);
+        }
+        
+        .product-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .product-price {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .add-to-cart {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background-color: var(--primary);
+            border: none;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .add-to-cart:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .add-to-cart:active {
+            transform: scale(0.9);
+        }
+        
+        .add-to-cart svg {
+            width: 20px;
+            height: 20px;
+            color: white;
+        }
+        
+        /* 购物车悬浮栏 */
+        .cart-float-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--surface);
+            border-top: 1px solid var(--gray-200);
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.05);
+            padding: var(--spacing-3) var(--spacing-4);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+        }
+        
+        .cart-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+        }
+        
+        .cart-icon-container {
+            position: relative;
+        }
+        
+        .cart-icon-large {
+            width: 32px;
+            height: 32px;
+            color: var(--primary);
+        }
+        
+        .cart-summary {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .cart-count {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .cart-total {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .checkout-btn {
+            padding: var(--spacing-3) var(--spacing-6);
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-meituan-button);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .checkout-btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .checkout-btn:active {
+            transform: scale(0.98);
+        }
+        
+        /* 购物车弹窗 */
+        .cart-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .cart-modal.show {
+            display: block;
+        }
+        
+        .cart-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--surface);
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+            padding: var(--spacing-4);
+            max-height: 70vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+        
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-4);
+            padding-bottom: var(--spacing-3);
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .cart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+        }
+        
+        .clear-cart {
+            font-size: 14px;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .clear-cart:hover {
+            color: var(--error);
+        }
+        
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+            padding: var(--spacing-3) 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cart-item-image {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+            background-color: var(--gray-200);
+        }
+        
+        .cart-item-info {
+            flex: 1;
+        }
+        
+        .cart-item-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-1);
+        }
+        
+        .cart-item-price {
+            font-size: 14px;
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+        }
+        
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+        }
+        
+        .quantity-btn {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--gray-100);
+            border: none;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .quantity-btn:hover {
+            background-color: var(--gray-200);
+        }
+        
+        .quantity-btn:active {
+            transform: scale(0.9);
+        }
+        
+        .quantity-btn.minus {
+            color: var(--text-secondary);
+        }
+        
+        .quantity-btn.plus {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .quantity-btn.plus:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .quantity-value {
+            min-width: 30px;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        /* 动画 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+        
+        /* 加入购物车动画 */
+        @keyframes addToCart {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(0.8);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .add-animation {
+            animation: addToCart 0.3s ease;
+        }
+        
+        /* 响应式设计 */
+        @media (min-width: 768px) {
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .product-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 位置确认条 -->
+    <div class="location-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+        </svg>
+        <span>已定位到：包间A - 星光KTV 3楼</span>
+    </div>
+    
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="header-content">
+            <div class="search-bar">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="search-input" placeholder="搜索商品">
+            </div>
+            <div class="cart-icon-wrapper" onclick="showCart()">
+                <svg class="cart-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                </svg>
+                <span class="cart-badge" id="cartBadge">3</span>
+            </div>
+        </div>
+    </header>
+    
+    <!-- 分类标签栏 -->
+    <div class="category-tabs">
+        <button class="category-tab active">🔥 热销</button>
+        <button class="category-tab">🍷 酒水</button>
+        <button class="category-tab">🍖 小食</button>
+        <button class="category-tab">🍰 甜点</button>
+        <button class="category-tab">🍉 果盘</button>
+        <button class="category-tab">🎁 套餐</button>
+    </div>
+    
+    <!-- 商品列表 -->
+    <div class="product-list">
+        <!-- 热销商品 -->
+        <section class="product-section">
+            <h2 class="section-title">🔥 热销推荐</h2>
+            <div class="product-grid">
+                <!-- 商品卡片 1 -->
+                <div class="product-card">
+                    <img src="https://via.placeholder.com/200x200/3b82f6/ffffff?text=青岛啤酒" alt="青岛啤酒" class="product-image">
+                    <div class="product-info">
+                        <div class="product-header">
+                            <h3 class="product-name">青岛啤酒 纯生</h3>
+                            <p class="product-desc">330ml*6罐装，口感清爽，是KTV聚会的最佳选择</p>
+                            <div class="product-meta">
+                                <span class="product-rating">
+                                    <span>⭐</span>
+                                    <span>4.9</span>
+                                </span>
+                                <span>月销999+</span>
+                            </div>
+                        </div>
+                        <div class="product-footer">
+                            <span class="product-price">¥88</span>
+                            <button class="add-to-cart" onclick="addToCart(this)">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 商品卡片 2 -->
+                <div class="product-card">
+                    <img src="https://via.placeholder.com/200x200/10b981/ffffff?text=水果拼盘" alt="水果拼盘" class="product-image">
+                    <div class="product-info">
+                        <div class="product-header">
+                            <h3 class="product-name">精选水果拼盘</h3>
+                            <p class="product-desc">时令新鲜水果，精心搭配，颜值与口感并存</p>
+                            <div class="product-meta">
+                                <span class="product-rating">
+                                    <span>⭐</span>
+                                    <span>4.8</span>
+                                </span>
+                                <span>月销666+</span>
+                            </div>
+                        </div>
+                        <div class="product-footer">
+                            <span class="product-price">¥68</span>
+                            <button class="add-to-cart" onclick="addToCart(this)">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 商品卡片 3 -->
+                <div class="product-card">
+                    <img src="https://via.placeholder.com/200x200/f59e0b/ffffff?text=小食拼盘" alt="小食拼盘" class="product-image">
+                    <div class="product-info">
+                        <div class="product-header">
+                            <h3 class="product-name">休闲小食拼盘</h3>
+                            <p class="product-desc">薯片、爆米花、花生等多种小食组合</p>
+                            <div class="product-meta">
+                                <span class="product-rating">
+                                    <span>⭐</span>
+                                    <span>4.7</span>
+                                </span>
+                                <span>月销888+</span>
+                            </div>
+                        </div>
+                        <div class="product-footer">
+                            <span class="product-price">¥38</span>
+                            <button class="add-to-cart" onclick="addToCart(this)">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 酒水饮料 -->
+        <section class="product-section">
+            <h2 class="section-title">🍷 酒水饮料</h2>
+            <div class="product-grid">
+                <!-- 商品卡片 4 -->
+                <div class="product-card">
+                    <img src="https://via.placeholder.com/200x200/ef4444/ffffff?text=百威啤酒" alt="百威啤酒" class="product-image">
+                    <div class="product-info">
+                        <div class="product-header">
+                            <h3 class="product-name">百威啤酒</h3>
+                            <p class="product-desc">500ml*6罐装，经典口味</p>
+                            <div class="product-meta">
+                                <span class="product-rating">
+                                    <span>⭐</span>
+                                    <span>4.8</span>
+                                </span>
+                                <span>月销520+</span>
+                            </div>
+                        </div>
+                        <div class="product-footer">
+                            <span class="product-price">¥98</span>
+                            <button class="add-to-cart" onclick="addToCart(this)">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 商品卡片 5 -->
+                <div class="product-card">
+                    <img src="https://via.placeholder.com/200x200/8b5cf6/ffffff?text=可乐雪碧" alt="可乐雪碧" class="product-image">
+                    <div class="product-info">
+                        <div class="product-header">
+                            <h3 class="product-name">可乐雪碧组合</h3>
+                            <p class="product-desc">2L装可乐+雪碧各一瓶</p>
+                            <div class="product-meta">
+                                <span class="product-rating">
+                                    <span>⭐</span>
+                                    <span>4.9</span>
+                                </span>
+                                <span>月销999+</span>
+                            </div>
+                        </div>
+                        <div class="product-footer">
+                            <span class="product-price">¥28</span>
+                            <button class="add-to-cart" onclick="addToCart(this)">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- 购物车悬浮栏 -->
+    <div class="cart-float-bar">
+        <div class="cart-info" onclick="showCart()">
+            <div class="cart-icon-container">
+                <svg class="cart-icon-large" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                </svg>
+                <span class="cart-badge">3</span>
+            </div>
+            <div class="cart-summary">
+                <span class="cart-count">3件商品</span>
+                <span class="cart-total">¥266</span>
+            </div>
+        </div>
+        <button class="checkout-btn" onclick="goToCheckout()">去结算</button>
+    </div>
+    
+    <!-- 购物车弹窗 -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h3 class="cart-title">
+                    🛒 购物车
+                    <span style="font-size: 14px; color: var(--text-secondary);">(3件商品)</span>
+                </h3>
+                <button class="clear-cart" onclick="clearCart()">清空购物车</button>
+            </div>
+            
+            <div class="cart-items">
+                <!-- 购物车商品 1 -->
+                <div class="cart-item">
+                    <img src="https://via.placeholder.com/60x60/3b82f6/ffffff?text=青岛" alt="青岛啤酒" class="cart-item-image">
+                    <div class="cart-item-info">
+                        <h4 class="cart-item-name">青岛啤酒 纯生</h4>
+                        <span class="cart-item-price">¥88</span>
+                    </div>
+                    <div class="cart-item-controls">
+                        <div class="quantity-control">
+                            <button class="quantity-btn minus" onclick="updateQuantity(this, -1)">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 13H5v-2h14v2z"/>
+                                </svg>
+                            </button>
+                            <span class="quantity-value">2</span>
+                            <button class="quantity-btn plus" onclick="updateQuantity(this, 1)">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 购物车商品 2 -->
+                <div class="cart-item">
+                    <img src="https://via.placeholder.com/60x60/10b981/ffffff?text=水果" alt="水果拼盘" class="cart-item-image">
+                    <div class="cart-item-info">
+                        <h4 class="cart-item-name">精选水果拼盘</h4>
+                        <span class="cart-item-price">¥68</span>
+                    </div>
+                    <div class="cart-item-controls">
+                        <div class="quantity-control">
+                            <button class="quantity-btn minus" onclick="updateQuantity(this, -1)">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 13H5v-2h14v2z"/>
+                                </svg>
+                            </button>
+                            <span class="quantity-value">1</span>
+                            <button class="quantity-btn plus" onclick="updateQuantity(this, 1)">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 购物车商品 3 -->
+                <div class="cart-item">
+                    <img src="https://via.placeholder.com/60x60/8b5cf6/ffffff?text=可乐" alt="可乐雪碧" class="cart-item-image">
+                    <div class="cart-item-info">
+                        <h4 class="cart-item-name">可乐雪碧组合</h4>
+                        <span class="cart-item-price">¥28</span>
+                    </div>
+                    <div class="cart-item-controls">
+                        <div class="quantity-control">
+                            <button class="quantity-btn minus" onclick="updateQuantity(this, -1)">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 13H5v-2h14v2z"/>
+                                </svg>
+                            </button>
+                            <span class="quantity-value">1</span>
+                            <button class="quantity-btn plus" onclick="updateQuantity(this, 1)">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 备注信息 -->
+            <div style="margin-top: var(--spacing-4); padding: var(--spacing-3); background-color: var(--gray-50); border-radius: var(--radius-base);">
+                <label style="font-size: 14px; color: var(--text-secondary); display: block; margin-bottom: var(--spacing-2);">📝 备注信息</label>
+                <textarea style="width: 100%; min-height: 60px; padding: var(--spacing-2); border: 1px solid var(--gray-300); border-radius: var(--radius-sm); resize: none; font-family: inherit; font-size: 14px;" placeholder="请输入备注信息，如：不要香菜、少冰等"></textarea>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 初始化主题
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme-preference');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+        
+        initTheme();
+        
+        // 分类切换
+        document.querySelectorAll('.category-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // 添加到购物车
+        let cartCount = 3;
+        function addToCart(button) {
+            button.classList.add('add-animation');
+            cartCount++;
+            updateCartBadge();
+            
+            // 显示添加成功提示
+            showToast('已添加到购物车');
+            
+            setTimeout(() => {
+                button.classList.remove('add-animation');
+            }, 300);
+        }
+        
+        // 更新购物车数量
+        function updateCartBadge() {
+            document.querySelectorAll('.cart-badge').forEach(badge => {
+                badge.textContent = cartCount;
+            });
+            document.querySelector('.cart-count').textContent = cartCount + '件商品';
+        }
+        
+        // 显示购物车
+        function showCart() {
+            document.getElementById('cartModal').classList.add('show');
+        }
+        
+        // 隐藏购物车
+        function hideCart() {
+            document.getElementById('cartModal').classList.remove('show');
+        }
+        
+        // 点击遮罩关闭
+        document.getElementById('cartModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideCart();
+            }
+        });
+        
+        // 更新数量
+        function updateQuantity(button, delta) {
+            const quantitySpan = button.parentElement.querySelector('.quantity-value');
+            let quantity = parseInt(quantitySpan.textContent);
+            quantity = Math.max(0, quantity + delta);
+            quantitySpan.textContent = quantity;
+            
+            if (quantity === 0) {
+                // 移除商品
+                const cartItem = button.closest('.cart-item');
+                cartItem.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => {
+                    cartItem.remove();
+                    cartCount--;
+                    updateCartBadge();
+                }, 300);
+            }
+        }
+        
+        // 清空购物车
+        function clearCart() {
+            if (confirm('确定要清空购物车吗？')) {
+                document.querySelector('.cart-items').innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: var(--spacing-6);">购物车是空的</p>';
+                cartCount = 0;
+                updateCartBadge();
+            }
+        }
+        
+        // 去结算
+        function goToCheckout() {
+            console.log('跳转到结算页面');
+            alert('即将跳转到结算页面...');
+        }
+        
+        // 显示提示信息
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 24px;
+                font-size: 14px;
+                z-index: 3000;
+                animation: fadeIn 0.3s ease;
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 1500);
+        }
+        
+        // 添加淡出动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeOut {
+                from {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateX(-20px);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

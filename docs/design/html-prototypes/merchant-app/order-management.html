@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>订单管理 - 星光KTV</title>
+    <style>
+        /* 复用设计系统变量 */
+        :root {
+            /* 品牌主色 - 活力橙 */
+            --primary: #ff6b35;
+            --primary-light: #ff8c5a;
+            --primary-dark: #e55a2b;
+            
+            /* 辅助色 - 深蓝 */
+            --secondary: #2e3b5a;
+            --secondary-light: #3a4a6b;
+            --secondary-dark: #1e2a3e;
+            
+            /* 功能色 */
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+            
+            /* 中性色 */
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            /* 背景色 */
+            --background-primary: #ffffff;
+            --background-secondary: #f9fafb;
+            --surface: #ffffff;
+            
+            /* 文字颜色 */
+            --text-primary: var(--gray-900);
+            --text-secondary: var(--gray-600);
+            
+            /* 间距 */
+            --spacing-1: 4px;
+            --spacing-2: 8px;
+            --spacing-3: 12px;
+            --spacing-4: 16px;
+            --spacing-5: 20px;
+            --spacing-6: 24px;
+            --spacing-8: 32px;
+            --spacing-10: 40px;
+            
+            /* 圆角 - 更圆润的设计 */
+            --radius-sm: 8px;
+            --radius-base: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-2xl: 24px;
+            --radius-full: 50%;
+            --radius-meituan-card: 14px;
+            --radius-meituan-button: 20px;
+            
+            /* 阴影 */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-base: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+            --shadow-xl: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* 暗黑模式 */
+        [data-theme="dark"] {
+            --primary: #ffb085;
+            --primary-light: #ffc299;
+            --primary-dark: #ff9e71;
+            
+            --secondary: #8b9dc3;
+            --secondary-light: #a0b1d6;
+            --secondary-dark: #7689b0;
+            
+            --success: #34d399;
+            --warning: #fbbf24;
+            --error: #f87171;
+            --info: #60a5fa;
+            
+            --background-primary: #0f1419;
+            --background-secondary: #1c2128;
+            --surface: #1c2128;
+            
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            
+            --gray-50: #0f1419;
+            --gray-100: #1c2128;
+            --gray-200: #2d3748;
+            --gray-300: #4a5568;
+            --gray-400: #718096;
+            --gray-500: #a0aec0;
+            --gray-600: #cbd5e0;
+            --gray-700: #e2e8f0;
+            --gray-800: #f7fafc;
+            --gray-900: #ffffff;
+            
+            --shadow-base: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* 基础样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            font-size: 14px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background-color: var(--background-secondary);
+            color: var(--text-primary);
+            line-height: 1.4;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding-bottom: 70px;
+        }
+        
+        /* 顶部导航栏 */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: var(--surface);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--spacing-3) var(--spacing-4);
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+        }
+        
+        .order-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 24px;
+            height: 24px;
+            padding: 0 var(--spacing-2);
+            background-color: var(--error);
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: var(--radius-full);
+        }
+        
+        .filter-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+            padding: var(--spacing-2) var(--spacing-3);
+            background: none;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-meituan-button);
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-btn:active {
+            background-color: var(--gray-100);
+            transform: scale(0.98);
+        }
+        
+        /* 订单状态标签 */
+        .status-tabs {
+            background-color: var(--surface);
+            display: flex;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding: var(--spacing-3) var(--spacing-4);
+            gap: var(--spacing-3);
+            border-bottom: 1px solid var(--gray-200);
+            position: sticky;
+            top: 56px;
+            z-index: 90;
+        }
+        
+        .status-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .status-tab {
+            flex-shrink: 0;
+            padding: var(--spacing-2) var(--spacing-4);
+            background-color: var(--gray-100);
+            border: none;
+            border-radius: var(--radius-meituan-button);
+            font-size: 14px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            position: relative;
+        }
+        
+        .status-tab.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .status-tab:active {
+            transform: scale(0.95);
+        }
+        
+        .tab-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
+            background-color: var(--error);
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* 订单列表 */
+        .order-list {
+            padding: var(--spacing-3) var(--spacing-4);
+        }
+        
+        .order-card {
+            background-color: var(--surface);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-base);
+            margin-bottom: var(--spacing-3);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .order-card.urgent {
+            border: 2px solid var(--error);
+        }
+        
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        /* 紧急标签 */
+        .urgent-tag {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: var(--error);
+            color: white;
+            padding: var(--spacing-1) var(--spacing-3);
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 0 0 var(--radius-base) 0;
+        }
+        
+        /* 订单头部 */
+        .order-header {
+            padding: var(--spacing-4);
+            border-bottom: 1px solid var(--gray-100);
+        }
+        
+        .order-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-2);
+        }
+        
+        .order-type {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+        }
+        
+        .type-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary);
+            color: white;
+            border-radius: var(--radius-full);
+            font-size: 16px;
+        }
+        
+        .type-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .type-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .type-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .order-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: right;
+        }
+        
+        .order-location {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        
+        /* 订单内容 */
+        .order-content {
+            padding: var(--spacing-4);
+        }
+        
+        .order-items {
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-2) 0;
+            font-size: 14px;
+        }
+        
+        .item-name {
+            color: var(--text-primary);
+        }
+        
+        .item-quantity {
+            color: var(--text-secondary);
+        }
+        
+        .order-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: var(--spacing-3);
+            border-top: 1px solid var(--gray-100);
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .summary-label {
+            color: var(--text-primary);
+        }
+        
+        .summary-value {
+            color: var(--primary);
+        }
+        
+        /* 订单操作 */
+        .order-actions {
+            padding: var(--spacing-3) var(--spacing-4);
+            background-color: var(--gray-50);
+            display: flex;
+            gap: var(--spacing-3);
+            justify-content: flex-end;
+        }
+        
+        .action-btn {
+            padding: var(--spacing-2) var(--spacing-4);
+            border: 1px solid var(--gray-300);
+            background-color: var(--surface);
+            border-radius: var(--radius-meituan-button);
+            font-size: 14px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .action-btn:hover {
+            background-color: var(--gray-100);
+        }
+        
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .action-btn.primary {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .action-btn.primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .action-btn.danger {
+            color: var(--error);
+            border-color: var(--error);
+        }
+        
+        .action-btn.danger:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-10) var(--spacing-4);
+        }
+        
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto var(--spacing-4);
+            opacity: 0.3;
+        }
+        
+        .empty-text {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+        
+        /* 加载状态 */
+        .loading {
+            text-align: center;
+            padding: var(--spacing-8);
+            color: var(--text-secondary);
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--gray-300);
+            border-top-color: var(--primary);
+            border-radius: var(--radius-full);
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--surface);
+            border-top: 1px solid var(--gray-200);
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+        
+        .nav-items {
+            display: flex;
+            justify-content: space-around;
+            padding: var(--spacing-2) 0;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-2);
+            color: var(--text-secondary);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .nav-item.active {
+            color: var(--primary);
+        }
+        
+        .nav-item:active {
+            transform: scale(0.95);
+        }
+        
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: var(--spacing-1);
+        }
+        
+        .nav-label {
+            font-size: 12px;
+        }
+        
+        /* 筛选弹窗 */
+        .filter-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .filter-modal.show {
+            display: block;
+        }
+        
+        .filter-content {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 80%;
+            max-width: 320px;
+            background-color: var(--surface);
+            padding: var(--spacing-4);
+            overflow-y: auto;
+            animation: slideInRight 0.3s ease;
+        }
+        
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-4);
+            padding-bottom: var(--spacing-3);
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .filter-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .filter-close {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+        }
+        
+        .filter-close:active {
+            background-color: var(--gray-100);
+        }
+        
+        .filter-section {
+            margin-bottom: var(--spacing-6);
+        }
+        
+        .filter-section-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .filter-options {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-2);
+        }
+        
+        .filter-option {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+            padding: var(--spacing-2);
+            cursor: pointer;
+        }
+        
+        .filter-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-option.selected .filter-checkbox {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .filter-option.selected .filter-checkbox::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+        }
+        
+        .filter-apply {
+            position: absolute;
+            bottom: var(--spacing-4);
+            left: var(--spacing-4);
+            right: var(--spacing-4);
+            padding: var(--spacing-3);
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-meituan-button);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-apply:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .filter-apply:active {
+            transform: scale(0.98);
+        }
+        
+        /* 动画 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+        
+        /* 响应式设计 */
+        @media (min-width: 768px) {
+            .order-list {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: var(--spacing-4);
+            }
+            
+            .order-card {
+                margin-bottom: 0;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .main-content {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            
+            .order-list {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="header-content">
+            <h1 class="header-title">
+                📋 订单管理
+                <span class="order-count">3</span>
+            </h1>
+            <button class="filter-btn" onclick="showFilter()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/>
+                </svg>
+                <span>筛选</span>
+            </button>
+        </div>
+    </header>
+    
+    <!-- 订单状态标签 -->
+    <div class="status-tabs">
+        <button class="status-tab active">
+            全部
+            <span class="tab-badge">12</span>
+        </button>
+        <button class="status-tab">
+            待接单
+            <span class="tab-badge">3</span>
+        </button>
+        <button class="status-tab">
+            进行中
+            <span class="tab-badge">5</span>
+        </button>
+        <button class="status-tab">
+            已完成
+        </button>
+        <button class="status-tab">
+            已取消
+        </button>
+    </div>
+    
+    <!-- 订单列表 -->
+    <div class="order-list">
+        <!-- 紧急订单 1 -->
+        <div class="order-card urgent">
+            <span class="urgent-tag">🚨 紧急</span>
+            <div class="order-header">
+                <div class="order-meta">
+                    <div class="order-type">
+                        <div class="type-icon">🍷</div>
+                        <div class="type-info">
+                            <span class="type-label">点单订单</span>
+                            <span class="type-value">包间A</span>
+                        </div>
+                    </div>
+                    <div class="order-time">
+                        <div>3分钟前</div>
+                        <div style="color: var(--error); font-weight: 600;">待接单</div>
+                    </div>
+                </div>
+                <div class="order-location">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    <span>3楼 包间A</span>
+                </div>
+            </div>
+            
+            <div class="order-content">
+                <div class="order-items">
+                    <div class="order-item">
+                        <span class="item-name">青岛啤酒 纯生</span>
+                        <span class="item-quantity">x2</span>
+                    </div>
+                    <div class="order-item">
+                        <span class="item-name">薯片</span>
+                        <span class="item-quantity">x1</span>
+                    </div>
+                </div>
+                <div class="order-summary">
+                    <span class="summary-label">合计</span>
+                    <span class="summary-value">¥109</span>
+                </div>
+            </div>
+            
+            <div class="order-actions">
+                <button class="action-btn danger" onclick="rejectOrder()">拒绝</button>
+                <button class="action-btn primary" onclick="acceptOrder()">接单</button>
+            </div>
+        </div>
+        
+        <!-- 预订订单 -->
+        <div class="order-card">
+            <div class="order-header">
+                <div class="order-meta">
+                    <div class="order-type">
+                        <div class="type-icon" style="background-color: var(--info);">🎤</div>
+                        <div class="type-info">
+                            <span class="type-label">预订订单</span>
+                            <span class="type-value">包间C</span>
+                        </div>
+                    </div>
+                    <div class="order-time">
+                        <div>刚刚</div>
+                        <div style="color: var(--warning); font-weight: 600;">待接单</div>
+                    </div>
+                </div>
+                <div class="order-location">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/><path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                    </svg>
+                    <span>今晚 20:00</span>
+                    <span>•</span>
+                    <span>6人</span>
+                </div>
+            </div>
+            
+            <div class="order-content">
+                <div class="order-items">
+                    <div class="order-item">
+                        <span class="item-name">包间费用</span>
+                        <span class="item-quantity">¥288</span>
+                    </div>
+                </div>
+                <div class="order-summary">
+                    <span class="summary-label">预付金额</span>
+                    <span class="summary-value">¥100</span>
+                </div>
+            </div>
+            
+            <div class="order-actions">
+                <button class="action-btn" onclick="viewDetail()">查看详情</button>
+                <button class="action-btn primary" onclick="acceptOrder()">接单</button>
+            </div>
+        </div>
+        
+        <!-- 进行中订单 -->
+        <div class="order-card">
+            <div class="order-header">
+                <div class="order-meta">
+                    <div class="order-type">
+                        <div class="type-icon">🍰</div>
+                        <div class="type-info">
+                            <span class="type-label">点单订单</span>
+                            <span class="type-value">VIP2</span>
+                        </div>
+                    </div>
+                    <div class="order-time">
+                        <div>15分钟前</div>
+                        <div style="color: var(--info); font-weight: 600;">制作中</div>
+                    </div>
+                </div>
+                <div class="order-location">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    <span>5楼 VIP2</span>
+                </div>
+            </div>
+            
+            <div class="order-content">
+                <div class="order-items">
+                    <div class="order-item">
+                        <span class="item-name">水果拼盘</span>
+                        <span class="item-quantity">x1</span>
+                    </div>
+                    <div class="order-item">
+                        <span class="item-name">进口红酒</span>
+                        <span class="item-quantity">x1</span>
+                    </div>
+                </div>
+                <div class="order-summary">
+                    <span class="summary-label">合计</span>
+                    <span class="summary-value">¥388</span>
+                </div>
+            </div>
+            
+            <div class="order-actions">
+                <button class="action-btn" onclick="viewDetail()">查看详情</button>
+                <button class="action-btn primary" onclick="completePrep()">准备完成</button>
+            </div>
+        </div>
+        
+        <!-- 已完成订单 -->
+        <div class="order-card">
+            <div class="order-header">
+                <div class="order-meta">
+                    <div class="order-type">
+                        <div class="type-icon" style="background-color: var(--success);">✓</div>
+                        <div class="type-info">
+                            <span class="type-label">点单订单</span>
+                            <span class="type-value">包间B</span>
+                        </div>
+                    </div>
+                    <div class="order-time">
+                        <div>30分钟前</div>
+                        <div style="color: var(--success); font-weight: 600;">已完成</div>
+                    </div>
+                </div>
+                <div class="order-location">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    <span>3楼 包间B</span>
+                </div>
+            </div>
+            
+            <div class="order-content">
+                <div class="order-items">
+                    <div class="order-item">
+                        <span class="item-name">套餐A</span>
+                        <span class="item-quantity">x1</span>
+                    </div>
+                </div>
+                <div class="order-summary">
+                    <span class="summary-label">实收金额</span>
+                    <span class="summary-value">¥168</span>
+                </div>
+            </div>
+            
+            <div class="order-actions">
+                <button class="action-btn" onclick="viewDetail()">查看详情</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部导航 -->
+    <nav class="bottom-nav">
+        <div class="nav-items">
+            <a href="dashboard.html" class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                </svg>
+                <span class="nav-label">概览</span>
+            </a>
+            
+            <a href="#" class="nav-item active">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                </svg>
+                <span class="nav-label">订单</span>
+            </a>
+            
+            <a href="#" class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l-5.5 9h11z"/><circle cx="17.5" cy="17.5" r="4.5"/><path d="M3 13.5h8v8H3z"/>
+                </svg>
+                <span class="nav-label">包间</span>
+            </a>
+            
+            <a href="#" class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+                <span class="nav-label">我的</span>
+            </a>
+        </div>
+    </nav>
+    
+    <!-- 筛选弹窗 -->
+    <div class="filter-modal" id="filterModal">
+        <div class="filter-content">
+            <div class="filter-header">
+                <h3 class="filter-title">筛选订单</h3>
+                <button class="filter-close" onclick="hideFilter()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="filter-section">
+                <h4 class="filter-section-title">订单类型</h4>
+                <div class="filter-options">
+                    <div class="filter-option selected" onclick="toggleFilter(this)">
+                        <div class="filter-checkbox"></div>
+                        <span>点单订单</span>
+                    </div>
+                    <div class="filter-option selected" onclick="toggleFilter(this)">
+                        <div class="filter-checkbox"></div>
+                        <span>预订订单</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="filter-section">
+                <h4 class="filter-section-title">时间范围</h4>
+                <div class="filter-options">
+                    <div class="filter-option selected" onclick="toggleFilter(this)">
+                        <div class="filter-checkbox"></div>
+                        <span>今天</span>
+                    </div>
+                    <div class="filter-option" onclick="toggleFilter(this)">
+                        <div class="filter-checkbox"></div>
+                        <span>昨天</span>
+                    </div>
+                    <div class="filter-option" onclick="toggleFilter(this)">
+                        <div class="filter-checkbox"></div>
+                        <span>本周</span>
+                    </div>
+                    <div class="filter-option" onclick="toggleFilter(this)">
+                        <div class="filter-checkbox"></div>
+                        <span>本月</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="filter-apply" onclick="applyFilter()">应用筛选</button>
+        </div>
+    </div>
+    
+    <script>
+        // 初始化主题
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme-preference');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+        
+        initTheme();
+        
+        // 状态标签切换
+        document.querySelectorAll('.status-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // 这里可以根据状态筛选订单
+                filterOrdersByStatus(this.textContent.trim());
+            });
+        });
+        
+        // 筛选订单
+        function filterOrdersByStatus(status) {
+            console.log('筛选订单状态:', status);
+            // 实际项目中这里会进行订单筛选
+        }
+        
+        // 显示筛选弹窗
+        function showFilter() {
+            document.getElementById('filterModal').classList.add('show');
+        }
+        
+        // 隐藏筛选弹窗
+        function hideFilter() {
+            document.getElementById('filterModal').classList.remove('show');
+        }
+        
+        // 切换筛选选项
+        function toggleFilter(element) {
+            element.classList.toggle('selected');
+        }
+        
+        // 应用筛选
+        function applyFilter() {
+            hideFilter();
+            showToast('筛选条件已应用');
+        }
+        
+        // 接受订单
+        function acceptOrder() {
+            const card = event.target.closest('.order-card');
+            showToast('订单已接受');
+            
+            // 更新订单状态
+            setTimeout(() => {
+                card.classList.remove('urgent');
+                const urgentTag = card.querySelector('.urgent-tag');
+                if (urgentTag) urgentTag.remove();
+                
+                const status = card.querySelector('.order-time div:last-child');
+                status.textContent = '制作中';
+                status.style.color = 'var(--info)';
+                
+                const actions = card.querySelector('.order-actions');
+                actions.innerHTML = `
+                    <button class="action-btn" onclick="viewDetail()">查看详情</button>
+                    <button class="action-btn primary" onclick="completePrep()">准备完成</button>
+                `;
+            }, 500);
+        }
+        
+        // 拒绝订单
+        function rejectOrder() {
+            if (confirm('确定要拒绝此订单吗？')) {
+                const card = event.target.closest('.order-card');
+                card.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => {
+                    card.remove();
+                    showToast('订单已拒绝');
+                }, 300);
+            }
+        }
+        
+        // 查看详情
+        function viewDetail() {
+            console.log('查看订单详情');
+        }
+        
+        // 准备完成
+        function completePrep() {
+            showToast('商品准备完成，等待配送');
+        }
+        
+        // 显示提示
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 24px;
+                font-size: 14px;
+                z-index: 3000;
+                animation: fadeIn 0.3s ease;
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 2000);
+        }
+        
+        // 添加淡出动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // 模拟新订单推送
+        function simulateNewOrder() {
+            const newOrderHTML = `
+                <div class="order-card urgent" style="animation: fadeIn 0.5s ease;">
+                    <span class="urgent-tag">🚨 新订单</span>
+                    <div class="order-header">
+                        <div class="order-meta">
+                            <div class="order-type">
+                                <div class="type-icon">🍷</div>
+                                <div class="type-info">
+                                    <span class="type-label">点单订单</span>
+                                    <span class="type-value">包间D</span>
+                                </div>
+                            </div>
+                            <div class="order-time">
+                                <div>刚刚</div>
+                                <div style="color: var(--error); font-weight: 600;">待接单</div>
+                            </div>
+                        </div>
+                        <div class="order-location">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                            </svg>
+                            <span>4楼 包间D</span>
+                        </div>
+                    </div>
+                    
+                    <div class="order-content">
+                        <div class="order-items">
+                            <div class="order-item">
+                                <span class="item-name">百威啤酒</span>
+                                <span class="item-quantity">x3</span>
+                            </div>
+                        </div>
+                        <div class="order-summary">
+                            <span class="summary-label">合计</span>
+                            <span class="summary-value">¥98</span>
+                        </div>
+                    </div>
+                    
+                    <div class="order-actions">
+                        <button class="action-btn danger" onclick="rejectOrder()">拒绝</button>
+                        <button class="action-btn primary" onclick="acceptOrder()">接单</button>
+                    </div>
+                </div>
+            `;
+            
+            const orderList = document.querySelector('.order-list');
+            orderList.insertAdjacentHTML('afterbegin', newOrderHTML);
+            
+            // 更新订单数量
+            const orderCount = document.querySelector('.order-count');
+            orderCount.textContent = parseInt(orderCount.textContent) + 1;
+            
+            // 播放提示音（实际项目中）
+            showToast('🔔 收到新订单！');
+        }
+        
+        // 每60秒模拟一个新订单
+        setInterval(simulateNewOrder, 60000);
+    </script>
+</body>
+</html>

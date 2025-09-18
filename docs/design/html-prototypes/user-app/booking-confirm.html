@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>预订确认 - 星光KTV</title>
+    <style>
+        /* 复用设计系统变量 */
+        :root {
+            /* 品牌主色 - 活力橙 */
+            --primary: #ff6b35;
+            --primary-light: #ff8c5a;
+            --primary-dark: #e55a2b;
+            
+            /* 辅助色 - 深蓝 */
+            --secondary: #2e3b5a;
+            --secondary-light: #3a4a6b;
+            --secondary-dark: #1e2a3e;
+            
+            /* 功能色 */
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+            
+            /* 中性色 */
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            /* 背景色 */
+            --background-primary: #ffffff;
+            --background-secondary: #f9fafb;
+            --surface: #ffffff;
+            
+            /* 文字颜色 */
+            --text-primary: var(--gray-900);
+            --text-secondary: var(--gray-600);
+            
+            /* 间距 */
+            --spacing-1: 4px;
+            --spacing-2: 8px;
+            --spacing-3: 12px;
+            --spacing-4: 16px;
+            --spacing-5: 20px;
+            --spacing-6: 24px;
+            --spacing-8: 32px;
+            --spacing-10: 40px;
+            
+            /* 圆角 - 更圆润的设计 */
+            --radius-sm: 8px;
+            --radius-base: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-2xl: 24px;
+            --radius-full: 50%;
+            --radius-meituan-card: 14px;
+            --radius-meituan-button: 20px;
+            
+            /* 阴影 */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-base: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+            --shadow-xl: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* 暗黑模式 */
+        [data-theme="dark"] {
+            --primary: #ffb085;
+            --primary-light: #ffc299;
+            --primary-dark: #ff9e71;
+            
+            --secondary: #8b9dc3;
+            --secondary-light: #a0b1d6;
+            --secondary-dark: #7689b0;
+            
+            --success: #34d399;
+            --warning: #fbbf24;
+            --error: #f87171;
+            --info: #60a5fa;
+            
+            --background-primary: #0f1419;
+            --background-secondary: #1c2128;
+            --surface: #1c2128;
+            
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            
+            --gray-50: #0f1419;
+            --gray-100: #1c2128;
+            --gray-200: #2d3748;
+            --gray-300: #4a5568;
+            --gray-400: #718096;
+            --gray-500: #a0aec0;
+            --gray-600: #cbd5e0;
+            --gray-700: #e2e8f0;
+            --gray-800: #f7fafc;
+            --gray-900: #ffffff;
+            
+            --shadow-base: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* 基础样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            font-size: 14px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background-color: var(--background-secondary);
+            color: var(--text-primary);
+            line-height: 1.4;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        /* 顶部导航栏 */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background-color: var(--surface);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--spacing-3) var(--spacing-4);
+            height: 56px;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+        }
+        
+        .back-btn {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .back-btn:active {
+            background-color: var(--gray-100);
+            transform: scale(0.95);
+        }
+        
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        /* 主内容区域 */
+        .main-content {
+            margin-top: 56px;
+            padding-bottom: 100px;
+        }
+        
+        /* 包间信息卡片 */
+        .room-info-card {
+            background-color: var(--surface);
+            margin-bottom: var(--spacing-3);
+            padding: var(--spacing-4);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-4);
+        }
+        
+        .room-image {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius-base);
+            object-fit: cover;
+            background-color: var(--gray-200);
+        }
+        
+        .room-details {
+            flex: 1;
+        }
+        
+        .room-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-1);
+        }
+        
+        .room-type {
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+        }
+        
+        /* 预订信息表单 */
+        .booking-form {
+            background-color: var(--surface);
+            padding: var(--spacing-4);
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .form-section {
+            margin-bottom: var(--spacing-5);
+        }
+        
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .form-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--spacing-3) 0;
+            border-bottom: 1px solid var(--gray-100);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .form-item:last-child {
+            border-bottom: none;
+        }
+        
+        .form-item:active {
+            background-color: var(--gray-50);
+        }
+        
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+            font-size: 16px;
+            color: var(--text-primary);
+        }
+        
+        .form-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--primary);
+        }
+        
+        .form-value {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+            font-size: 16px;
+            color: var(--text-primary);
+        }
+        
+        .arrow-icon {
+            width: 20px;
+            height: 20px;
+            color: var(--gray-400);
+        }
+        
+        /* 费用明细 */
+        .fee-section {
+            background-color: var(--surface);
+            padding: var(--spacing-4);
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-4);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+        }
+        
+        .fee-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-2) 0;
+            font-size: 14px;
+        }
+        
+        .fee-label {
+            color: var(--text-secondary);
+        }
+        
+        .fee-value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .fee-divider {
+            border-top: 1px solid var(--gray-200);
+            margin: var(--spacing-3) 0;
+        }
+        
+        .total-fee {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .total-label {
+            color: var(--text-primary);
+        }
+        
+        .total-value {
+            color: var(--primary);
+        }
+        
+        /* 优惠信息 */
+        .discount-section {
+            background-color: var(--surface);
+            padding: var(--spacing-4);
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .discount-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-3) 0;
+            border-bottom: 1px solid var(--gray-100);
+            cursor: pointer;
+        }
+        
+        .discount-item:last-child {
+            border-bottom: none;
+        }
+        
+        .discount-item:active {
+            background-color: var(--gray-50);
+        }
+        
+        .discount-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+        }
+        
+        .discount-icon {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .discount-text {
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        
+        .discount-amount {
+            font-size: 14px;
+            color: var(--success);
+            font-weight: 500;
+        }
+        
+        /* 底部操作栏 */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--surface);
+            border-top: 1px solid var(--gray-200);
+            padding: var(--spacing-3) var(--spacing-4);
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--spacing-4);
+        }
+        
+        .payment-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .payment-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .payment-amount {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-3);
+        }
+        
+        .btn {
+            padding: var(--spacing-3) var(--spacing-5);
+            border: none;
+            border-radius: var(--radius-meituan-button);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-secondary {
+            background-color: var(--gray-100);
+            color: var(--text-primary);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--gray-200);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        /* 选择器弹窗 */
+        .picker-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .picker-overlay.show {
+            display: block;
+        }
+        
+        .picker-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--surface);
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+            padding: var(--spacing-4);
+            max-height: 60vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+        
+        .picker-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-4);
+        }
+        
+        .picker-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .picker-close {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+        }
+        
+        .picker-close:active {
+            background-color: var(--gray-100);
+        }
+        
+        /* 日期选择器 */
+        .date-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: var(--spacing-2);
+            margin-top: var(--spacing-4);
+        }
+        
+        .date-item {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-base);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        
+        .date-item:hover {
+            background-color: var(--gray-100);
+        }
+        
+        .date-item.selected {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .date-item.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .date-day {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .date-weekday {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        /* 动画 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+        
+        /* 响应式设计 */
+        @media (min-width: 768px) {
+            .main-content {
+                max-width: 600px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            
+            .bottom-bar {
+                max-width: 600px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <button class="back-btn" onclick="window.history.back()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                    </svg>
+                </button>
+                <h1 class="page-title">预订确认</h1>
+            </div>
+        </div>
+    </header>
+    
+    <!-- 主内容区域 -->
+    <div class="main-content">
+        <!-- 包间信息 -->
+        <div class="room-info-card">
+            <img src="https://via.placeholder.com/80x80/ff6b35/ffffff?text=包间A" alt="包间A" class="room-image">
+            <div class="room-details">
+                <h2 class="room-name">📹 包间A</h2>
+                <div class="room-type">
+                    <span>小型包间(2-4人)</span>
+                    <span>•</span>
+                    <span>星光KTV</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 预订信息 -->
+        <div class="booking-form">
+            <div class="form-section">
+                <div class="form-item" onclick="showDatePicker()">
+                    <div class="form-label">
+                        <svg class="form-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
+                        </svg>
+                        <span>日期</span>
+                    </div>
+                    <div class="form-value">
+                        <span id="selected-date">今天 2025/09/19</span>
+                        <svg class="arrow-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="form-item" onclick="showTimePicker()">
+                    <div class="form-label">
+                        <svg class="form-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/><path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                        </svg>
+                        <span>时间</span>
+                    </div>
+                    <div class="form-value">
+                        <span id="selected-time">14:00 开始使用</span>
+                        <svg class="arrow-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="form-item" onclick="showPeoplePicker()">
+                    <div class="form-label">
+                        <svg class="form-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                        </svg>
+                        <span>人数</span>
+                    </div>
+                    <div class="form-value">
+                        <span id="selected-people">3人</span>
+                        <svg class="arrow-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 费用明细 -->
+        <div class="fee-section">
+            <h3 class="section-title">
+                💰 费用明细
+            </h3>
+            <div class="fee-item">
+                <span class="fee-label">包间费用</span>
+                <span class="fee-value">¥188</span>
+            </div>
+            <div class="fee-item">
+                <span class="fee-label">服务费</span>
+                <span class="fee-value">¥20</span>
+            </div>
+            <div class="fee-divider"></div>
+            <div class="fee-item">
+                <span class="fee-label">小计</span>
+                <span class="fee-value">¥208</span>
+            </div>
+        </div>
+        
+        <!-- 优惠信息 -->
+        <div class="discount-section">
+            <h3 class="section-title">
+                🎁 优惠信息
+            </h3>
+            <div class="discount-item" onclick="showPointsDialog()">
+                <div class="discount-info">
+                    <span class="discount-icon">💎</span>
+                    <span class="discount-text">积分抵扣 (150积分)</span>
+                </div>
+                <div class="form-value">
+                    <span class="discount-amount">-¥15</span>
+                    <svg class="arrow-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="discount-item" onclick="showCouponDialog()">
+                <div class="discount-info">
+                    <span class="discount-icon">🎫</span>
+                    <span class="discount-text">优惠券</span>
+                </div>
+                <div class="form-value">
+                    <span class="discount-amount">-¥20</span>
+                    <svg class="arrow-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部操作栏 -->
+    <div class="bottom-bar">
+        <div class="payment-info">
+            <span class="payment-label">实付</span>
+            <span class="payment-amount">¥173</span>
+        </div>
+        <div class="action-buttons">
+            <button class="btn btn-secondary" onclick="saveForLater()">稍后预订</button>
+            <button class="btn btn-primary" onclick="confirmBooking()">立即预订</button>
+        </div>
+    </div>
+    
+    <!-- 日期选择器弹窗 -->
+    <div class="picker-overlay" id="datePicker">
+        <div class="picker-content">
+            <div class="picker-header">
+                <h3 class="picker-title">选择日期</h3>
+                <button class="picker-close" onclick="hidePicker('datePicker')">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="date-grid">
+                <div class="date-item selected" onclick="selectDate(this, '今天')">
+                    <div class="date-day">19</div>
+                    <div class="date-weekday">今天</div>
+                </div>
+                <div class="date-item" onclick="selectDate(this, '明天')">
+                    <div class="date-day">20</div>
+                    <div class="date-weekday">明天</div>
+                </div>
+                <div class="date-item" onclick="selectDate(this, '后天')">
+                    <div class="date-day">21</div>
+                    <div class="date-weekday">后天</div>
+                </div>
+                <div class="date-item" onclick="selectDate(this, '周日')">
+                    <div class="date-day">22</div>
+                    <div class="date-weekday">周日</div>
+                </div>
+                <div class="date-item" onclick="selectDate(this, '周一')">
+                    <div class="date-day">23</div>
+                    <div class="date-weekday">周一</div>
+                </div>
+                <div class="date-item" onclick="selectDate(this, '周二')">
+                    <div class="date-day">24</div>
+                    <div class="date-weekday">周二</div>
+                </div>
+                <div class="date-item" onclick="selectDate(this, '周三')">
+                    <div class="date-day">25</div>
+                    <div class="date-weekday">周三</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 初始化主题
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme-preference');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+        
+        initTheme();
+        
+        // 显示选择器
+        function showDatePicker() {
+            document.getElementById('datePicker').classList.add('show');
+        }
+        
+        function showTimePicker() {
+            alert('显示时间选择器');
+        }
+        
+        function showPeoplePicker() {
+            alert('显示人数选择器');
+        }
+        
+        function showPointsDialog() {
+            alert('显示积分使用对话框');
+        }
+        
+        function showCouponDialog() {
+            alert('显示优惠券选择对话框');
+        }
+        
+        // 隐藏选择器
+        function hidePicker(pickerId) {
+            document.getElementById(pickerId).classList.remove('show');
+        }
+        
+        // 选择日期
+        function selectDate(element, dateText) {
+            // 移除其他选中状态
+            document.querySelectorAll('.date-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // 添加选中状态
+            element.classList.add('selected');
+            
+            // 更新显示文本
+            const day = element.querySelector('.date-day').textContent;
+            document.getElementById('selected-date').textContent = dateText + ' 2025/09/' + day;
+            
+            // 关闭选择器
+            hidePicker('datePicker');
+        }
+        
+        // 点击遮罩关闭
+        document.getElementById('datePicker').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hidePicker('datePicker');
+            }
+        });
+        
+        // 稍后预订
+        function saveForLater() {
+            alert('预订信息已保存，您可以稍后继续');
+        }
+        
+        // 确认预订
+        function confirmBooking() {
+            console.log('确认预订，跳转到支付页面');
+            alert('预订成功！即将跳转到支付页面...');
+        }
+    </script>
+</body>
+</html>

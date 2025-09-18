@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>数据看板 - 商户端</title>
+    <style>
+        /* 设计系统变量 */
+        :root {
+            /* 品牌色 */
+            --primary: #FF6B35;
+            --primary-light: #FF8F66;
+            --primary-dark: #E5602F;
+            
+            /* 功能色 */
+            --success: #52C41A;
+            --warning: #FAAD14;
+            --error: #F5222D;
+            --info: #1890FF;
+            
+            /* 中性色 */
+            --gray-1: #FFFFFF;
+            --gray-2: #FAFAFA;
+            --gray-3: #F5F5F5;
+            --gray-4: #E8E8E8;
+            --gray-5: #D9D9D9;
+            --gray-6: #BFBFBF;
+            --gray-7: #8C8C8C;
+            --gray-8: #595959;
+            --gray-9: #262626;
+            --gray-10: #000000;
+            
+            /* 间距 */
+            --spacing-1: 4px;
+            --spacing-2: 8px;
+            --spacing-3: 12px;
+            --spacing-4: 16px;
+            --spacing-5: 20px;
+            --spacing-6: 24px;
+            --spacing-8: 32px;
+            --spacing-10: 40px;
+            
+            /* 圆角 */
+            --radius-sm: 4px;
+            --radius-base: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-2xl: 24px;
+            --radius-full: 9999px;
+            
+            /* 阴影 */
+            --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-2: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-3: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+            --shadow-primary: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+        
+        /* 基础样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: var(--gray-9);
+            background-color: var(--gray-2);
+            overflow-x: hidden;
+        }
+        
+        /* 容器布局 */
+        .app-container {
+            min-height: 100vh;
+            max-width: 430px;
+            margin: 0 auto;
+            background-color: var(--gray-2);
+            position: relative;
+            padding-bottom: 80px;
+        }
+        
+        /* 顶部导航 */
+        .header {
+            background-color: var(--gray-1);
+            padding: env(safe-area-inset-top) var(--spacing-4) var(--spacing-4);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-1);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .store-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+        }
+        
+        .store-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-base);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--gray-1);
+        }
+        
+        .store-details {
+            flex: 1;
+        }
+        
+        .store-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-9);
+        }
+        
+        .store-status {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+            font-size: 13px;
+            color: var(--success);
+        }
+        
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--success);
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: var(--spacing-3);
+        }
+        
+        .header-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--gray-3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            position: relative;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 8px;
+            height: 8px;
+            background-color: var(--error);
+            border-radius: 50%;
+            border: 2px solid var(--gray-1);
+        }
+        
+        /* 日期选择器 */
+        .date-picker {
+            display: flex;
+            gap: var(--spacing-2);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: var(--spacing-2);
+        }
+        
+        .date-picker::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .date-chip {
+            flex-shrink: 0;
+            padding: var(--spacing-2) var(--spacing-4);
+            border-radius: var(--radius-2xl);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background-color: var(--gray-3);
+            color: var(--gray-8);
+            border: 1px solid transparent;
+        }
+        
+        .date-chip.active {
+            background-color: var(--primary);
+            color: var(--gray-1);
+            box-shadow: var(--shadow-primary);
+        }
+        
+        /* 核心指标卡片 */
+        .metrics-overview {
+            padding: var(--spacing-4);
+        }
+        
+        .metrics-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-5);
+            margin-bottom: var(--spacing-4);
+            box-shadow: var(--shadow-primary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .metrics-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+        }
+        
+        .metrics-content {
+            position: relative;
+            z-index: 1;
+            color: var(--gray-1);
+        }
+        
+        .metrics-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: var(--spacing-3);
+            opacity: 0.9;
+        }
+        
+        .metrics-value {
+            font-size: 36px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: var(--spacing-2);
+        }
+        
+        .metrics-trend {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+            font-size: 14px;
+        }
+        
+        .trend-icon {
+            display: flex;
+            align-items: center;
+        }
+        
+        .trend-up {
+            color: #52FF7A;
+        }
+        
+        .trend-down {
+            color: #FF5252;
+        }
+        
+        /* 数据网格 */
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-3);
+            padding: 0 var(--spacing-4) var(--spacing-4);
+        }
+        
+        .data-card {
+            background-color: var(--gray-1);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-4);
+            box-shadow: var(--shadow-2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .data-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-3);
+        }
+        
+        .data-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .data-label {
+            font-size: 14px;
+            color: var(--gray-7);
+        }
+        
+        .data-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        .icon-orders {
+            background-color: rgba(24, 144, 255, 0.1);
+            color: var(--info);
+        }
+        
+        .icon-revenue {
+            background-color: rgba(82, 196, 26, 0.1);
+            color: var(--success);
+        }
+        
+        .icon-customers {
+            background-color: rgba(250, 173, 20, 0.1);
+            color: var(--warning);
+        }
+        
+        .icon-rate {
+            background-color: rgba(255, 107, 53, 0.1);
+            color: var(--primary);
+        }
+        
+        .data-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-9);
+            margin-bottom: var(--spacing-1);
+        }
+        
+        .data-change {
+            font-size: 12px;
+            color: var(--gray-7);
+        }
+        
+        .change-positive {
+            color: var(--success);
+        }
+        
+        .change-negative {
+            color: var(--error);
+        }
+        
+        /* 图表区域 */
+        .chart-section {
+            margin: var(--spacing-4) 0;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 var(--spacing-4);
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-9);
+        }
+        
+        .section-action {
+            font-size: 14px;
+            color: var(--primary);
+            cursor: pointer;
+        }
+        
+        .chart-container {
+            background-color: var(--gray-1);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-4);
+            margin: 0 var(--spacing-4);
+            box-shadow: var(--shadow-2);
+        }
+        
+        .chart-placeholder {
+            height: 200px;
+            background: linear-gradient(135deg, var(--gray-3) 0%, var(--gray-4) 100%);
+            border-radius: var(--radius-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-7);
+            font-size: 14px;
+        }
+        
+        /* 包间状态 */
+        .room-status-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-3);
+            padding: var(--spacing-4);
+        }
+        
+        .room-status-card {
+            background-color: var(--gray-1);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-3);
+            text-align: center;
+            box-shadow: var(--shadow-2);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .room-status-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-3);
+        }
+        
+        .room-number {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-2);
+        }
+        
+        .room-state {
+            padding: var(--spacing-1) var(--spacing-3);
+            border-radius: var(--radius-2xl);
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .state-available {
+            background-color: rgba(82, 196, 26, 0.1);
+            color: var(--success);
+        }
+        
+        .state-occupied {
+            background-color: rgba(255, 107, 53, 0.1);
+            color: var(--primary);
+        }
+        
+        .state-cleaning {
+            background-color: rgba(24, 144, 255, 0.1);
+            color: var(--info);
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 430px;
+            background-color: var(--gray-1);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            padding: var(--spacing-2) 0 env(safe-area-inset-bottom);
+            z-index: 100;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-1);
+            padding: var(--spacing-2) 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .nav-item.active {
+            color: var(--primary);
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            transition: transform 0.2s ease;
+        }
+        
+        .nav-item:active .nav-icon {
+            transform: scale(0.9);
+        }
+        
+        .nav-label {
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 375px) {
+            .metrics-value {
+                font-size: 32px;
+            }
+            
+            .data-grid {
+                gap: var(--spacing-2);
+            }
+            
+            .data-value {
+                font-size: 20px;
+            }
+            
+            .room-status-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航 -->
+        <header class="header">
+            <div class="header-content">
+                <div class="store-info">
+                    <div class="store-avatar">🎤</div>
+                    <div class="store-details">
+                        <h1 class="store-name">星光KTV（三里屯店）</h1>
+                        <div class="store-status">
+                            <span class="status-dot"></span>
+                            <span>营业中</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <div class="header-icon">
+                        🔔
+                        <span class="notification-badge"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 日期选择 -->
+            <div class="date-picker">
+                <div class="date-chip active">今日</div>
+                <div class="date-chip">昨日</div>
+                <div class="date-chip">本周</div>
+                <div class="date-chip">本月</div>
+                <div class="date-chip">自定义</div>
+            </div>
+        </header>
+        
+        <!-- 核心指标 -->
+        <div class="metrics-overview">
+            <div class="metrics-card">
+                <div class="metrics-content">
+                    <h2 class="metrics-title">今日营业额</h2>
+                    <div class="metrics-value">¥28,658</div>
+                    <div class="metrics-trend">
+                        <span class="trend-icon trend-up">↑</span>
+                        <span>较昨日增长 15.2%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 数据网格 -->
+        <div class="data-grid">
+            <div class="data-card">
+                <div class="data-card-header">
+                    <span class="data-label">订单数</span>
+                    <div class="data-icon icon-orders">📋</div>
+                </div>
+                <div class="data-value">156</div>
+                <div class="data-change change-positive">↑ 12.3%</div>
+            </div>
+            
+            <div class="data-card">
+                <div class="data-card-header">
+                    <span class="data-label">客单价</span>
+                    <div class="data-icon icon-revenue">💰</div>
+                </div>
+                <div class="data-value">¥184</div>
+                <div class="data-change change-positive">↑ 5.6%</div>
+            </div>
+            
+            <div class="data-card">
+                <div class="data-card-header">
+                    <span class="data-label">新客户</span>
+                    <div class="data-icon icon-customers">👥</div>
+                </div>
+                <div class="data-value">43</div>
+                <div class="data-change change-negative">↓ 3.2%</div>
+            </div>
+            
+            <div class="data-card">
+                <div class="data-card-header">
+                    <span class="data-label">使用率</span>
+                    <div class="data-icon icon-rate">📊</div>
+                </div>
+                <div class="data-value">87%</div>
+                <div class="data-change change-positive">↑ 8.1%</div>
+            </div>
+        </div>
+        
+        <!-- 营收趋势图表 -->
+        <div class="chart-section">
+            <div class="section-header">
+                <h3 class="section-title">营收趋势</h3>
+                <span class="section-action">查看详情 →</span>
+            </div>
+            <div class="chart-container">
+                <div class="chart-placeholder">
+                    营收趋势图表区域
+                </div>
+            </div>
+        </div>
+        
+        <!-- 包间状态 -->
+        <div class="chart-section">
+            <div class="section-header">
+                <h3 class="section-title">包间状态</h3>
+                <span class="section-action">管理包间 →</span>
+            </div>
+            <div class="room-status-grid">
+                <div class="room-status-card">
+                    <div class="room-number">A01</div>
+                    <div class="room-state state-occupied">使用中</div>
+                </div>
+                <div class="room-status-card">
+                    <div class="room-number">A02</div>
+                    <div class="room-state state-available">空闲</div>
+                </div>
+                <div class="room-status-card">
+                    <div class="room-number">A03</div>
+                    <div class="room-state state-cleaning">清洁中</div>
+                </div>
+                <div class="room-status-card">
+                    <div class="room-number">B01</div>
+                    <div class="room-state state-occupied">使用中</div>
+                </div>
+                <div class="room-status-card">
+                    <div class="room-number">B02</div>
+                    <div class="room-state state-available">空闲</div>
+                </div>
+                <div class="room-status-card">
+                    <div class="room-number">B03</div>
+                    <div class="room-state state-occupied">使用中</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部导航 -->
+        <nav class="bottom-nav">
+            <div class="nav-container">
+                <div class="nav-item active">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">数据</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-label">订单</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-label">包间</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">🍽️</span>
+                    <span class="nav-label">菜单</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label">设置</span>
+                </div>
+            </div>
+        </nav>
+    </div>
+    
+    <script>
+        // 日期选择器
+        const dateChips = document.querySelectorAll('.date-chip');
+        dateChips.forEach(chip => {
+            chip.addEventListener('click', function() {
+                dateChips.forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                
+                // 触发数据更新
+                const period = this.textContent;
+                console.log('切换到:', period);
+                updateDashboard(period);
+            });
+        });
+        
+        // 数据卡片点击
+        const dataCards = document.querySelectorAll('.data-card');
+        dataCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const label = this.querySelector('.data-label').textContent;
+                console.log('查看详情:', label);
+            });
+        });
+        
+        // 包间状态卡片点击
+        const roomCards = document.querySelectorAll('.room-status-card');
+        roomCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const roomNumber = this.querySelector('.room-number').textContent;
+                console.log('查看包间:', roomNumber);
+            });
+        });
+        
+        // 底部导航
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.addEventListener('click', function() {
+                navItems.forEach(n => n.classList.remove('active'));
+                this.classList.add('active');
+                
+                const label = this.querySelector('.nav-label').textContent;
+                console.log('切换到:', label);
+            });
+        });
+        
+        // 模拟数据更新
+        function updateDashboard(period) {
+            // 模拟加载动画
+            const cards = document.querySelectorAll('.data-value');
+            cards.forEach(card => {
+                card.style.opacity = '0.5';
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    // 这里可以更新实际数据
+                }, 300);
+            });
+        }
+        
+        // 下拉刷新
+        let startY = 0;
+        let isPulling = false;
+        
+        document.addEventListener('touchstart', (e) => {
+            if (window.scrollY === 0) {
+                startY = e.touches[0].pageY;
+                isPulling = true;
+            }
+        });
+        
+        document.addEventListener('touchmove', (e) => {
+            if (!isPulling) return;
+            
+            const currentY = e.touches[0].pageY;
+            const diff = currentY - startY;
+            
+            if (diff > 0 && window.scrollY === 0) {
+                e.preventDefault();
+                // 添加下拉效果
+                if (diff > 50) {
+                    document.querySelector('.metrics-card').style.transform = `translateY(${Math.min(diff * 0.3, 30)}px)`;
+                }
+            }
+        });
+        
+        document.addEventListener('touchend', () => {
+            if (!isPulling) return;
+            isPulling = false;
+            
+            // 恢复位置
+            document.querySelector('.metrics-card').style.transform = '';
+            
+            // 触发刷新
+            console.log('刷新数据');
+            updateDashboard('今日');
+        });
+    </script>
+</body>
+</html>

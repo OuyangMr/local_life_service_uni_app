@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>星光KTV - 店铺详情</title>
+    <style>
+        /* 复用首页的设计系统变量 */
+        :root {
+            /* 品牌主色 - 活力橙 */
+            --primary: #ff6b35;
+            --primary-light: #ff8c5a;
+            --primary-dark: #e55a2b;
+            
+            /* 辅助色 - 深蓝 */
+            --secondary: #2e3b5a;
+            --secondary-light: #3a4a6b;
+            --secondary-dark: #1e2a3e;
+            
+            /* 功能色 */
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+            
+            /* 中性色 */
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            /* 背景色 */
+            --background-primary: #ffffff;
+            --background-secondary: #f9fafb;
+            --surface: #ffffff;
+            
+            /* 文字颜色 */
+            --text-primary: var(--gray-900);
+            --text-secondary: var(--gray-600);
+            
+            /* 间距 */
+            --spacing-1: 4px;
+            --spacing-2: 8px;
+            --spacing-3: 12px;
+            --spacing-4: 16px;
+            --spacing-5: 20px;
+            --spacing-6: 24px;
+            --spacing-8: 32px;
+            --spacing-10: 40px;
+            
+            /* 圆角 - 更圆润的设计 */
+            --radius-sm: 8px;
+            --radius-base: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-2xl: 24px;
+            --radius-full: 50%;
+            --radius-meituan-card: 14px;
+            --radius-meituan-button: 20px;
+            
+            /* 阴影 */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-base: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+            --shadow-xl: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* 暗黑模式 */
+        [data-theme="dark"] {
+            --primary: #ffb085;
+            --primary-light: #ffc299;
+            --primary-dark: #ff9e71;
+            
+            --secondary: #8b9dc3;
+            --secondary-light: #a0b1d6;
+            --secondary-dark: #7689b0;
+            
+            --success: #34d399;
+            --warning: #fbbf24;
+            --error: #f87171;
+            --info: #60a5fa;
+            
+            --background-primary: #0f1419;
+            --background-secondary: #1c2128;
+            --surface: #1c2128;
+            
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            
+            --gray-50: #0f1419;
+            --gray-100: #1c2128;
+            --gray-200: #2d3748;
+            --gray-300: #4a5568;
+            --gray-400: #718096;
+            --gray-500: #a0aec0;
+            --gray-600: #cbd5e0;
+            --gray-700: #e2e8f0;
+            --gray-800: #f7fafc;
+            --gray-900: #ffffff;
+            
+            --shadow-base: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* 基础样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            font-size: 14px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background-color: var(--background-secondary);
+            color: var(--text-primary);
+            line-height: 1.4;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        /* 顶部导航栏 */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background-color: var(--surface);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--spacing-3) var(--spacing-4);
+            height: 56px;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+        }
+        
+        .back-btn {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .back-btn:active {
+            background-color: var(--gray-100);
+            transform: scale(0.95);
+        }
+        
+        .store-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: var(--spacing-2);
+        }
+        
+        .icon-btn {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .icon-btn:active {
+            background-color: var(--gray-100);
+            transform: scale(0.95);
+        }
+        
+        /* 视频展示区 */
+        .video-section {
+            margin-top: 56px;
+            position: relative;
+            width: 100%;
+            height: 240px;
+            background-color: #000;
+            overflow: hidden;
+        }
+        
+        .store-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .play-btn {
+            width: 64px;
+            height: 64px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .play-btn:hover {
+            transform: scale(1.1);
+            background-color: white;
+        }
+        
+        .play-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* 基础信息 */
+        .store-basic-info {
+            background-color: var(--surface);
+            padding: var(--spacing-4);
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-3);
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .info-icon {
+            width: 20px;
+            height: 20px;
+            color: var(--primary);
+        }
+        
+        /* 包间选择区域 */
+        .room-section {
+            background-color: var(--surface);
+            padding: var(--spacing-4);
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-4);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+        }
+        
+        .available-count {
+            font-size: 14px;
+            color: var(--success);
+            font-weight: normal;
+        }
+        
+        /* 包间类型筛选 */
+        .room-filters {
+            display: flex;
+            gap: var(--spacing-2);
+            margin-bottom: var(--spacing-4);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        .room-filters::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .filter-chip {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+            padding: var(--spacing-2) var(--spacing-3);
+            background-color: var(--gray-100);
+            border: 1px solid transparent;
+            border-radius: var(--radius-meituan-button);
+            font-size: 14px;
+            color: var(--text-primary);
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        
+        .filter-chip.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .filter-chip:active {
+            transform: scale(0.95);
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: var(--radius-full);
+        }
+        
+        .status-indicator.available {
+            background-color: var(--success);
+        }
+        
+        .status-indicator.occupied {
+            background-color: var(--error);
+        }
+        
+        .status-indicator.maintenance {
+            background-color: var(--warning);
+        }
+        
+        /* 包间网格 */
+        .room-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-3);
+        }
+        
+        .room-card {
+            background-color: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-4);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .room-card.available {
+            border-color: var(--success);
+            background-color: rgba(16, 185, 129, 0.05);
+        }
+        
+        .room-card.occupied {
+            border-color: var(--error);
+            background-color: rgba(239, 68, 68, 0.05);
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .room-card:hover:not(.occupied) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .room-card:active:not(.occupied) {
+            transform: scale(0.98);
+        }
+        
+        .room-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .room-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .room-status {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+            font-size: 12px;
+            padding: var(--spacing-1) var(--spacing-2);
+            border-radius: var(--radius-sm);
+        }
+        
+        .room-status.available {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .room-status.occupied {
+            background-color: var(--error);
+            color: white;
+        }
+        
+        .room-details {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-2);
+        }
+        
+        .room-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .room-price {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-top: var(--spacing-2);
+        }
+        
+        /* 设施标签 */
+        .facility-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-2);
+            margin-top: var(--spacing-3);
+        }
+        
+        .facility-tag {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+            padding: var(--spacing-1) var(--spacing-2);
+            background-color: var(--gray-100);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        /* 底部操作栏 */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--surface);
+            border-top: 1px solid var(--gray-200);
+            padding: var(--spacing-3) var(--spacing-4);
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+        
+        .bottom-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--spacing-4);
+        }
+        
+        .price-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .price-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .price-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .book-btn {
+            flex: 1;
+            padding: var(--spacing-3) var(--spacing-6);
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-meituan-button);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .book-btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .book-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .book-btn:disabled {
+            background-color: var(--gray-300);
+            cursor: not-allowed;
+        }
+        
+        /* 加载动画 */
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+        
+        /* 响应式设计 */
+        @media (min-width: 768px) {
+            .room-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .video-section {
+                height: 360px;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .room-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .video-section {
+                height: 480px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <button class="back-btn" onclick="window.history.back()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                    </svg>
+                </button>
+                <h1 class="store-title">星光KTV（望京店）</h1>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                    </svg>
+                </button>
+                <button class="icon-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- 视频展示区 -->
+    <section class="video-section">
+        <img src="https://via.placeholder.com/800x450/ff6b35/ffffff?text=店铺环境视频" alt="店铺环境" class="store-video">
+        <div class="video-overlay">
+            <div class="play-btn">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="var(--primary)">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 基础信息 -->
+    <section class="store-basic-info">
+        <div class="info-grid">
+            <div class="info-item">
+                <svg class="info-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                </svg>
+                <span>4.8分 (2.3k评价)</span>
+            </div>
+            <div class="info-item">
+                <svg class="info-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                </svg>
+                <span>朝阳区望京SOHO T1</span>
+            </div>
+            <div class="info-item">
+                <svg class="info-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                </svg>
+                <span>010-88888888</span>
+            </div>
+            <div class="info-item">
+                <svg class="info-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/><path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                </svg>
+                <span>营业中 10:00-02:00</span>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 包间选择 -->
+    <section class="room-section">
+        <div class="section-header">
+            <h2 class="section-title">
+                💡包间选择
+                <span class="available-count">(12间可预订)</span>
+            </h2>
+        </div>
+        
+        <!-- 包间类型筛选 -->
+        <div class="room-filters">
+            <div class="filter-chip active">
+                <span class="status-indicator available"></span>
+                <span>全部包间</span>
+            </div>
+            <div class="filter-chip">
+                <span class="status-indicator available"></span>
+                <span>小型包间(2-4人)</span>
+            </div>
+            <div class="filter-chip">
+                <span class="status-indicator maintenance"></span>
+                <span>中型包间(5-8人)</span>
+            </div>
+            <div class="filter-chip">
+                <span class="status-indicator occupied"></span>
+                <span>大型包间(10+人)</span>
+            </div>
+        </div>
+        
+        <!-- 包间网格 -->
+        <div class="room-grid">
+            <!-- 包间卡片 1 - 可预订 -->
+            <div class="room-card available">
+                <div class="room-header">
+                    <h3 class="room-name">包间A</h3>
+                    <span class="room-status available">可订</span>
+                </div>
+                <div class="room-details">
+                    <div class="room-info">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                        <span>2-4人</span>
+                    </div>
+                    <div class="facility-tags">
+                        <span class="facility-tag">🎤 双麦</span>
+                        <span class="facility-tag">📺 65寸屏</span>
+                    </div>
+                    <div class="room-price">¥188/时</div>
+                </div>
+            </div>
+            
+            <!-- 包间卡片 2 - 使用中 -->
+            <div class="room-card occupied">
+                <div class="room-header">
+                    <h3 class="room-name">包间B</h3>
+                    <span class="room-status occupied">使用中</span>
+                </div>
+                <div class="room-details">
+                    <div class="room-info">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                        <span>2-4人</span>
+                    </div>
+                    <div class="facility-tags">
+                        <span class="facility-tag">🎤 双麦</span>
+                        <span class="facility-tag">📺 55寸屏</span>
+                    </div>
+                    <div class="room-price">¥168/时</div>
+                </div>
+            </div>
+            
+            <!-- 包间卡片 3 - 可预订 -->
+            <div class="room-card available">
+                <div class="room-header">
+                    <h3 class="room-name">包间C</h3>
+                    <span class="room-status available">可订</span>
+                </div>
+                <div class="room-details">
+                    <div class="room-info">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                        <span>5-8人</span>
+                    </div>
+                    <div class="facility-tags">
+                        <span class="facility-tag">🎤 四麦</span>
+                        <span class="facility-tag">📺 75寸屏</span>
+                        <span class="facility-tag">🎮 PS5</span>
+                    </div>
+                    <div class="room-price">¥288/时</div>
+                </div>
+            </div>
+            
+            <!-- 包间卡片 4 - 可预订 -->
+            <div class="room-card available">
+                <div class="room-header">
+                    <h3 class="room-name">VIP包间</h3>
+                    <span class="room-status available">可订</span>
+                </div>
+                <div class="room-details">
+                    <div class="room-info">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                        <span>10-15人</span>
+                    </div>
+                    <div class="facility-tags">
+                        <span class="facility-tag">🎤 六麦</span>
+                        <span class="facility-tag">📺 85寸屏</span>
+                        <span class="facility-tag">🎮 游戏机</span>
+                        <span class="facility-tag">🀄 麻将桌</span>
+                    </div>
+                    <div class="room-price">¥588/时</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 底部操作栏 -->
+    <div class="bottom-bar">
+        <div class="bottom-content">
+            <div class="price-info">
+                <span class="price-label">起步价</span>
+                <span class="price-value">¥168/时</span>
+            </div>
+            <button class="book-btn" onclick="goToBooking()">立即预订</button>
+        </div>
+    </div>
+    
+    <!-- 占位高度 -->
+    <div style="height: 80px;"></div>
+    
+    <script>
+        // 初始化主题
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme-preference');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+        
+        initTheme();
+        
+        // 包间筛选
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // 包间选择
+        let selectedRoom = null;
+        document.querySelectorAll('.room-card.available').forEach(card => {
+            card.addEventListener('click', function() {
+                // 移除其他选中状态
+                document.querySelectorAll('.room-card').forEach(c => {
+                    c.style.borderColor = '';
+                    c.style.borderWidth = '';
+                });
+                
+                // 添加选中状态
+                this.style.borderColor = 'var(--primary)';
+                this.style.borderWidth = '2px';
+                selectedRoom = this.querySelector('.room-name').textContent;
+                
+                // 更新底部价格
+                const price = this.querySelector('.room-price').textContent;
+                document.querySelector('.price-value').textContent = price;
+            });
+        });
+        
+        // 播放视频
+        document.querySelector('.play-btn').addEventListener('click', function() {
+            console.log('播放店铺环境视频');
+            // 实际项目中这里会打开视频播放器
+        });
+        
+        // 跳转到预订页面
+        function goToBooking() {
+            if (!selectedRoom) {
+                alert('请先选择包间');
+                return;
+            }
+            console.log('跳转到预订确认页，已选择：' + selectedRoom);
+            // 实际项目中这里会跳转到预订确认页
+        }
+    </script>
+</body>
+</html>

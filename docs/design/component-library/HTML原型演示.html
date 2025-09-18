@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>本地生活服务应用 - 高保真原型演示</title>
+    <style>
+        :root {
+            /* 颜色系统 */
+            --color-primary: #2196f3;
+            --color-primary-hover: #1976d2;
+            --color-success: #52c41a;
+            --color-warning: #faad14;
+            --color-error: #ff4d4f;
+            --color-vip: #ff6b6b;
+            --color-vip-secondary: #ffd93d;
+            
+            /* 文本色 */
+            --color-text-primary: #262626;
+            --color-text-secondary: #595959;
+            --color-text-tertiary: #8c8c8c;
+            --color-text-disabled: #bfbfbf;
+            
+            /* 背景色 */
+            --color-bg-primary: #ffffff;
+            --color-bg-secondary: #fafafa;
+            --color-bg-tertiary: #f5f5f5;
+            
+            /* 边框色 */
+            --color-border-light: #f0f0f0;
+            --color-border-base: #d9d9d9;
+            
+            /* 间距 */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            
+            /* 阴影 */
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+            --shadow-base: 0 4px 16px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+            
+            /* 圆角 */
+            --border-radius-sm: 4px;
+            --border-radius-base: 8px;
+            --border-radius-lg: 12px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--color-bg-secondary);
+            color: var(--color-text-primary);
+            line-height: 1.5;
+        }
+        
+        .prototype-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-lg);
+        }
+        
+        .prototype-header {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+            padding: var(--spacing-xl);
+            background: var(--color-bg-primary);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .prototype-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .prototype-subtitle {
+            font-size: 18px;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .prototype-nav {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .nav-btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-base);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .nav-btn:hover {
+            background: var(--color-primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-base);
+        }
+        
+        .nav-btn.active {
+            background: var(--color-vip);
+        }
+        
+        .prototype-section {
+            display: none;
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .prototype-section.active {
+            display: block;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: var(--spacing-lg);
+            text-align: center;
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .demo-card {
+            background: var(--color-bg-primary);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-card:hover {
+            box-shadow: var(--shadow-base);
+            transform: translateY(-2px);
+        }
+        
+        .demo-card-header {
+            padding: var(--spacing-md);
+            background: var(--color-bg-tertiary);
+            border-bottom: 1px solid var(--color-border-light);
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+        
+        .demo-card-body {
+            padding: var(--spacing-lg);
+        }
+        
+        /* 移动端模拟器 */
+        .mobile-simulator {
+            width: 375px;
+            height: 667px;
+            background: #000;
+            border-radius: 25px;
+            padding: 20px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .mobile-screen {
+            width: 100%;
+            height: 100%;
+            background: var(--color-bg-primary);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .mobile-header {
+            height: 60px;
+            background: var(--color-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--spacing-md);
+            font-weight: 600;
+        }
+        
+        .mobile-content {
+            height: calc(100% - 60px);
+            overflow-y: auto;
+            padding: var(--spacing-md);
+        }
+        
+        /* 用户端首页样式 */
+        .user-home {
+            padding: var(--spacing-md);
+        }
+        
+        .location-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-lg);
+            padding: var(--spacing-sm);
+        }
+        
+        .location-text {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+        }
+        
+        .vip-badge {
+            background: linear-gradient(135deg, var(--color-vip), var(--color-vip-secondary));
+            color: white;
+            padding: 4px 8px;
+            border-radius: var(--border-radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .category-card {
+            background: var(--color-bg-primary);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .category-card:hover {
+            box-shadow: var(--shadow-base);
+            transform: translateY(-2px);
+        }
+        
+        .category-icon {
+            font-size: 32px;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .category-name {
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .category-count {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+        
+        .store-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+        
+        .store-card {
+            background: var(--color-bg-primary);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-md);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            gap: var(--spacing-md);
+        }
+        
+        .store-image {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--border-radius-base);
+            background: var(--color-bg-secondary);
+            flex-shrink: 0;
+        }
+        
+        .store-info {
+            flex: 1;
+        }
+        
+        .store-name {
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .store-meta {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .store-price {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .price-original {
+            color: var(--color-text-tertiary);
+            text-decoration: line-through;
+            margin-right: var(--spacing-xs);
+        }
+        
+        .price-vip {
+            color: var(--color-vip);
+        }
+        
+        .store-actions {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: var(--spacing-xs) var(--spacing-md);
+            border: none;
+            border-radius: var(--border-radius-base);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--color-primary-hover);
+        }
+        
+        .btn-vip {
+            background: linear-gradient(135deg, var(--color-vip), var(--color-vip-secondary));
+            color: white;
+            font-weight: 600;
+        }
+        
+        .btn-secondary {
+            background: var(--color-bg-secondary);
+            color: var(--color-text-secondary);
+            border: 1px solid var(--color-border-base);
+        }
+        
+        /* 状态标签 */
+        .status-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 6px;
+            border-radius: var(--border-radius-sm);
+            font-size: 10px;
+            font-weight: 500;
+        }
+        
+        .status-available {
+            background: #f6ffed;
+            color: var(--color-success);
+        }
+        
+        .status-busy {
+            background: #fff7e6;
+            color: var(--color-warning);
+        }
+        
+        /* 商户端样式 */
+        .admin-dashboard {
+            padding: var(--spacing-lg);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .stat-card {
+            background: var(--color-bg-primary);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .stat-trend {
+            font-size: 12px;
+            color: var(--color-success);
+        }
+        
+        .order-alert {
+            background: linear-gradient(135deg, #ff9a9e, #fecfef);
+            color: white;
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius-lg);
+            margin-bottom: var(--spacing-lg);
+            text-align: center;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .order-list {
+            background: var(--color-bg-primary);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-md);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-md) 0;
+            border-bottom: 1px solid var(--color-border-light);
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        .order-info {
+            flex: 1;
+        }
+        
+        .order-number {
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .order-details {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+        
+        .order-status {
+            text-align: center;
+            margin: 0 var(--spacing-md);
+        }
+        
+        .order-actions {
+            display: flex;
+            gap: var(--spacing-xs);
+        }
+        
+        /* 组件展示 */
+        .component-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+        }
+        
+        .component-demo {
+            background: var(--color-bg-primary);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .component-title {
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text-primary);
+        }
+        
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+        
+        .input-demo {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--color-border-base);
+            border-radius: var(--border-radius-base);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .input-demo:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+        }
+        
+        .card-demo {
+            border: 1px solid var(--color-border-light);
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background: var(--color-bg-tertiary);
+            padding: var(--spacing-md);
+            font-weight: 600;
+        }
+        
+        .card-body {
+            padding: var(--spacing-md);
+        }
+        
+        .tag-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-xs);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .prototype-container {
+                padding: var(--spacing-md);
+            }
+            
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .mobile-simulator {
+                width: 100%;
+                max-width: 375px;
+                height: auto;
+                min-height: 600px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .component-showcase {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="prototype-container">
+        <div class="prototype-header">
+            <h1 class="prototype-title">🏪 本地生活服务应用</h1>
+            <p class="prototype-subtitle">高保真交互原型演示 - 用户端 & 商户端</p>
+            <div class="prototype-nav">
+                <button class="nav-btn active" onclick="showSection('user-home')">用户端首页</button>
+                <button class="nav-btn" onclick="showSection('user-booking')">预订流程</button>
+                <button class="nav-btn" onclick="showSection('user-order')">点单流程</button>
+                <button class="nav-btn" onclick="showSection('admin-dashboard')">商户端仪表板</button>
+                <button class="nav-btn" onclick="showSection('admin-orders')">订单管理</button>
+                <button class="nav-btn" onclick="showSection('components')">组件库</button>
+            </div>
+        </div>
+
+        <!-- 用户端首页 -->
+        <div id="user-home" class="prototype-section active">
+            <h2 class="section-title">📱 用户端首页演示</h2>
+            <div class="demo-grid">
+                <div class="mobile-simulator">
+                    <div class="mobile-screen">
+                        <div class="mobile-header">
+                            <div>🏠 本地生活</div>
+                            <div>📍 北京朝阳</div>
+                            <div class="vip-badge">👑 VIP</div>
+                        </div>
+                        <div class="mobile-content">
+                            <div class="user-home">
+                                <div class="category-grid">
+                                    <div class="category-card" onclick="animateClick(this)">
+                                        <div class="category-icon">🎤</div>
+                                        <div class="category-name">KTV</div>
+                                        <div class="category-count">138家店</div>
+                                    </div>
+                                    <div class="category-card" onclick="animateClick(this)">
+                                        <div class="category-icon">🍵</div>
+                                        <div class="category-name">茶楼</div>
+                                        <div class="category-count">85家店</div>
+                                    </div>
+                                    <div class="category-card" onclick="animateClick(this)">
+                                        <div class="category-icon">☕</div>
+                                        <div class="category-name">咖啡厅</div>
+                                        <div class="category-count">96家店</div>
+                                    </div>
+                                </div>
+                                
+                                <h3 style="margin-bottom: 16px; color: var(--color-text-primary);">🔥 VIP专享推荐</h3>
+                                <div class="store-card" style="border: 2px solid var(--color-vip); background: #fff5f5;">
+                                    <div class="store-image"></div>
+                                    <div class="store-info">
+                                        <div class="store-name">钱柜KTV 💎</div>
+                                        <div class="store-meta">⭐4.9 · 距离500m · 6个包间可订</div>
+                                        <div class="store-price">
+                                            <span class="price-original">¥88</span>
+                                            <span class="price-vip">VIP价¥70</span>
+                                        </div>
+                                    </div>
+                                    <div class="store-actions">
+                                        <button class="btn btn-vip" onclick="animateClick(this)">立即预订</button>
+                                        <button class="btn btn-secondary" onclick="animateClick(this)">🎥预览</button>
+                                    </div>
+                                </div>
+                                
+                                <h3 style="margin: 24px 0 16px; color: var(--color-text-primary);">📍 附近热门</h3>
+                                <div class="store-list">
+                                    <div class="store-card">
+                                        <div class="store-image"></div>
+                                        <div class="store-info">
+                                            <div class="store-name">欢唱KTV <span class="status-tag status-available">🟢 营业中</span></div>
+                                            <div class="store-meta">⭐4.7 · 距离800m · 3个包间可订</div>
+                                            <div class="store-price">
+                                                <span class="price-original">¥68</span>
+                                                <span class="price-vip">VIP价¥54</span>
+                                            </div>
+                                        </div>
+                                        <div class="store-actions">
+                                            <button class="btn btn-primary" onclick="animateClick(this)">立即预订</button>
+                                            <button class="btn btn-secondary" onclick="animateClick(this)">查看详情</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="store-card">
+                                        <div class="store-image"></div>
+                                        <div class="store-info">
+                                            <div class="store-name">星巴克咖啡 <span class="status-tag status-busy">🟡 较忙</span></div>
+                                            <div class="store-meta">⭐4.6 · 距离1.2km · 有空座位</div>
+                                            <div class="store-price">人均¥35</div>
+                                        </div>
+                                        <div class="store-actions">
+                                            <button class="btn btn-primary" onclick="animateClick(this)">查看详情</button>
+                                            <button class="btn btn-secondary" onclick="animateClick(this)">🧭导航</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="demo-card">
+                    <div class="demo-card-header">💡 用户端首页设计亮点</div>
+                    <div class="demo-card-body">
+                        <h4>🎯 核心功能</h4>
+                        <ul style="margin: 12px 0; padding-left: 20px;">
+                            <li>类目选择 - 快速定位服务类型</li>
+                            <li>VIP身份识别 - 显著的VIP标识和专享内容</li>
+                            <li>智能推荐 - 基于位置和偏好的个性化推荐</li>
+                            <li>实时状态 - 店铺营业状态和空间可用性</li>
+                        </ul>
+                        
+                        <h4>🎨 设计特色</h4>
+                        <ul style="margin: 12px 0; padding-left: 20px;">
+                            <li>VIP专享区域 - 金红色渐变背景突出VIP内容</li>
+                            <li>状态指示器 - 颜色编码的营业和空间状态</li>
+                            <li>价格对比 - 原价与VIP价格的对比展示</li>
+                            <li>操作便利 - 一键预订和快捷操作按钮</li>
+                        </ul>
+                        
+                        <h4>🔧 交互细节</h4>
+                        <ul style="margin: 12px 0; padding-left: 20px;">
+                            <li>按压反馈 - 点击时的视觉和触觉反馈</li>
+                            <li>悬浮效果 - 卡片悬浮时的阴影变化</li>
+                            <li>加载动画 - 数据加载时的骨架屏效果</li>
+                            <li>下拉刷新 - 获取最新店铺信息</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 用户端预订流程 -->
+        <div id="user-booking" class="prototype-section">
+            <h2 class="section-title">💎 VIP用户预订流程演示</h2>
+            <div class="demo-grid">
+                <div class="mobile-simulator">
+                    <div class="mobile-screen">
+                        <div class="mobile-header">
+                            <div>← 返回</div>
+                            <div>预订确认</div>
+                            <div></div>
+                        </div>
+                        <div class="mobile-content">
+                            <div style="padding: 16px;">
+                                <div style="background: var(--color-bg-primary); border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: var(--shadow-sm);">
+                                    <h3 style="margin-bottom: 12px;">📋 预订信息</h3>
+                                    <div style="margin-bottom: 8px;">🏪 钱柜KTV - 包间A (中型)</div>
+                                    <div style="margin-bottom: 8px;">📅 今天 2024/1/15</div>
+                                    <div style="margin-bottom: 8px;">⏰ 19:00 - 23:00 (4小时)</div>
+                                    <div style="margin-bottom: 8px;">👥 4人 (最多6人)</div>
+                                    <div style="font-size: 12px; color: var(--color-text-secondary);">📝 生日聚会，需要生日歌</div>
+                                </div>
+                                
+                                <div style="background: linear-gradient(135deg, #fff5f5, #ffe6e6); border: 2px solid var(--color-vip); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                                    <h3 style="color: var(--color-vip); margin-bottom: 12px;">💎 VIP专享特权</h3>
+                                    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                                        <span style="color: var(--color-success); margin-right: 8px;">✅</span>
+                                        <span style="font-size: 14px;">免费预订 - 无需支付订金</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                                        <span style="color: var(--color-success); margin-right: 8px;">✅</span>
+                                        <span style="font-size: 14px;">会员优惠 - 享受8折优惠价</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                                        <span style="color: var(--color-success); margin-right: 8px;">✅</span>
+                                        <span style="font-size: 14px;">免费取消 - 提前2小时免费取消</span>
+                                    </div>
+                                    <div style="text-align: center; margin-top: 12px; font-size: 18px; font-weight: 600; color: var(--color-vip);">
+                                        消费金额: ¥696.96
+                                    </div>
+                                    <div style="text-align: center; font-size: 12px; color: var(--color-text-secondary);">
+                                        (到店消费后统一结算)
+                                    </div>
+                                </div>
+                                
+                                <button class="btn btn-vip" style="width: 100%; padding: 16px; font-size: 16px; font-weight: 600;" onclick="showBookingSuccess()">
+                                    ✅ 确认预订
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="demo-card">
+                    <div class="demo-card-header">💎 VIP预订流程优势</div>
+                    <div class="demo-card-body">
+                        <h4>🚀 流程简化</h4>
+                        <ul style="margin: 12px 0; padding-left: 20px;">
+                            <li><strong>普通用户</strong>: 5步流程，需支付订金</li>
+                            <li><strong>VIP用户</strong>: 3步流程，免费预订</li>
+                            <li>减少50%的操作步骤</li>
+                        </ul>
+                        
+                        <h4>💰 经济优势</h4>
+                        <ul style="margin: 12px 0; padding-left: 20px;">
+                            <li>免支付20%订金(约¥140)</li>
+                            <li>享受8折会员价优惠</li>
+                            <li>免费取消政策</li>
+                            <li>积分翻倍返利</li>
+                        </ul>
+                        
+                        <h4>🎯 体验差异</h4>
+                        <ul style="margin: 12px 0; padding-left: 20px;">
+                            <li>专属VIP标识和页面样式</li>
+                            <li>优先确认和处理</li>
+                            <li>专享客服通道</li>
+                            <li>个性化推荐内容</li>
+                        </ul>
+                        
+                        <div style="background: var(--color-bg-secondary); padding: 12px; border-radius: 8px; margin-top: 16px;">
+                            <strong>💡 设计理念:</strong> 通过明显的视觉差异和实际优惠，让VIP用户充分感受到身份价值，提升用户粘性和升级转化率。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 用户端点单流程 -->
+        <div id="user-order" class="prototype-section">
+            <h2 class="section-title">📱 扫码点单流程演示</h2>
+            <div class="demo-grid">
+                <div class="mobile-simulator">
+                    <div class="mobile-screen">
+                        <div class="mobile-header">
+                            <div>← 返回</div>
+                            <div>扫码点单</div>
+                            <div>🛒(3)</div>
+                        </div>
+                        <div class="mobile-content">
+                            <div style="padding: 16px;">
+                                <div style="background: #e6f7ff; border: 2px solid var(--color-info); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                                    <div style="text-align: center; color: var(--color-success); font-weight: 600; margin-bottom: 8px;">
+                                        ✅ 扫码成功
+                                    </div>
+                                    <div style="margin-bottom: 8px;">📍 钱柜KTV - 包间A</div>
+                                    <div style="margin-bottom: 8px;">👥 4-6人中型包间</div>
+                                    <div style="font-size: 12px; color: var(--color-text-secondary);">⏰ 已预订 19:00-23:00</div>
+                                </div>
+                                
+                                <h3 style="margin-bottom: 12px;">🔥 为您推荐</h3>
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;">
+                                    <div class="product-card" onclick="addToCart(this)">
+                                        <div style="width: 100%; height: 80px; background: var(--color-bg-secondary); border-radius: 8px; margin-bottom: 8px;"></div>
+                                        <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">可乐2L</div>
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <div>
+                                                <span style="color: var(--color-text-tertiary); text-decoration: line-through; font-size: 12px;">¥12</span>
+                                                <span style="color: var(--color-vip); font-weight: 600; margin-left: 4px;">¥10</span>
+                                            </div>
+                                            <button class="btn btn-primary" style="font-size: 12px; padding: 4px 8px;">+加购</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="product-card" onclick="addToCart(this)">
+                                        <div style="width: 100%; height: 80px; background: var(--color-bg-secondary); border-radius: 8px; margin-bottom: 8px;"></div>
+                                        <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">薯条大份</div>
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <div>
+                                                <span style="color: var(--color-text-tertiary); text-decoration: line-through; font-size: 12px;">¥18</span>
+                                                <span style="color: var(--color-vip); font-weight: 600; margin-left: 4px;">¥15</span>
+                                            </div>
+                                            <button class="btn btn-primary" style="font-size: 12px; padding: 4px 8px;">+加购</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button class="btn btn-secondary" style="width: 100%; margin-bottom: 16px;" onclick="animateClick(this)">
+                                    📋 浏览完整菜单
+                                </button>
+                                
+                                <div style="position: fixed; bottom: 20px; left: 20px; right: 20px; background: var(--color-vip); color: white; padding: 12px 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-lg);">
+                    <div>
+                        <span>🛒 已选3件</span>
+                        <span style="margin: 0 8px;">¥68</span>
+                        <span style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px; font-size: 12px;">VIP优惠-¥13</span>
+                    </div>
+                    <button style="background: white; color: var(--color-vip); border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer;" onclick="animateClick(this)">
+                        立即结算
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="demo-card">
+    <div class="demo-card-header">📱 扫码点单体验设计</div>
+    <div class="demo-card-body">
+        <h4>🎯 扫码流程</h4>
+        <ol style="margin: 12px 0; padding-left: 20px;">
+            <li>扫描桌上二维码</li>
+            <li>自动识别位置和预订信息</li>
+            <li>智能推荐相关商品</li>
+            <li>VIP价格自动显示</li>
+            <li>一键加购到购物车</li>
+        </ol>
+        
+        <h4>💡 智能化设计</h4>
+        <ul style="margin: 12px 0; padding-left: 20px;">
+            <li>基于空间类型的商品推荐</li>
+            <li>VIP用户自动享受会员价</li>
+            <li>实时库存状态显示</li>
+            <li>预计送达时间计算</li>
+        </ul>
+        
+        <h4>🛒 购物体验</h4>
+        <ul style="margin: 12px 0; padding-left: 20px;">
+            <li>浮动购物车实时显示</li>
+            <li>VIP优惠金额突出展示</li>
+            <li>一键结算简化流程</li>
+            <li>支持多种支付方式</li>
+        </ul>
+        
+        <div style="background: var(--color-success-50); border: 1px solid var(--color-success); padding: 12px; border-radius: 8px; margin-top: 16px;">
+            <strong>🚀 效率提升:</strong> 相比传统点单方式，扫码点单减少等待时间80%，提升点单效率300%。
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
+<!-- 商户端仪表板 -->
+<div id="admin-dashboard" class="prototype-section">
+<h2 class="section-title">🏪 商户端仪表板演示</h2>
+<div class="demo-card">
+    <div class="demo-card-header">📊 实时经营概览</div>
+    <div class="demo-card-body">
+        <div class="admin-dashboard">
+            <div class="order-alert">
+                🚨 新订单提醒: 包间A点餐 ¥25 (点击处理)
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">156</div>
+                    <div class="stat-label">今日订单</div>
+                    <div class="stat-trend">↗️ +12%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">¥12.8K</div>
+                    <div class="stat-label">营业额</div>
+                    <div class="stat-trend">↗️ +8%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">23</div>
+                    <div class="stat-label">新客户</div>
+                    <div class="stat-trend">↗️ +15%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">98.5%</div>
+                    <div class="stat-label">好评率</div>
+                    <div class="stat-trend">↗️ +2%</div>
+                </div>
+            </div>
+            
+            <div class="order-list">
+                <h3 style="margin-bottom: 16px;">📋 实时订单</h3>
+                <div class="order-item">
+                    <div class="order-info">
+                        <div class="order-number">#001156 包间A</div>
+                        <div class="order-details">可乐+薯条 · 14:32下单</div>
+                    </div>
+                    <div class="order-status">
+                        <div class="status-tag" style="background: #ff4d4f; color: white;">🔴 新订单</div>
+                    </div>
+                    <div class="order-actions">
+                        <button class="btn btn-primary" onclick="animateClick(this)">接单</button>
+                        <button class="btn btn-secondary" onclick="animateClick(this)">详情</button>
+                    </div>
+                </div>
+                
+                <div class="order-item">
+                    <div class="order-info">
+                        <div class="order-number">#001155 包间B</div>
+                        <div class="order-details">果盘套餐 · 预计5分钟</div>
+                    </div>
+                    <div class="order-status">
+                        <div class="status-tag" style="background: var(--color-warning); color: white;">🟡 制作中</div>
+                    </div>
+                    <div class="order-actions">
+                        <button class="btn btn-secondary" onclick="animateClick(this)">催单</button>
+                        <button class="btn btn-secondary" onclick="animateClick(this)">详情</button>
+                    </div>
+                </div>
+                
+                <div class="order-item">
+                    <div class="order-info">
+                        <div class="order-number">#001154 卡座5</div>
+                        <div class="order-details">咖啡+蛋糕 · 配送员小王</div>
+                    </div>
+                    <div class="order-status">
+                        <div class="status-tag" style="background: var(--color-success); color: white;">🟢 配送中</div>
+                    </div>
+                    <div class="order-actions">
+                        <button class="btn btn-primary" onclick="animateClick(this)">确认送达</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- 商户端订单管理 -->
+<div id="admin-orders" class="prototype-section">
+<h2 class="section-title">📋 商户端订单管理演示</h2>
+<div class="demo-card">
+    <div class="demo-card-header">📋 订单管理系统</div>
+    <div class="demo-card-body">
+        <div style="display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="filterOrders('all')">全部(156)</button>
+            <button class="btn btn-secondary" onclick="filterOrders('new')">🔴新订单(8)</button>
+            <button class="btn btn-secondary" onclick="filterOrders('making')">🟡制作中(12)</button>
+            <button class="btn btn-secondary" onclick="filterOrders('delivering')">🟢配送中(5)</button>
+            <button class="btn btn-secondary" onclick="filterOrders('completed')">✅已完成(131)</button>
+        </div>
+        
+        <div class="order-list">
+            <div class="order-item" data-status="new">
+                <div class="order-info">
+                    <div class="order-number">#001156 · 14:32 · 包间A</div>
+                    <div class="order-details">
+                        <div>👤 张小明 (👑VIP) · 📱138****8888</div>
+                        <div>🛒 可乐2L×1, 薯条大份×1</div>
+                        <div>💰 ¥25.00 (VIP优惠-¥5.00)</div>
+                        <div>📝 备注: 不要冰，薯条要热的</div>
+                    </div>
+                </div>
+                <div class="order-status">
+                    <div class="status-tag" style="background: #ff4d4f; color: white;">🔴 新订单</div>
+                    <div style="font-size: 12px; color: var(--color-text-secondary); margin-top: 4px;">预计8-12分钟</div>
+                </div>
+                <div class="order-actions">
+                    <button class="btn btn-primary" onclick="acceptOrder(this)">✅ 接单</button>
+                    <button class="btn btn-secondary" onclick="animateClick(this)">❌ 拒单</button>
+                    <button class="btn btn-secondary" onclick="animateClick(this)">📞 联系</button>
+                </div>
+            </div>
+            
+            <div class="order-item" data-status="making">
+                <div class="order-info">
+                    <div class="order-number">#001155 · 14:25 · 包间B</div>
+                    <div class="order-details">
+                        <div>👤 李小红 · 📱139****9999</div>
+                        <div>🛒 综合果盘A×1</div>
+                        <div>💰 ¥68.00</div>
+                        <div>👨‍🍳 后厨制作中 · 🍽️ 分配给服务员小王</div>
+                    </div>
+                </div>
+                <div class="order-status">
+                    <div class="status-tag" style="background: var(--color-warning); color: white;">🟡 制作中</div>
+                    <div style="font-size: 12px; color: var(--color-text-secondary); margin-top: 4px;">还需5分钟</div>
+                </div>
+                <div class="order-actions">
+                    <button class="btn btn-primary" onclick="animateClick(this)">📋 详情</button>
+                    <button class="btn btn-secondary" onclick="animateClick(this)">🔔 催促</button>
+                    <button class="btn btn-secondary" onclick="animateClick(this)">📱 通知客户</button>
+                </div>
+            </div>
+            
+            <div class="order-item" data-status="delivering">
+                <div class="order-info">
+                    <div class="order-number">#001154 · 14:18 · 卡座5</div>
+                    <div class="order-details">
+                        <div>👤 王小刚 · 📱137****7777</div>
+                        <div>🛒 咖啡×1, 蛋糕×1</div>
+                        <div>💰 ¥45.00</div>
+                        <div>🚚 服务员小王配送中 · 📍 距离包间50米</div>
+                    </div>
+                </div>
+                <div class="order-status">
+                    <div class="status-tag" style="background: var(--color-success); color: white;">🟢 配送中</div>
+                    <div style="font-size: 12px; color: var(--color-text-secondary); margin-top: 4px;">预计2分钟送达</div>
+                </div>
+                <div class="order-actions">
+                    <button class="btn btn-primary" onclick="completeOrder(this)">✅ 确认送达</button>
+                    <button class="btn btn-secondary" onclick="animateClick(this)">📍 查看位置</button>
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 16px; padding: 12px; background: var(--color-bg-secondary); border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <span>📊 今日统计: </span>
+                <span>订单156单 · 营业额¥12.8K · 好评率98.5%</span>
+            </div>
+            <div>
+                <button class="btn btn-secondary" onclick="animateClick(this)">🔊 语音开</button>
+                <button class="btn btn-secondary" onclick="animateClick(this)">📤 导出</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- 组件库展示 -->
+<div id="components" class="prototype-section">
+<h2 class="section-title">🧩 设计系统组件库</h2>
+<div class="component-showcase">
+    <div class="component-demo">
+        <div class="component-title">🔘 按钮组件</div>
+        <div class="button-group">
+            <button class="btn btn-primary">主要按钮</button>
+            <button class="btn btn-vip">💎 VIP按钮</button>
+            <button class="btn btn-secondary">次要按钮</button>
+            <button class="btn btn-primary" disabled>禁用按钮</button>
+        </div>
+    </div>
+    
+    <div class="component-demo">
+        <div class="component-title">📝 输入框组件</div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <input class="input-demo" type="text" placeholder="基础输入框">
+            <input class="input-demo input-search" type="text" placeholder="搜索输入框" style="padding-left: 32px;">
+            <input class="input-demo" type="text" value="错误状态" style="border-color: var(--color-error);">
+            <input class="input-demo" type="text" value="成功状态" style="border-color: var(--color-success);">
+        </div>
+    </div>
+    
+    <div class="component-demo">
+        <div class="component-title">🏷️ 状态标签</div>
+        <div class="tag-group">
+            <span class="status-tag status-available">🟢 可预订</span>
+            <span class="status-tag status-busy">🟡 使用中</span>
+            <span class="status-tag" style="background: #f0f0f0; color: #999;">🟠 维护中</span>
+            <span class="status-tag" style="background: var(--color-vip); color: white;">👑 VIP专享</span>
+            <span class="status-tag" style="background: var(--color-success-50); color: var(--color-success);">✅ 已完成</span>
+            <span class="status-tag" style="background: var(--color-error-50); color: var(--color-error);">❌ 已取消</span>
+        </div>
+    </div>
+    
+    <div class="component-demo">
+        <div class="component-title">📇 卡片组件</div>
+        <div class="card-demo">
+            <div class="card-header">店铺信息卡片</div>
+            <div class="card-body">
+                <div style="margin-bottom: 8px;"><strong>钱柜KTV</strong> <span class="status-tag status-available">🟢 营业中</span></div>
+                <div style="margin-bottom: 8px; font-size: 14px; color: var(--color-text-secondary);">⭐4.9 · 距离500m · 人均¥88</div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: var(--color-vip); font-weight: 600;">💎 VIP价¥70</span>
+                    <button class="btn btn-primary" style="font-size: 12px;">立即预订</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="component-demo">
+        <div class="component-title">🎨 颜色系统</div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+            <div style="background: var(--color-primary); color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 12px;">主色调</div>
+            <div style="background: var(--color-success); color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 12px;">成功色</div>
+            <div style="background: var(--color-warning); color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 12px;">警告色</div>
+            <div style="background: var(--color-error); color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 12px;">错误色</div>
+            <div style="background: var(--color-vip); color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 12px;">VIP色</div>
+            <div style="background: var(--color-text-secondary); color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 12px;">中性色</div>
+        </div>
+    </div>
+    
+    <div class="component-demo">
+        <div class="component-title">📊 数据展示</div>
+        <div class="stat-card" style="margin: 0;">
+            <div class="stat-value" style="color: var(--color-primary);">156</div>
+            <div class="stat-label">今日订单</div>
+            <div class="stat-trend">↗️ +12%</div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
+<script>
+function showSection(sectionId) {
+    // 隐藏所有section
+    const sections = document.querySelectorAll('.prototype-section');
+    sections.forEach(section => section.classList.remove('active'));
+    
+    // 显示目标section
+    document.getElementById(sectionId).classList.add('active');
+    
+    // 更新导航按钮状态
+    const navBtns = document.querySelectorAll('.nav-btn');
+    navBtns.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+}
+
+function animateClick(element) {
+    element.style.transform = 'scale(0.95)';
+    element.style.transition = 'transform 0.1s ease';
+    
+    setTimeout(() => {
+        element.style.transform = 'scale(1)';
+        element.style.transition = 'transform 0.3s ease';
+    }, 100);
+    
+    // 显示操作反馈
+    const feedback = document.createElement('div');
+    feedback.textContent = '✅ 操作成功';
+    feedback.style.position = 'fixed';
+    feedback.style.top = '50%';
+    feedback.style.left = '50%';
+    feedback.style.transform = 'translate(-50%, -50%)';
+    feedback.style.background = 'rgba(0, 0, 0, 0.8)';
+    feedback.style.color = 'white';
+    feedback.style.padding = '12px 24px';
+    feedback.style.borderRadius = '8px';
+    feedback.style.fontSize = '14px';
+    feedback.style.zIndex = '9999';
+    feedback.style.pointerEvents = 'none';
+    
+    document.body.appendChild(feedback);
+    
+    setTimeout(() => {
+        feedback.remove();
+    }, 1500);
+}
+
+function addToCart(element) {
+    animateClick(element);
+    
+    // 更新购物车数量
+    const cartBadge = document.querySelector('.mobile-header div:last-child');
+    if (cartBadge) {
+        const currentCount = parseInt(cartBadge.textContent.match(/\d+/)[0]);
+        cartBadge.textContent = `🛒(${currentCount + 1})`;
+    }
+}
+
+function showBookingSuccess() {
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.background = 'rgba(0, 0, 0, 0.5)';
+    overlay.style.display = 'flex';
+    overlay.style.alignItems = 'center';
+    overlay.style.justifyContent = 'center';
+    overlay.style.zIndex = '9999';
+    
+    const modal = document.createElement('div');
+    modal.style.background = 'white';
+    modal.style.borderRadius = '16px';
+    modal.style.padding = '32px';
+    modal.style.textAlign = 'center';
+    modal.style.maxWidth = '300px';
+    modal.style.animation = 'scale-in 0.3s ease';
+    
+    modal.innerHTML = `
+        <div style="font-size: 48px; margin-bottom: 16px;">🎉</div>
+        <h3 style="color: var(--color-success); margin-bottom: 16px;">预订成功！</h3>
+        <div style="margin-bottom: 16px;">
+            <div style="background: var(--color-bg-secondary); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                <div style="font-size: 24px; font-weight: 600; margin-bottom: 8px;">KG240115001</div>
+                <div style="font-size: 14px; color: var(--color-text-secondary);">预订码</div>
+            </div>
+            <div style="font-size: 14px; color: var(--color-text-secondary);">
+                钱柜KTV - 包间A<br>
+                今日 19:00-23:00<br>
+                VIP免费预订
+            </div>
+        </div>
+        <button class="btn btn-primary" onclick="this.parentElement.parentElement.remove()" style="width: 100%;">
+            确定
+        </button>
+    `;
+    
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    
+    overlay.onclick = (e) => {
+        if (e.target === overlay) {
+            overlay.remove();
+        }
+    };
+}
+
+function acceptOrder(element) {
+    animateClick(element);
+    
+    // 更新订单状态
+    const orderItem = element.closest('.order-item');
+    const statusTag = orderItem.querySelector('.status-tag');
+    statusTag.style.background = 'var(--color-warning)';
+    statusTag.innerHTML = '🟡 制作中';
+    
+    // 更新操作按钮
+    const actions = orderItem.querySelector('.order-actions');
+    actions.innerHTML = `
+        <button class="btn btn-secondary" onclick="animateClick(this)">📋 详情</button>
+        <button class="btn btn-secondary" onclick="animateClick(this)">🔔 催促</button>
+    `;
+    
+    // 显示接单成功提示
+    const feedback = document.createElement('div');
+    feedback.textContent = '✅ 订单已接收，已分配给后厨制作';
+    feedback.style.position = 'fixed';
+    feedback.style.top = '20px';
+    feedback.style.left = '50%';
+    feedback.style.transform = 'translateX(-50%)';
+    feedback.style.background = 'var(--color-success)';
+    feedback.style.color = 'white';
+    feedback.style.padding = '12px 24px';
+    feedback.style.borderRadius = '8px';
+    feedback.style.fontSize = '14px';
+    feedback.style.zIndex = '9999';
+    feedback.style.animation = 'slide-in-up 0.3s ease';
+    
+    document.body.appendChild(feedback);
+    
+    setTimeout(() => {
+        feedback.remove();
+    }, 3000);
+}
+
+function completeOrder(element) {
+    animateClick(element);
+    
+    // 更新订单状态
+    const orderItem = element.closest('.order-item');
+    const statusTag = orderItem.querySelector('.status-tag');
+    statusTag.style.background = 'var(--color-success)';
+    statusTag.innerHTML = '✅ 已完成';
+    
+    // 更新操作按钮
+    const actions = orderItem.querySelector('.order-actions');
+    actions.innerHTML = `
+        <button class="btn btn-secondary" onclick="animateClick(this)">📋 详情</button>
+        <button class="btn btn-secondary" onclick="animateClick(this)">⭐ 评价</button>
+    `;
+    
+    orderItem.dataset.status = 'completed';
+}
+
+function filterOrders(status) {
+    const orders = document.querySelectorAll('.order-item');
+    
+    orders.forEach(order => {
+        if (status === 'all' || order.dataset.status === status) {
+            order.style.display = 'flex';
+        } else {
+            order.style.display = 'none';
+        }
+    });
+    
+    // 更新按钮状态
+    const filterBtns = document.querySelectorAll('[onclick^="filterOrders"]');
+    filterBtns.forEach(btn => {
+        btn.className = 'btn btn-secondary';
+    });
+    event.target.className = 'btn btn-primary';
+}
+
+// 页面加载完成后的初始化
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🎉 本地生活服务应用原型加载完成');
+    
+    // 添加一些交互效果
+    const cards = document.querySelectorAll('.demo-card, .category-card, .store-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+            this.style.boxShadow = 'var(--shadow-base)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = 'var(--shadow-sm)';
+        });
+    });
+});
+
+// 键盘快捷键
+document.addEventListener('keydown', function(e) {
+    if (e.key >= '1' && e.key <= '6') {
+        const sections = ['user-home', 'user-booking', 'user-order', 'admin-dashboard', 'admin-orders', 'components'];
+        const index = parseInt(e.key) - 1;
+        if (sections[index]) {
+            const targetBtn = document.querySelectorAll('.nav-btn')[index];
+            if (targetBtn) {
+                targetBtn.click();
+            }
+        }
+    }
+});
+</script>
+</body>
+</html>

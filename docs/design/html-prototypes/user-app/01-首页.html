@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>本地生活服务 - 首页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+            overflow-x: hidden;
+        }
+        
+        .app-container {
+            max-width: 375px;
+            margin: 0 auto;
+            background: #fff;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .status-bar {
+            height: 24px;
+            background: #000;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 12px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2196F3, #21CBF3);
+            color: white;
+            padding: 16px 20px 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 100%;
+            height: 200%;
+            background: rgba(255,255,255,0.1);
+            transform: rotate(15deg);
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .location {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .location-icon {
+            width: 20px;
+            height: 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .vip-badge {
+            background: linear-gradient(135deg, #FF6B6B, #FFD93D);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 8px rgba(255,107,107,0.3);
+        }
+        
+        .welcome-text {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .welcome-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .welcome-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .search-section {
+            background: white;
+            margin: -16px 20px 0;
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            position: relative;
+            z-index: 3;
+        }
+        
+        .search-box {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: none;
+            width: 100%;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .search-icon {
+            width: 20px;
+            height: 20px;
+            opacity: 0.6;
+        }
+        
+        .category-section {
+            padding: 24px 20px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #333;
+        }
+        
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        
+        .category-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px 16px;
+            text-align: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent, rgba(33,150,243,0.05));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+        
+        .category-card:hover::before {
+            opacity: 1;
+        }
+        
+        .category-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .category-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #333;
+        }
+        
+        .category-count {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .vip-section {
+            background: linear-gradient(135deg, #FFF5F5, #FFE6E6);
+            border: 2px solid #FF6B6B;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .vip-section::before {
+            content: '💎';
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            font-size: 24px;
+            opacity: 0.3;
+        }
+        
+        .vip-title {
+            color: #FF6B6B;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .store-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            gap: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 16px;
+        }
+        
+        .store-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+        
+        .store-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .store-image::after {
+            content: '🏪';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 32px;
+            opacity: 0.7;
+        }
+        
+        .store-info {
+            flex: 1;
+        }
+        
+        .store-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+        
+        .status-online {
+            background: #E8F5E8;
+            color: #2E7D1C;
+        }
+        
+        .status-busy {
+            background: #FFF4E6;
+            color: #D46B08;
+        }
+        
+        .store-meta {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .store-price {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .price-original {
+            font-size: 12px;
+            color: #999;
+            text-decoration: line-through;
+        }
+        
+        .price-vip {
+            font-size: 14px;
+            color: #FF6B6B;
+            font-weight: 600;
+        }
+        
+        .store-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: #2196F3;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1976D2;
+            transform: translateY(-1px);
+        }
+        
+        .btn-vip {
+            background: linear-gradient(135deg, #FF6B6B, #FFD93D);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #666;
+            border: 1px solid #e9ecef;
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 375px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            padding: 8px 0 20px;
+        }
+        
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 8px 4px;
+            color: #666;
+            font-size: 10px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-item.active {
+            color: #2196F3;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+            display: block;
+        }
+        
+        .fab {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #FF6B6B, #FFD93D);
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(255,107,107,0.4);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(255,107,107,0.6);
+        }
+        
+        .content-padding {
+            padding-bottom: 120px;
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-in {
+            animation: slideInUp 0.6s ease-out;
+        }
+        
+        .loading-skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <span>9:41</span>
+            <span>📶 🔋 100%</span>
+        </div>
+        
+        <!-- 头部区域 -->
+        <div class="header">
+            <div class="header-top">
+                <div class="location">
+                    <div class="location-icon">📍</div>
+                    <div>
+                        <div style="font-size: 14px; font-weight: 500;">北京市朝阳区</div>
+                        <div style="font-size: 11px; opacity: 0.8;">建国路88号</div>
+                    </div>
+                </div>
+                <div class="vip-badge">
+                    <span>👑</span>
+                    <span>VIP会员</span>
+                </div>
+            </div>
+            <div class="welcome-text">
+                <div class="welcome-title">发现身边精彩生活</div>
+                <div class="welcome-subtitle">专享VIP特权，畅享品质服务</div>
+            </div>
+        </div>
+        
+        <!-- 搜索区域 -->
+        <div class="search-section">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <span>搜索店铺、商品...</span>
+            </div>
+        </div>
+        
+        <div class="content-padding">
+            <!-- 服务分类 -->
+            <div class="category-section">
+                <h2 class="section-title">🎯 选择服务类型</h2>
+                <div class="category-grid">
+                    <div class="category-card animate-in" onclick="navigateToStores('ktv')">
+                        <span class="category-icon">🎤</span>
+                        <div class="category-name">KTV</div>
+                        <div class="category-count">138家店</div>
+                    </div>
+                    <div class="category-card animate-in" onclick="navigateToStores('tea')">
+                        <span class="category-icon">🍵</span>
+                        <div class="category-name">茶楼</div>
+                        <div class="category-count">85家店</div>
+                    </div>
+                    <div class="category-card animate-in" onclick="navigateToStores('coffee')">
+                        <span class="category-icon">☕</span>
+                        <div class="category-name">咖啡厅</div>
+                        <div class="category-count">96家店</div>
+                    </div>
+                </div>
+                
+                <!-- VIP专享推荐 -->
+                <div class="vip-section animate-in">
+                    <h3 class="vip-title">
+                        <span>💎</span>
+                        <span>VIP专享推荐</span>
+                    </h3>
+                    <div class="store-card" onclick="navigateToStore('qiangui')">
+                        <div class="store-image"></div>
+                        <div class="store-info">
+                            <div class="store-name">
+                                钱柜KTV
+                                <span class="status-badge status-online">🟢 营业中</span>
+                            </div>
+                            <div class="store-meta">
+                                <div class="rating">
+                                    <span>⭐</span>
+                                    <span>4.9</span>
+                                </div>
+                                <span>距离500m</span>
+                                <span>6个包间可订</span>
+                            </div>
+                            <div class="store-price">
+                                <span class="price-original">人均¥88</span>
+                                <span class="price-vip">VIP价¥70</span>
+                            </div>
+                        </div>
+                        <div class="store-actions">
+                            <button class="btn btn-vip" onclick="event.stopPropagation(); bookStore('qiangui')">立即预订</button>
+                            <button class="btn btn-secondary" onclick="event.stopPropagation(); previewStore('qiangui')">🎥预览</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 附近热门 -->
+                <h2 class="section-title">📍 附近热门店铺</h2>
+                
+                <div class="store-card animate-in" onclick="navigateToStore('huanchang')">
+                    <div class="store-image" style="background: linear-gradient(135deg, #667eea, #764ba2);"></div>
+                    <div class="store-info">
+                        <div class="store-name">
+                            欢唱KTV
+                            <span class="status-badge status-online">🟢 营业中</span>
+                        </div>
+                        <div class="store-meta">
+                            <div class="rating">
+                                <span>⭐</span>
+                                <span>4.7</span>
+                            </div>
+                            <span>距离800m</span>
+                            <span>3个包间可订</span>
+                        </div>
+                        <div class="store-price">
+                            <span class="price-original">人均¥68</span>
+                            <span class="price-vip">VIP价¥54</span>
+                        </div>
+                    </div>
+                    <div class="store-actions">
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); bookStore('huanchang')">立即预订</button>
+                        <button class="btn btn-secondary" onclick="event.stopPropagation(); viewDetails('huanchang')">查看详情</button>
+                    </div>
+                </div>
+                
+                <div class="store-card animate-in" onclick="navigateToStore('starbucks')">
+                    <div class="store-image" style="background: linear-gradient(135deg, #00d2ff, #3a7bd5);"></div>
+                    <div class="store-info">
+                        <div class="store-name">
+                            星巴克咖啡
+                            <span class="status-badge status-busy">🟡 较忙</span>
+                        </div>
+                        <div class="store-meta">
+                            <div class="rating">
+                                <span>⭐</span>
+                                <span>4.6</span>
+                            </div>
+                            <span>距离1.2km</span>
+                            <span>有空座位</span>
+                        </div>
+                        <div class="store-price">
+                            <span>人均¥35</span>
+                        </div>
+                    </div>
+                    <div class="store-actions">
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); viewDetails('starbucks')">查看详情</button>
+                        <button class="btn btn-secondary" onclick="event.stopPropagation(); navigate('starbucks')">🧭导航</button>
+                    </div>
+                </div>
+                
+                <div class="store-card animate-in" onclick="navigateToStore('xiyu')">
+                    <div class="store-image" style="background: linear-gradient(135deg, #ff9a9e, #fecfef);"></div>
+                    <div class="store-info">
+                        <div class="store-name">
+                            溪雨茶楼
+                            <span class="status-badge status-online">🟢 营业中</span>
+                        </div>
+                        <div class="store-meta">
+                            <div class="rating">
+                                <span>⭐</span>
+                                <span>4.8</span>
+                            </div>
+                            <span>距离600m</span>
+                            <span>雅间充足</span>
+                        </div>
+                        <div class="store-price">
+                            <span class="price-original">人均¥58</span>
+                            <span class="price-vip">VIP价¥46</span>
+                        </div>
+                    </div>
+                    <div class="store-actions">
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); bookStore('xiyu')">立即预订</button>
+                        <button class="btn btn-secondary" onclick="event.stopPropagation(); viewMenu('xiyu')">📋菜单</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 悬浮按钮 -->
+        <button class="fab" onclick="openScanCode()" title="扫码点单">
+            📱
+        </button>
+        
+        <!-- 底部导航 -->
+        <div class="bottom-nav">
+            <div class="nav-item active">
+                <span class="nav-icon">🏠</span>
+                <span>首页</span>
+            </div>
+            <div class="nav-item" onclick="navigateTo('discover')">
+                <span class="nav-icon">🔍</span>
+                <span>发现</span>
+            </div>
+            <div class="nav-item" onclick="navigateTo('orders')">
+                <span class="nav-icon">📋</span>
+                <span>订单</span>
+            </div>
+            <div class="nav-item" onclick="navigateTo('profile')">
+                <span class="nav-icon">👤</span>
+                <span>我的</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const animateElements = document.querySelectorAll('.animate-in');
+            animateElements.forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+        
+        // 导航功能
+        function navigateToStores(category) {
+            // 添加点击反馈
+            event.target.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                event.target.style.transform = 'scale(1)';
+            }, 150);
+            
+            // 模拟页面跳转
+            showToast(`正在跳转到${category}店铺列表...`);
+            setTimeout(() => {
+                window.location.href = `02-店铺列表.html?category=${category}`;
+            }, 500);
+        }
+        
+        function navigateToStore(storeId) {
+            showToast('正在加载店铺详情...');
+            setTimeout(() => {
+                window.location.href = `03-店铺详情.html?store=${storeId}`;
+            }, 500);
+        }
+        
+        function bookStore(storeId) {
+            showToast('正在跳转到预订页面...');
+            setTimeout(() => {
+                window.location.href = `04-预订确认.html?store=${storeId}`;
+            }, 500);
+        }
+        
+        function previewStore(storeId) {
+            showToast('正在加载视频预览...');
+            setTimeout(() => {
+                window.location.href = `03-店铺详情.html?store=${storeId}`;
+            }, 500);
+        }
+        
+        function viewDetails(storeId) {
+            navigateToStore(storeId);
+        }
+        
+        function viewMenu(storeId) {
+            showToast('正在加载菜单...');
+            setTimeout(() => {
+                window.location.href = `05-扫码点单.html?store=${storeId}`;
+            }, 500);
+        }
+        
+        function navigate(storeId) {
+            showToast('正在打开地图导航...');
+        }
+        
+        function openScanCode() {
+            showToast('正在打开扫码功能...');
+            setTimeout(() => {
+                window.location.href = '05-扫码点单.html';
+            }, 500);
+        }
+        
+        function navigateTo(page) {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            showToast(`正在跳转到${page}页面...`);
+        }
+        
+        // Toast提示
+        function navigateToProfile() {
+            showToast('正在跳转到个人中心...');
+            setTimeout(() => {
+                window.location.href = '06-个人中心.html';
+            }, 500);
+        }
+        
+        function navigateToCategory() {
+            showToast('正在跳转到分类页面...');
+            setTimeout(() => {
+                window.location.href = '02-分类浏览.html';
+            }, 500);
+        }
+        
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0,0,0,0.8);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-size: 14px;
+                z-index: 9999;
+                animation: fadeInOut 2s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+        
+        // 添加CSS动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInOut {
+                0%, 100% { opacity: 0; }
+                50% { opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // 模拟数据加载
+        function simulateLoading() {
+            const cards = document.querySelectorAll('.store-card');
+            cards.forEach(card => {
+                card.classList.add('loading-skeleton');
+            });
+            
+            setTimeout(() => {
+                cards.forEach(card => {
+                    card.classList.remove('loading-skeleton');
+                });
+            }, 1000);
+        }
+        
+        // 页面滚动优化
+        let ticking = false;
+        function updateScrollPosition() {
+            const scrolled = window.pageYOffset;
+            const header = document.querySelector('.header');
+            const opacity = Math.max(0, 1 - scrolled / 200);
+            header.style.opacity = opacity;
+            ticking = false;
+        }
+        
+        window.addEventListener('scroll', function() {
+            if (!ticking) {
+                requestAnimationFrame(updateScrollPosition);
+                ticking = true;
+            }
+        });
+    </script>
+</body>
+</html>

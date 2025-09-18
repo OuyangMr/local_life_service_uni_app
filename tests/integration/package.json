@@ -1,0 +1,31 @@
+{
+  "name": "local-life-service-integration-tests",
+  "version": "1.0.0",
+  "description": "本地生活服务应用集成测试",
+  "scripts": {
+    "test": "jest --config jest.config.js",
+    "test:watch": "jest --config jest.config.js --watch",
+    "test:coverage": "jest --config jest.config.js --coverage",
+    "test:auth": "jest --config jest.config.js auth.integration.test.ts",
+    "test:order": "jest --config jest.config.js order.integration.test.ts",
+    "test:payment": "jest --config jest.config.js payment.integration.test.ts",
+    "test:ci": "jest --config jest.config.js --ci --coverage --watchAll=false"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.8",
+    "@types/node": "^20.5.9",
+    "@types/supertest": "^2.0.12",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.4.2",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "mongoose": "^8.0.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}

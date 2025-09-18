@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>菜单管理 - 钱柜KTV商户系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .notification-btn {
+            position: relative;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: #FF6B6B;
+            border-radius: 50%;
+            width: 8px;
+            height: 8px;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #667eea;
+        }
+        
+        .user-name {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .nav {
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            padding: 0 30px;
+            display: flex;
+            gap: 32px;
+        }
+        
+        .nav-item {
+            padding: 16px 0;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .nav-item.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        
+        .nav-item:hover:not(.active) {
+            color: #667eea;
+            opacity: 0.7;
+        }
+        
+        .main-content {
+            padding: 30px;
+            background: #f8f9fa;
+            min-height: calc(100vh - 120px);
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #666;
+            border: 1px solid #e9ecef;
+        }
+        
+        .btn-secondary:hover {
+            background: #f8f9fa;
+            border-color: #667eea;
+        }
+        
+        .menu-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
+        }
+        
+        .categories-panel {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            height: fit-content;
+        }
+        
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .category-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .category-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        
+        .category-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .category-item.active {
+            background: #e6f4ff;
+            border-color: #1890ff;
+            color: #1890ff;
+        }
+        
+        .category-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .category-icon {
+            font-size: 16px;
+        }
+        
+        .category-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .category-count {
+            background: #f0f0f0;
+            color: #666;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+        
+        .category-item.active .category-count {
+            background: rgba(24,144,255,0.1);
+            color: #1890ff;
+        }
+        
+        .add-category-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            border: 2px dashed #d9d9d9;
+            border-radius: 8px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 12px;
+        }
+        
+        .add-category-btn:hover {
+            border-color: #1890ff;
+            color: #1890ff;
+        }
+        
+        .menu-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        }
+        
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .search-bar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .search-input {
+            padding: 8px 16px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 250px;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .status-filter {
+            padding: 8px 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background: white;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .item-card {
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .item-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(102,126,234,0.1);
+        }
+        
+        .item-image {
+            position: relative;
+            height: 150px;
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: white;
+        }
+        
+        .item-status {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+        
+        .status-available {
+            background: rgba(76,175,80,0.9);
+            color: white;
+        }
+        
+        .status-out-stock {
+            background: rgba(244,67,54,0.9);
+            color: white;
+        }
+        
+        .status-discontinued {
+            background: rgba(158,158,158,0.9);
+            color: white;
+        }
+        
+        .hot-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: #FF6B6B;
+            color: white;
+            font-size: 10px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        
+        .item-content {
+            padding: 16px;
+        }
+        
+        .item-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .item-desc {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        
+        .item-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-size: 12px;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .price-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .price-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .price-original {
+            font-size: 12px;
+            color: #999;
+            text-decoration: line-through;
+        }
+        
+        .price-current {
+            font-size: 16px;
+            color: #FF6B6B;
+            font-weight: 600;
+        }
+        
+        .vip-price {
+            background: linear-gradient(135deg, #FF6B6B, #FFD93D);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        
+        .sales-info {
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .item-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 6px 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+        
+        .action-btn.primary {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .action-btn.primary:hover {
+            background: #5a67d8;
+        }
+        
+        .action-btn.danger {
+            border-color: #FF6B6B;
+            color: #FF6B6B;
+        }
+        
+        .action-btn.danger:hover {
+            background: #FF6B6B;
+            color: white;
+        }
+        
+        .bulk-operations {
+            background: #e6f7ff;
+            border: 1px solid #91d5ff;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .bulk-operations.show {
+            display: flex;
+        }
+        
+        .bulk-text {
+            font-size: 14px;
+            color: #0958d9;
+        }
+        
+        .bulk-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .bulk-btn {
+            padding: 6px 12px;
+            border: 1px solid #91d5ff;
+            border-radius: 6px;
+            background: white;
+            color: #0958d9;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .bulk-btn:hover {
+            background: #e6f7ff;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        .empty-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .empty-desc {
+            font-size: 14px;
+            color: #999;
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-in {
+            animation: slideInUp 0.6s ease-out;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                box-shadow: none;
+            }
+            
+            .header {
+                padding: 16px 20px;
+            }
+            
+            .brand {
+                font-size: 18px;
+            }
+            
+            .nav {
+                padding: 0 20px;
+                overflow-x: auto;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+            
+            .menu-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .categories-panel {
+                order: 2;
+            }
+            
+            .category-list {
+                flex-direction: row;
+                overflow-x: auto;
+                gap: 12px;
+            }
+            
+            .category-item {
+                white-space: nowrap;
+                min-width: auto;
+            }
+            
+            .search-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-input {
+                width: 100%;
+            }
+            
+            .items-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <div class="brand">
+                <div class="brand-icon">🏪</div>
+                <div>钱柜KTV管理系统</div>
+            </div>
+            
+            <div class="user-info">
+                <button class="notification-btn">
+                    🔔
+                    <div class="notification-badge"></div>
+                </button>
+                <div class="user-avatar">👨‍💼</div>
+                <div class="user-name">张经理</div>
+            </div>
+        </div>
+        
+        <!-- 导航栏 -->
+        <div class="nav">
+            <div class="nav-item" onclick="switchPage('dashboard')">📊 仪表板</div>
+            <div class="nav-item" onclick="switchPage('orders')">📋 订单管理</div>
+            <div class="nav-item" onclick="switchPage('rooms')">🏠 包间管理</div>
+            <div class="nav-item active">🍴 菜单管理</div>
+            <div class="nav-item" onclick="switchPage('staff')">👥 员工管理</div>
+            <div class="nav-item" onclick="switchPage('finance')">💰 财务报表</div>
+            <div class="nav-item" onclick="switchPage('settings')">⚙️ 系统设置</div>
+        </div>
+        
+        <!-- 主要内容 -->
+        <div class="main-content">
+            <!-- 页面头部 -->
+            <div class="page-header animate-in">
+                <div class="page-title">菜单管理</div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="importMenu()">📥 导入菜单</button>
+                    <button class="btn btn-secondary" onclick="exportMenu()">📤 导出菜单</button>
+                    <button class="btn btn-primary" onclick="addMenuItem()">➕ 添加商品</button>
+                </div>
+            </div>
+            
+            <!-- 菜单布局 -->
+            <div class="menu-layout animate-in">
+                <!-- 分类面板 -->
+                <div class="categories-panel">
+                    <div class="panel-title">
+                        <span>📂</span>
+                        <span>商品分类</span>
+                    </div>
+                    
+                    <div class="category-list">
+                        <div class="category-item active" onclick="selectCategory('all')">
+                            <div class="category-info">
+                                <span class="category-icon">📋</span>
+                                <span class="category-name">全部商品</span>
+                            </div>
+                            <span class="category-count">48</span>
+                        </div>
+                        
+                        <div class="category-item" onclick="selectCategory('drinks')">
+                            <div class="category-info">
+                                <span class="category-icon">🥤</span>
+                                <span class="category-name">饮料</span>
+                            </div>
+                            <span class="category-count">15</span>
+                        </div>
+                        
+                        <div class="category-item" onclick="selectCategory('snacks')">
+                            <div class="category-info">
+                                <span class="category-icon">🍟</span>
+                                <span class="category-name">小食</span>
+                            </div>
+                            <span class="category-count">12</span>
+                        </div>
+                        
+                        <div class="category-item" onclick="selectCategory('fruits')">
+                            <div class="category-info">
+                                <span class="category-icon">🍎</span>
+                                <span class="category-name">果盘</span>
+                            </div>
+                            <span class="category-count">8</span>
+                        </div>
+                        
+                        <div class="category-item" onclick="selectCategory('meals')">
+                            <div class="category-info">
+                                <span class="category-icon">🍖</span>
+                                <span class="category-name">正餐</span>
+                            </div>
+                            <span class="category-count">6</span>
+                        </div>
+                        
+                        <div class="category-item" onclick="selectCategory('packages')">
+                            <div class="category-info">
+                                <span class="category-icon">🎁</span>
+                                <span class="category-name">套餐</span>
+                            </div>
+                            <span class="category-count">4</span>
+                        </div>
+                        
+                        <div class="category-item" onclick="selectCategory('alcohol')">
+                            <div class="category-info">
+                                <span class="category-icon">🍷</span>
+                                <span class="category-name">酒水</span>
+                            </div>
+                            <span class="category-count">3</span>
+                        </div>
+                    </div>
+                    
+                    <div class="add-category-btn" onclick="addCategory()">
+                        <span>➕</span>
+                        <span>添加分类</span>
+                    </div>
+                </div>
+                
+                <!-- 商品内容 -->
+                <div class="menu-content">
+                    <div class="content-header">
+                        <div style="font-size: 18px; font-weight: 600;">全部商品 (48)</div>
+                        <div class="search-bar">
+                            <input type="text" class="search-input" placeholder="搜索商品名称或编号..." id="searchInput">
+                            <select class="status-filter" id="statusFilter">
+                                <option value="all">全部状态</option>
+                                <option value="available">在售</option>
+                                <option value="out-stock">缺货</option>
+                                <option value="discontinued">下架</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- 批量操作栏 -->
+                    <div class="bulk-operations" id="bulkOperations">
+                        <div class="bulk-text">已选择 <span id="selectedCount">0</span> 个商品</div>
+                        <div class="bulk-actions">
+                            <button class="bulk-btn" onclick="bulkAction('available')">批量上架</button>
+                            <button class="bulk-btn" onclick="bulkAction('out-stock')">批量下架</button>
+                            <button class="bulk-btn" onclick="bulkAction('price')">批量改价</button>
+                            <button class="bulk-btn" onclick="bulkAction('delete')">批量删除</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 商品网格 -->
+                    <div class="items-grid" id="itemsGrid">
+                        <!-- 商品卡片 1 -->
+                        <div class="item-card" data-category="drinks" data-status="available" onclick="editItem('item1')">
+                            <div class="item-image" style="background: linear-gradient(135deg, #ff9a9e, #fecfef);">
+                                🥤
+                                <div class="item-status status-available">在售</div>
+                                <div class="hot-badge">热销</div>
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title">可乐2L</div>
+                                <div class="item-desc">冰爽解腻，聚会必备饮品</div>
+                                <div class="item-details">
+                                    <div class="detail-item">
+                                        <span>📦</span>
+                                        <span>库存: 85</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>📊</span>
+                                        <span>月销: 156</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>⏰</span>
+                                        <span>15分钟</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>⭐</span>
+                                        <span>4.8分</span>
+                                    </div>
+                                </div>
+                                <div class="price-section">
+                                    <div class="price-group">
+                                        <span class="price-original">¥12.00</span>
+                                        <span class="price-current">¥10.00</span>
+                                        <span class="vip-price">VIP</span>
+                                    </div>
+                                    <div class="sales-info">今日已售: 23</div>
+                                </div>
+                                <div class="item-actions">
+                                    <button class="action-btn" onclick="event.stopPropagation(); editPrice('item1')">💰 改价</button>
+                                    <button class="action-btn" onclick="event.stopPropagation(); editStock('item1')">📦 库存</button>
+                                    <button class="action-btn primary" onclick="event.stopPropagation(); viewAnalytics('item1')">📊 分析</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 商品卡片 2 -->
+                        <div class="item-card" data-category="snacks" data-status="available" onclick="editItem('item2')">
+                            <div class="item-image" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                                🍟
+                                <div class="item-status status-available">在售</div>
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title">薯条大份</div>
+                                <div class="item-desc">香脆可口，分享首选</div>
+                                <div class="item-details">
+                                    <div class="detail-item">
+                                        <span>📦</span>
+                                        <span>库存: 42</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>📊</span>
+                                        <span>月销: 89</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>⏰</span>
+                                        <span>10分钟</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>⭐</span>
+                                        <span>4.6分</span>
+                                    </div>
+                                </div>
+                                <div class="price-section">
+                                    <div class="price-group">
+                                        <span class="price-original">¥18.00</span>
+                                        <span class="price-current">¥15.00</span>
+                                        <span class="vip-price">VIP</span>
+                                    </div>
+                                    <div class="sales-info">今日已售: 12</div>
+                                </div>
+                                <div class="item-actions">
+                                    <button class="action-btn" onclick="event.stopPropagation(); editPrice('item2')">💰 改价</button>
+                                    <button class="action-btn" onclick="event.stopPropagation(); editStock('item2')">📦 库存</button>
+                                    <button class="action-btn primary" onclick="event.stopPropagation(); viewAnalytics('item2')">📊 分析</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 商品卡片 3 -->
+                        <div class="item-card" data-category="fruits" data-status="out-stock" onclick="editItem('item3')">
+                            <div class="item-image" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">
+                                🍎
+                                <div class="item-status status-out-stock">缺货</div>
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title">综合果盘A</div>
+                                <div class="item-desc">新鲜水果，健康之选</div>
+                                <div class="item-details">
+                                    <div class="detail-item">
+                                        <span>📦</span>
+                                        <span style="color: #FF6B6B;">库存: 0</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>📊</span>
+                                        <span>月销: 76</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>⏰</span>
+                                        <span>20分钟</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>⭐</span>
+                                        <span>4.9分</span>
+                                    </div>
+                                </div>
+                                <div class="price-section">
+                                    <div class="price-group">
+                                        <span class="price-original">¥38.00</span>
+                                        <span class="price-current">¥32.00</span>
+                                        <span class="vip-price">VIP</span>
+                                    </div>
+                                    <div class="sales-info">今日已售: 0</div>
+                                </div>
+                                <div class="item-actions">
+                                    <button class="action-btn danger" onclick="event.stopPropagation(); restock('item3')">📦 补货</button>
+                                    <button class="action-btn" onclick="event.stopPropagation(); editPrice('item3')">💰 改价</button>
+                                    <button class="action-btn primary" onclick="event.stopPropagation(); viewAnalytics('item3')">📊 分析</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 商品卡片 4 -->
+                        <div class="item-card" data-category="packages" data-status="available" onclick="editItem('item4')">
+                            <div class="item-image" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                                🎁
+                                <div class="item-status status-available">在售</div>
+                                <div class="hot-badge">套餐</div>
+                            </div>
+                            <div class="item-content">
+                                <div class="item-title">KTV欢唱套餐</div>
+                                <div class="item-desc">酒水+小食组合优惠</div>
+                                <div class="item-details">
+                                    <div class="detail-item">
+                                        <span>📦</span>
+                                        <span>库存: 无限</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>📊</span>
+                                        <span>月销: 45</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>⏰</span>
+                                        <span>25分钟</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>⭐</span>
+                                        <span>4.7分</span>
+                                    </div>
+                                </div>
+                                <div class="price-section">
+                                    <div class="price-group">
+                                        <span class="price-original">¥128.00</span>
+                                        <span class="price-current">¥108.00</span>
+                                        <span class="vip-price">VIP</span>
+                                    </div>
+                                    <div class="sales-info">今日已售: 8</div>
+                                </div>
+                                <div class="item-actions">
+                                    <button class="action-btn" onclick="event.stopPropagation(); editPackage('item4')">📝 编辑套餐</button>
+                                    <button class="action-btn" onclick="event.stopPropagation(); editPrice('item4')">💰 改价</button>
+                                    <button class="action-btn primary" onclick="event.stopPropagation(); viewAnalytics('item4')">📊 分析</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let selectedItems = new Set();
+        let currentCategory = 'all';
+        
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const animateElements = document.querySelectorAll('.animate-in');
+            animateElements.forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.1}s`;
+            });
+            
+            // 搜索功能
+            document.getElementById('searchInput').addEventListener('input', filterItems);
+            document.getElementById('statusFilter').addEventListener('change', filterItems);
+        });
+        
+        // 页面切换
+        function switchPage(page) {
+            // 更新导航状态
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            showToast(`正在加载${page}页面...`);
+            
+            setTimeout(() => {
+                switch(page) {
+                    case 'dashboard':
+                        window.location.href = '01-仪表板.html';
+                        break;
+                    case 'orders':
+                        window.location.href = '02-订单管理.html';
+                        break;
+                    case 'rooms':
+                        window.location.href = '03-包间管理.html';
+                        break;
+                    default:
+                        showToast(`${page}功能开发中...`);
+                }
+            }, 500);
+        }
+        
+        // 分类选择
+        function selectCategory(category) {
+            // 更新分类状态
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            currentCategory = category;
+            filterItems();
+            
+            const categoryNames = {
+                'all': '全部商品',
+                'drinks': '饮料',
+                'snacks': '小食',
+                'fruits': '果盘',
+                'meals': '正餐',
+                'packages': '套餐',
+                'alcohol': '酒水'
+            };
+            
+            showToast(`正在筛选${categoryNames[category]}...`);
+        }
+        
+        // 商品筛选
+        function filterItems() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const itemCards = document.querySelectorAll('.item-card');
+            let visibleCount = 0;
+            
+            itemCards.forEach(card => {
+                const title = card.querySelector('.item-title').textContent.toLowerCase();
+                const category = card.dataset.category;
+                const status = card.dataset.status;
+                
+                const matchesSearch = title.includes(searchTerm);
+                const matchesCategory = currentCategory === 'all' || category === currentCategory;
+                const matchesStatus = statusFilter === 'all' || status === statusFilter;
+                
+                if (matchesSearch && matchesCategory && matchesStatus) {
+                    card.style.display = 'block';
+                    card.style.animation = 'slideInUp 0.5s ease-out';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // 更新商品数量显示
+            document.querySelector('.content-header > div').textContent = 
+                `${currentCategory === 'all' ? '全部商品' : document.querySelector('.category-item.active .category-name').textContent} (${visibleCount})`;
+        }
+        
+        // 商品编辑
+        function editItem(itemId) {
+            showToast(`正在编辑商品 ${itemId}...`);
+            
+            // 这里可以打开商品编辑弹窗
+            setTimeout(() => {
+                showItemDetailModal(itemId);
+            }, 500);
+        }
+        
+        function showItemDetailModal(itemId) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                animation: fadeIn 0.3s ease;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    border-radius: 16px;
+                    padding: 24px;
+                    max-width: 600px;
+                    width: 90%;
+                    max-height: 80vh;
+                    overflow-y: auto;
+                    animation: slideInUp 0.3s ease;
+                ">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2>编辑商品 - 可乐2L</h2>
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" style="
+                            background: none;
+                            border: none;
+                            font-size: 24px;
+                            cursor: pointer;
+                            padding: 4px;
+                        ">×</button>
+                    </div>
+                    
+                    <div style="display: grid; gap: 20px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 500;">商品名称</label>
+                                <input type="text" value="可乐2L" style="
+                                    width: 100%;
+                                    padding: 8px 12px;
+                                    border: 1px solid #e9ecef;
+                                    border-radius: 8px;
+                                    font-size: 14px;
+                                ">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 500;">商品分类</label>
+                                <select style="
+                                    width: 100%;
+                                    padding: 8px 12px;
+                                    border: 1px solid #e9ecef;
+                                    border-radius: 8px;
+                                    font-size: 14px;
+                                ">
+                                    <option value="drinks" selected>饮料</option>
+                                    <option value="snacks">小食</option>
+                                    <option value="fruits">果盘</option>
+                                    <option value="meals">正餐</option>
+                                    <option value="packages">套餐</option>
+                                    <option value="alcohol">酒水</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500;">商品描述</label>
+                            <textarea style="
+                                width: 100%;
+                                padding: 8px 12px;
+                                border: 1px solid #e9ecef;
+                                border-radius: 8px;
+                                font-size: 14px;
+                                resize: vertical;
+                                min-height: 60px;
+                            ">冰爽解腻，聚会必备饮品</textarea>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 500;">原价 (¥)</label>
+                                <input type="number" value="12.00" step="0.01" style="
+                                    width: 100%;
+                                    padding: 8px 12px;
+                                    border: 1px solid #e9ecef;
+                                    border-radius: 8px;
+                                    font-size: 14px;
+                                ">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 500;">VIP价 (¥)</label>
+                                <input type="number" value="10.00" step="0.01" style="
+                                    width: 100%;
+                                    padding: 8px 12px;
+                                    border: 1px solid #e9ecef;
+                                    border-radius: 8px;
+                                    font-size: 14px;
+                                ">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 500;">库存数量</label>
+                                <input type="number" value="85" style="
+                                    width: 100%;
+                                    padding: 8px 12px;
+                                    border: 1px solid #e9ecef;
+                                    border-radius: 8px;
+                                    font-size: 14px;
+                                ">
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 500;">制作时长 (分钟)</label>
+                                <input type="number" value="15" style="
+                                    width: 100%;
+                                    padding: 8px 12px;
+                                    border: 1px solid #e9ecef;
+                                    border-radius: 8px;
+                                    font-size: 14px;
+                                ">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-weight: 500;">商品状态</label>
+                                <select style="
+                                    width: 100%;
+                                    padding: 8px 12px;
+                                    border: 1px solid #e9ecef;
+                                    border-radius: 8px;
+                                    font-size: 14px;
+                                ">
+                                    <option value="available" selected>在售</option>
+                                    <option value="out-stock">缺货</option>
+                                    <option value="discontinued">下架</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                            <button onclick="this.parentElement.parentElement.parentElement.remove()" style="
+                                padding: 10px 20px;
+                                border: 1px solid #e9ecef;
+                                border-radius: 8px;
+                                background: white;
+                                cursor: pointer;
+                            ">取消</button>
+                            <button onclick="saveItem('${itemId}')" style="
+                                padding: 10px 20px;
+                                border: none;
+                                border-radius: 8px;
+                                background: #667eea;
+                                color: white;
+                                cursor: pointer;
+                            ">保存修改</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.remove();
+            };
+        }
+        
+        // 商品操作
+        function editPrice(itemId) {
+            showToast(`正在编辑商品 ${itemId} 价格...`);
+        }
+        
+        function editStock(itemId) {
+            showToast(`正在调整商品 ${itemId} 库存...`);
+        }
+        
+        function viewAnalytics(itemId) {
+            showToast(`正在查看商品 ${itemId} 销售分析...`);
+        }
+        
+        function restock(itemId) {
+            showConfirm('确认为此商品补货？', () => {
+                showToast(`商品 ${itemId} 补货成功！`);
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            });
+        }
+        
+        function editPackage(itemId) {
+            showToast(`正在编辑套餐 ${itemId} 内容...`);
+        }
+        
+        // 批量操作
+        function bulkAction(action) {
+            const actions = {
+                'available': '批量上架',
+                'out-stock': '批量下架',
+                'price': '批量改价',
+                'delete': '批量删除'
+            };
+            
+            showConfirm(`确认${actions[action]}选中的商品？`, () => {
+                showToast(`${actions[action]}操作成功！`);
+                selectedItems.clear();
+                updateBulkOperations();
+            });
+        }
+        
+        function updateBulkOperations() {
+            const bulkOperations = document.getElementById('bulkOperations');
+            const selectedCount = document.getElementById('selectedCount');
+            
+            if (selectedItems.size > 0) {
+                bulkOperations.classList.add('show');
+                selectedCount.textContent = selectedItems.size;
+            } else {
+                bulkOperations.classList.remove('show');
+            }
+        }
+        
+        // 头部操作
+        function importMenu() {
+            showToast('正在打开菜单导入功能...');
+        }
+        
+        function exportMenu() {
+            showToast('正在导出菜单数据...');
+        }
+        
+        function addMenuItem() {
+            showToast('正在打开添加商品页面...');
+            setTimeout(() => {
+                showItemDetailModal('new');
+            }, 500);
+        }
+        
+        function addCategory() {
+            showPrompt('请输入新分类名称：', (name) => {
+                if (name) {
+                    showToast(`分类"${name}"添加成功！`);
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                }
+            });
+        }
+        
+        function saveItem(itemId) {
+            showToast(`商品 ${itemId} 保存成功！`);
+            // 关闭弹窗
+            document.querySelector('[style*="position: fixed"]').remove();
+            // 刷新列表
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        }
+        
+        // 工具函数
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(0,0,0,0.8);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-size: 14px;
+                z-index: 10000;
+                animation: slideInDown 0.3s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOutUp 0.3s ease';
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 2000);
+        }
+        
+        function showConfirm(message, callback) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    border-radius: 16px;
+                    padding: 24px;
+                    max-width: 400px;
+                    text-align: center;
+                    animation: slideInUp 0.3s ease;
+                ">
+                    <div style="margin-bottom: 20px; color: #333; line-height: 1.5;">${message}</div>
+                    <div style="display: flex; gap: 12px; justify-content: center;">
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" style="
+                            padding: 10px 20px;
+                            border: 1px solid #e9ecef;
+                            border-radius: 8px;
+                            background: white;
+                            cursor: pointer;
+                        ">取消</button>
+                        <button onclick="confirmAction()" style="
+                            padding: 10px 20px;
+                            border: none;
+                            border-radius: 8px;
+                            background: #667eea;
+                            color: white;
+                            cursor: pointer;
+                        ">确认</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            window.confirmAction = () => {
+                modal.remove();
+                callback();
+            };
+        }
+        
+        function showPrompt(message, callback) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    border-radius: 16px;
+                    padding: 24px;
+                    max-width: 400px;
+                    animation: slideInUp 0.3s ease;
+                ">
+                    <div style="margin-bottom: 16px; color: #333;">${message}</div>
+                    <input type="text" id="promptInput" style="
+                        width: 100%;
+                        padding: 8px 12px;
+                        border: 1px solid #e9ecef;
+                        border-radius: 8px;
+                        font-size: 14px;
+                        margin-bottom: 20px;
+                    ">
+                    <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" style="
+                            padding: 10px 20px;
+                            border: 1px solid #e9ecef;
+                            border-radius: 8px;
+                            background: white;
+                            cursor: pointer;
+                        ">取消</button>
+                        <button onclick="submitPrompt()" style="
+                            padding: 10px 20px;
+                            border: none;
+                            border-radius: 8px;
+                            background: #667eea;
+                            color: white;
+                            cursor: pointer;
+                        ">确认</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 聚焦输入框
+            setTimeout(() => {
+                document.getElementById('promptInput').focus();
+            }, 100);
+            
+            window.submitPrompt = () => {
+                const value = document.getElementById('promptInput').value.trim();
+                modal.remove();
+                callback(value);
+            };
+        }
+        
+        // 添加CSS动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            
+            @keyframes slideInDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            @keyframes slideOutUp {
+                from {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateY(-30px);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

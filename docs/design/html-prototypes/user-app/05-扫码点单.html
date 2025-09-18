@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>扫码点单 - 包间A</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .app-container {
+            max-width: 375px;
+            margin: 0 auto;
+            background: #f8f9fa;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .status-bar {
+            height: 24px;
+            background: #000;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 12px;
+        }
+        
+        .header {
+            background: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .cart-btn {
+            position: relative;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+        
+        .cart-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: #FF6B6B;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .location-banner {
+            background: linear-gradient(135deg, #E8F5E8, #D4E8D4);
+            border: 1px solid #52c41a;
+            margin: 16px 20px;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .location-icon {
+            width: 40px;
+            height: 40px;
+            background: #52c41a;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+        
+        .location-info {
+            flex: 1;
+        }
+        
+        .location-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2E7D1C;
+            margin-bottom: 4px;
+        }
+        
+        .location-subtitle {
+            font-size: 12px;
+            color: #52c41a;
+        }
+        
+        .delivery-time {
+            background: white;
+            padding: 12px 20px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .content {
+            padding: 0 20px 120px;
+        }
+        
+        .recommend-section {
+            margin-bottom: 24px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .recommend-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 80px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hot-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: #FF6B6B;
+            color: white;
+            font-size: 8px;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        
+        .product-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .product-desc {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        
+        .product-price {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .price-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .price-original {
+            font-size: 11px;
+            color: #999;
+            text-decoration: line-through;
+        }
+        
+        .price-vip {
+            font-size: 14px;
+            color: #FF6B6B;
+            font-weight: 600;
+        }
+        
+        .vip-tag {
+            background: linear-gradient(135deg, #FF6B6B, #FFD93D);
+            color: white;
+            font-size: 8px;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .add-btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .add-btn:hover {
+            background: #1976D2;
+            transform: scale(1.05);
+        }
+        
+        .categories-section {
+            margin-bottom: 24px;
+        }
+        
+        .categories-scroll {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .categories-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .category-btn {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 12px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .category-btn.active {
+            background: #2196F3;
+            color: white;
+            border-color: #2196F3;
+        }
+        
+        .category-btn:hover:not(.active) {
+            background: #f8f9fa;
+            border-color: #2196F3;
+        }
+        
+        .menu-btn {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .menu-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+        
+        .service-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .service-btn {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .service-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            border-color: #2196F3;
+        }
+        
+        .service-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .service-text {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .floating-cart {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 335px;
+            background: linear-gradient(135deg, #FF6B6B, #FFD93D);
+            border-radius: 16px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: white;
+            box-shadow: 0 8px 24px rgba(255,107,107,0.4);
+            z-index: 200;
+            transition: all 0.3s ease;
+        }
+        
+        .floating-cart:hover {
+            transform: translateX(-50%) translateY(-2px);
+            box-shadow: 0 12px 32px rgba(255,107,107,0.5);
+        }
+        
+        .cart-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .cart-summary {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .cart-discount {
+            font-size: 11px;
+            background: rgba(255,255,255,0.2);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        
+        .checkout-btn {
+            background: white;
+            color: #FF6B6B;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .checkout-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-in {
+            animation: slideInUp 0.6s ease-out;
+        }
+        
+        @keyframes addToCart {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .add-animation {
+            animation: addToCart 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <span>9:41</span>
+            <span>📶 🔋 100%</span>
+        </div>
+        
+        <!-- 头部 -->
+        <div class="header">
+            <button class="back-btn" onclick="goBack()">←</button>
+            <div class="header-title">扫码点单</div>
+            <button class="cart-btn" onclick="openCart()">
+                🛒
+                <span class="cart-badge" id="cartBadge">3</span>
+            </button>
+        </div>
+        
+        <!-- 位置确认 -->
+        <div class="location-banner animate-in">
+            <div class="location-icon">✅</div>
+            <div class="location-info">
+                <div class="location-title">钱柜KTV - 包间A</div>
+                <div class="location-subtitle">4-6人中型包间 · 已确认位置</div>
+            </div>
+        </div>
+        
+        <!-- 配送时间 -->
+        <div class="delivery-time">
+            <span>📱</span>
+            <span>钱柜KTV-包间A点单</span>
+            <span>·</span>
+            <span>⏰预计15分钟送达</span>
+        </div>
+        
+        <div class="content">
+            <!-- 为您推荐 -->
+            <div class="recommend-section animate-in">
+                <h2 class="section-title">
+                    <span>🔥</span>
+                    <span>为您推荐</span>
+                </h2>
+                
+                <div class="recommend-grid">
+                    <div class="product-card" onclick="addToCart('cola', '可乐2L', 10)">
+                        <div class="product-image" style="background: linear-gradient(135deg, #ff9a9e, #fecfef);">
+                            🥤
+                            <div class="hot-badge">热销</div>
+                        </div>
+                        <div class="product-name">可乐2L</div>
+                        <div class="product-desc">冰爽解腻，聚会必备</div>
+                        <div class="product-price">
+                            <div class="price-group">
+                                <span class="price-original">¥12</span>
+                                <span class="price-vip">¥10</span>
+                                <span class="vip-tag">VIP</span>
+                            </div>
+                        </div>
+                        <button class="add-btn">+加购</button>
+                    </div>
+                    
+                    <div class="product-card" onclick="addToCart('fries', '薯条大份', 15)">
+                        <div class="product-image" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                            🍟
+                        </div>
+                        <div class="product-name">薯条大份</div>
+                        <div class="product-desc">香脆可口，分享首选</div>
+                        <div class="product-price">
+                            <div class="price-group">
+                                <span class="price-original">¥18</span>
+                                <span class="price-vip">¥15</span>
+                                <span class="vip-tag">VIP</span>
+                            </div>
+                        </div>
+                        <button class="add-btn">+加购</button>
+                    </div>
+                    
+                    <div class="product-card" onclick="addToCart('fruit', '综合果盘', 32)">
+                        <div class="product-image" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">
+                            🍎
+                        </div>
+                        <div class="product-name">综合果盘A</div>
+                        <div class="product-desc">新鲜水果，健康之选</div>
+                        <div class="product-price">
+                            <div class="price-group">
+                                <span class="price-original">¥38</span>
+                                <span class="price-vip">¥32</span>
+                                <span class="vip-tag">VIP</span>
+                            </div>
+                        </div>
+                        <button class="add-btn">+加购</button>
+                    </div>
+                    
+                    <div class="product-card" onclick="addToCart('ktv-set', 'KTV套餐', 108)">
+                        <div class="product-image" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                            🎁
+                            <div class="hot-badge">套餐</div>
+                        </div>
+                        <div class="product-name">KTV套餐</div>
+                        <div class="product-desc">酒水+小食组合优惠</div>
+                        <div class="product-price">
+                            <div class="price-group">
+                                <span class="price-original">¥128</span>
+                                <span class="price-vip">¥108</span>
+                                <span class="vip-tag">VIP</span>
+                            </div>
+                        </div>
+                        <button class="add-btn">+加购</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 商品分类 -->
+            <div class="categories-section animate-in">
+                <h2 class="section-title">
+                    <span>🍴</span>
+                    <span>分类菜单</span>
+                </h2>
+                
+                <div class="categories-scroll">
+                    <div class="category-btn active">🥤 饮料</div>
+                    <div class="category-btn">🍟 小食</div>
+                    <div class="category-btn">🍎 果盘</div>
+                    <div class="category-btn">🍖 正餐</div>
+                    <div class="category-btn">🎁 套餐</div>
+                    <div class="category-btn">⚡ 秒杀</div>
+                </div>
+            </div>
+            
+            <!-- 浏览菜单 -->
+            <div class="menu-btn animate-in" onclick="openFullMenu()">
+                <div style="font-size: 18px; margin-bottom: 8px;">📋</div>
+                <div style="font-weight: 600; margin-bottom: 4px;">浏览完整菜单</div>
+                <div style="font-size: 12px; color: #666;">查看所有商品和详细信息</div>
+            </div>
+            
+            <!-- 快速服务 -->
+            <div class="animate-in">
+                <h2 class="section-title">
+                    <span>🎯</span>
+                    <span>快速服务</span>
+                </h2>
+                
+                <div class="service-buttons">
+                    <div class="service-btn" onclick="callService()">
+                        <span class="service-icon">🔔</span>
+                        <div class="service-text">呼叫服务员</div>
+                    </div>
+                    
+                    <div class="service-btn" onclick="getWifi()">
+                        <span class="service-icon">📱</span>
+                        <div class="service-text">WiFi密码</div>
+                    </div>
+                    
+                    <div class="service-btn" onclick="viewCoupons()">
+                        <span class="service-icon">🎫</span>
+                        <div class="service-text">查看优惠券</div>
+                    </div>
+                    
+                    <div class="service-btn" onclick="callDriver()">
+                        <span class="service-icon">🚗</span>
+                        <div class="service-text">代驾服务</div>
+                    </div>
+                    
+                    <div class="service-btn" onclick="payParking()">
+                        <span class="service-icon">🅿️</span>
+                        <div class="service-text">停车缴费</div>
+                    </div>
+                    
+                    <div class="service-btn" onclick="orderTaxi()">
+                        <span class="service-icon">🚕</span>
+                        <div class="service-text">叫车服务</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 浮动购物车 -->
+        <div class="floating-cart" onclick="checkout()">
+            <div class="cart-info">
+                <div class="cart-summary">
+                    <span>🛒 已选<span id="itemCount">3</span>件</span>
+                    <span>¥<span id="totalPrice">68</span></span>
+                    <span class="cart-discount">VIP优惠-¥13</span>
+                </div>
+            </div>
+            <button class="checkout-btn">立即结算</button>
+        </div>
+    </div>
+    
+    <script>
+        let cartItems = 3;
+        let totalPrice = 68;
+        let vipDiscount = 13;
+        
+        function goBack() {
+            window.history.back();
+        }
+        
+        function addToCart(productId, productName, price) {
+            // 添加动画效果
+            event.target.classList.add('add-animation');
+            setTimeout(() => {
+                event.target.classList.remove('add-animation');
+            }, 300);
+            
+            // 更新购物车
+            cartItems++;
+            totalPrice += price;
+            updateCartDisplay();
+            
+            // 显示添加成功提示
+            showToast(`${productName} 已加入购物车`);
+            
+            // 更新购物车徽章动画
+            const badge = document.getElementById('cartBadge');
+            badge.style.transform = 'scale(1.3)';
+            setTimeout(() => {
+                badge.style.transform = 'scale(1)';
+            }, 200);
+        }
+        
+        function updateCartDisplay() {
+            document.getElementById('cartBadge').textContent = cartItems;
+            document.getElementById('itemCount').textContent = cartItems;
+            document.getElementById('totalPrice').textContent = totalPrice;
+            
+            // 重新计算VIP优惠
+            const newDiscount = Math.floor(totalPrice * 0.15);
+            document.querySelector('.cart-discount').textContent = `VIP优惠-¥${newDiscount}`;
+        }
+        
+        function openCart() {
+            showToast('正在打开购物车...');
+            // 这里可以打开购物车详情页面
+        }
+        
+        function checkout() {
+            showToast('正在跳转到结算页面...');
+            setTimeout(() => {
+                // 创建订单确认页面，暂时回到首页
+                window.location.href = '01-首页.html';
+            }, 500);
+        }
+        
+        function openFullMenu() {
+            showToast('正在加载完整菜单...');
+            // 可以跳转到完整菜单页面
+        }
+        
+        function callService() {
+            showConfirm('确认呼叫服务员吗？', () => {
+                showToast('服务员正在赶来，请稍等...');
+            });
+        }
+        
+        function getWifi() {
+            showAlert('WiFi信息', 'WiFi名称: QianGuiKTV_Guest<br>密码: qg123456');
+        }
+        
+        function viewCoupons() {
+            showToast('正在查看可用优惠券...');
+        }
+        
+        function callDriver() {
+            showToast('正在为您联系代驾师傅...');
+        }
+        
+        function payParking() {
+            showToast('正在跳转到停车缴费...');
+        }
+        
+        function orderTaxi() {
+            showToast('正在为您叫车...');
+        }
+        
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0,0,0,0.8);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-size: 14px;
+                z-index: 9999;
+                animation: fadeInOut 2s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+        
+        function showAlert(title, content) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    border-radius: 16px;
+                    padding: 24px;
+                    max-width: 280px;
+                    text-align: center;
+                    animation: slideInUp 0.3s ease;
+                ">
+                    <h3 style="margin-bottom: 16px; color: #333;">${title}</h3>
+                    <div style="margin-bottom: 20px; color: #666; line-height: 1.5;">${content}</div>
+                    <button onclick="this.parentElement.parentElement.remove()" style="
+                        background: #2196F3;
+                        color: white;
+                        border: none;
+                        border-radius: 8px;
+                        padding: 10px 24px;
+                        cursor: pointer;
+                    ">确定</button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.remove();
+            };
+        }
+        
+        function showConfirm(message, callback) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    border-radius: 16px;
+                    padding: 24px;
+                    max-width: 280px;
+                    text-align: center;
+                    animation: slideInUp 0.3s ease;
+                ">
+                    <div style="margin-bottom: 20px; color: #333; line-height: 1.5;">${message}</div>
+                    <div style="display: flex; gap: 12px;">
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" style="
+                            flex: 1;
+                            background: #f8f9fa;
+                            color: #666;
+                            border: 1px solid #e9ecef;
+                            border-radius: 8px;
+                            padding: 10px;
+                            cursor: pointer;
+                        ">取消</button>
+                        <button onclick="confirmAction()" style="
+                            flex: 1;
+                            background: #2196F3;
+                            color: white;
+                            border: none;
+                            border-radius: 8px;
+                            padding: 10px;
+                            cursor: pointer;
+                        ">确认</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            window.confirmAction = () => {
+                modal.remove();
+                callback();
+            };
+        }
+        
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const animateElements = document.querySelectorAll('.animate-in');
+            animateElements.forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+        
+        // 分类切换
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                showToast(`正在加载${this.textContent}分类...`);
+            });
+        });
+        
+        // 添加CSS动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInOut {
+                0%, 100% { opacity: 0; }
+                50% { opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

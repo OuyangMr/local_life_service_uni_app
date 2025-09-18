@@ -1,0 +1,297 @@
+/**
+ * 这里是uni-app内置的常用样式变量
+ * 为了便于升级，请勿修改此文件
+ * 如果需要修改变量，请在 styles/theme.scss 中进行覆盖
+ */
+
+/* 引入样式文件 */
+@import '@/styles/theme.scss';
+@import '@/styles/components.scss';
+@import '@/styles/responsive.scss';
+
+/* 颜色变量 */
+:root {
+  /* 主题色 */
+  --uni-color-primary: #667eea;
+  --uni-color-primary-light: #8a9af0;
+  --uni-color-primary-dark: #4c63d2;
+  
+  /* 功能色 */
+  --uni-color-success: #52c41a;
+  --uni-color-warning: #faad14;
+  --uni-color-error: #ff4d4f;
+  --uni-color-info: #1890ff;
+  
+  /* 中性色 */
+  --uni-text-color: #333333;
+  --uni-text-color-grey: #666666;
+  --uni-text-color-light: #999999;
+  --uni-text-color-disabled: #cccccc;
+  
+  /* 背景色 */
+  --uni-bg-color: #ffffff;
+  --uni-bg-color-grey: #f5f5f5;
+  --uni-bg-color-hover: #f0f0f0;
+  --uni-bg-color-mask: rgba(0, 0, 0, 0.4);
+  
+  /* 边框色 */
+  --uni-border-color: #e5e5e5;
+  --uni-border-color-light: #f0f0f0;
+  
+  /* 阴影 */
+  --uni-shadow-sm: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+  --uni-shadow-base: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+  --uni-shadow-lg: 0 8rpx 24rpx rgba(0, 0, 0, 0.12);
+  
+  /* 圆角 */
+  --uni-border-radius-sm: 6rpx;
+  --uni-border-radius-base: 12rpx;
+  --uni-border-radius-lg: 20rpx;
+  
+  /* 间距 */
+  --uni-spacing-xs: 10rpx;
+  --uni-spacing-sm: 20rpx;
+  --uni-spacing-base: 30rpx;
+  --uni-spacing-lg: 40rpx;
+  --uni-spacing-xl: 60rpx;
+  
+  /* 字体大小 */
+  --uni-font-size-xs: 22rpx;
+  --uni-font-size-sm: 26rpx;
+  --uni-font-size-base: 30rpx;
+  --uni-font-size-lg: 36rpx;
+  --uni-font-size-xl: 42rpx;
+  --uni-font-size-xxl: 48rpx;
+  
+  /* 行高 */
+  --uni-line-height-base: 1.4;
+  --uni-line-height-text: 1.5;
+}
+
+/* 统一字体 */
+page {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: var(--uni-font-size-base);
+  line-height: var(--uni-line-height-base);
+  color: var(--uni-text-color);
+  background-color: var(--uni-bg-color-grey);
+}
+
+/* 通用工具类 */
+
+/* 文本对齐 */
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+/* 文本颜色 */
+.text-primary { color: var(--uni-color-primary) !important; }
+.text-success { color: var(--uni-color-success) !important; }
+.text-warning { color: var(--uni-color-warning) !important; }
+.text-error { color: var(--uni-color-error) !important; }
+.text-info { color: var(--uni-color-info) !important; }
+.text-grey { color: var(--uni-text-color-grey) !important; }
+.text-light { color: var(--uni-text-color-light) !important; }
+.text-disabled { color: var(--uni-text-color-disabled) !important; }
+
+/* 字体大小 */
+.text-xs { font-size: var(--uni-font-size-xs) !important; }
+.text-sm { font-size: var(--uni-font-size-sm) !important; }
+.text-base { font-size: var(--uni-font-size-base) !important; }
+.text-lg { font-size: var(--uni-font-size-lg) !important; }
+.text-xl { font-size: var(--uni-font-size-xl) !important; }
+.text-xxl { font-size: var(--uni-font-size-xxl) !important; }
+
+/* 字体粗细 */
+.font-light { font-weight: 300; }
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+
+/* 背景色 */
+.bg-primary { background-color: var(--uni-color-primary) !important; }
+.bg-success { background-color: var(--uni-color-success) !important; }
+.bg-warning { background-color: var(--uni-color-warning) !important; }
+.bg-error { background-color: var(--uni-color-error) !important; }
+.bg-info { background-color: var(--uni-color-info) !important; }
+.bg-white { background-color: var(--uni-bg-color) !important; }
+.bg-grey { background-color: var(--uni-bg-color-grey) !important; }
+
+/* 边距 */
+.m-0 { margin: 0 !important; }
+.m-xs { margin: var(--uni-spacing-xs) !important; }
+.m-sm { margin: var(--uni-spacing-sm) !important; }
+.m-base { margin: var(--uni-spacing-base) !important; }
+.m-lg { margin: var(--uni-spacing-lg) !important; }
+.m-xl { margin: var(--uni-spacing-xl) !important; }
+
+.mt-0 { margin-top: 0 !important; }
+.mt-xs { margin-top: var(--uni-spacing-xs) !important; }
+.mt-sm { margin-top: var(--uni-spacing-sm) !important; }
+.mt-base { margin-top: var(--uni-spacing-base) !important; }
+.mt-lg { margin-top: var(--uni-spacing-lg) !important; }
+.mt-xl { margin-top: var(--uni-spacing-xl) !important; }
+
+.mb-0 { margin-bottom: 0 !important; }
+.mb-xs { margin-bottom: var(--uni-spacing-xs) !important; }
+.mb-sm { margin-bottom: var(--uni-spacing-sm) !important; }
+.mb-base { margin-bottom: var(--uni-spacing-base) !important; }
+.mb-lg { margin-bottom: var(--uni-spacing-lg) !important; }
+.mb-xl { margin-bottom: var(--uni-spacing-xl) !important; }
+
+.ml-0 { margin-left: 0 !important; }
+.ml-xs { margin-left: var(--uni-spacing-xs) !important; }
+.ml-sm { margin-left: var(--uni-spacing-sm) !important; }
+.ml-base { margin-left: var(--uni-spacing-base) !important; }
+.ml-lg { margin-left: var(--uni-spacing-lg) !important; }
+.ml-xl { margin-left: var(--uni-spacing-xl) !important; }
+
+.mr-0 { margin-right: 0 !important; }
+.mr-xs { margin-right: var(--uni-spacing-xs) !important; }
+.mr-sm { margin-right: var(--uni-spacing-sm) !important; }
+.mr-base { margin-right: var(--uni-spacing-base) !important; }
+.mr-lg { margin-right: var(--uni-spacing-lg) !important; }
+.mr-xl { margin-right: var(--uni-spacing-xl) !important; }
+
+/* 内边距 */
+.p-0 { padding: 0 !important; }
+.p-xs { padding: var(--uni-spacing-xs) !important; }
+.p-sm { padding: var(--uni-spacing-sm) !important; }
+.p-base { padding: var(--uni-spacing-base) !important; }
+.p-lg { padding: var(--uni-spacing-lg) !important; }
+.p-xl { padding: var(--uni-spacing-xl) !important; }
+
+.pt-0 { padding-top: 0 !important; }
+.pt-xs { padding-top: var(--uni-spacing-xs) !important; }
+.pt-sm { padding-top: var(--uni-spacing-sm) !important; }
+.pt-base { padding-top: var(--uni-spacing-base) !important; }
+.pt-lg { padding-top: var(--uni-spacing-lg) !important; }
+.pt-xl { padding-top: var(--uni-spacing-xl) !important; }
+
+.pb-0 { padding-bottom: 0 !important; }
+.pb-xs { padding-bottom: var(--uni-spacing-xs) !important; }
+.pb-sm { padding-bottom: var(--uni-spacing-sm) !important; }
+.pb-base { padding-bottom: var(--uni-spacing-base) !important; }
+.pb-lg { padding-bottom: var(--uni-spacing-lg) !important; }
+.pb-xl { padding-bottom: var(--uni-spacing-xl) !important; }
+
+.pl-0 { padding-left: 0 !important; }
+.pl-xs { padding-left: var(--uni-spacing-xs) !important; }
+.pl-sm { padding-left: var(--uni-spacing-sm) !important; }
+.pl-base { padding-left: var(--uni-spacing-base) !important; }
+.pl-lg { padding-left: var(--uni-spacing-lg) !important; }
+.pl-xl { padding-left: var(--uni-spacing-xl) !important; }
+
+.pr-0 { padding-right: 0 !important; }
+.pr-xs { padding-right: var(--uni-spacing-xs) !important; }
+.pr-sm { padding-right: var(--uni-spacing-sm) !important; }
+.pr-base { padding-right: var(--uni-spacing-base) !important; }
+.pr-lg { padding-right: var(--uni-spacing-lg) !important; }
+.pr-xl { padding-right: var(--uni-spacing-xl) !important; }
+
+/* 弹性布局 */
+.flex { display: flex; }
+.flex-column { flex-direction: column; }
+.flex-row { flex-direction: row; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-nowrap { flex-wrap: nowrap; }
+.flex-grow { flex-grow: 1; }
+.flex-shrink { flex-shrink: 1; }
+
+.justify-start { justify-content: flex-start; }
+.justify-end { justify-content: flex-end; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-around { justify-content: space-around; }
+
+.align-start { align-items: flex-start; }
+.align-end { align-items: flex-end; }
+.align-center { align-items: center; }
+.align-stretch { align-items: stretch; }
+
+/* 圆角 */
+.rounded-none { border-radius: 0; }
+.rounded-sm { border-radius: var(--uni-border-radius-sm); }
+.rounded { border-radius: var(--uni-border-radius-base); }
+.rounded-lg { border-radius: var(--uni-border-radius-lg); }
+.rounded-full { border-radius: 50%; }
+
+/* 阴影 */
+.shadow-none { box-shadow: none; }
+.shadow-sm { box-shadow: var(--uni-shadow-sm); }
+.shadow { box-shadow: var(--uni-shadow-base); }
+.shadow-lg { box-shadow: var(--uni-shadow-lg); }
+
+/* 显示隐藏 */
+.hidden { display: none !important; }
+.visible { visibility: visible !important; }
+.invisible { visibility: hidden !important; }
+
+/* 位置 */
+.relative { position: relative; }
+.absolute { position: absolute; }
+.fixed { position: fixed; }
+
+/* 溢出 */
+.overflow-hidden { overflow: hidden; }
+.overflow-scroll { overflow: scroll; }
+.overflow-auto { overflow: auto; }
+
+/* 省略号 */
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ellipsis-2 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.ellipsis-3 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+/* 过渡动画 */
+.transition { transition: all 0.3s ease; }
+.transition-fast { transition: all 0.15s ease; }
+.transition-slow { transition: all 0.5s ease; }
+
+/* 缩放动画 */
+.scale-enter {
+  transform: scale(0.9);
+  opacity: 0;
+}
+
+.scale-enter-active {
+  transition: all 0.3s ease;
+}
+
+.scale-enter-to {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.scale-leave {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.scale-leave-active {
+  transition: all 0.3s ease;
+}
+
+.scale-leave-to {
+  transform: scale(0.9);
+  opacity: 0;
+}
+

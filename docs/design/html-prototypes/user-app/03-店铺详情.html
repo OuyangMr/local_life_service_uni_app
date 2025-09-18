@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>钱柜KTV - 店铺详情</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .app-container {
+            max-width: 375px;
+            margin: 0 auto;
+            background: #f8f9fa;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .status-bar {
+            height: 24px;
+            background: #000;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 12px;
+        }
+        
+        .header {
+            background: transparent;
+            position: absolute;
+            top: 24px;
+            left: 0;
+            right: 0;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+        }
+        
+        .nav-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(0,0,0,0.3);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(0,0,0,0.5);
+            transform: scale(1.1);
+        }
+        
+        .store-banner {
+            position: relative;
+            height: 280px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            overflow: hidden;
+        }
+        
+        .banner-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .video-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+            position: relative;
+        }
+        
+        .play-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            color: #667eea;
+            font-size: 32px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .play-btn:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            background: white;
+        }
+        
+        .video-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.6));
+            padding: 40px 20px 20px;
+            color: white;
+        }
+        
+        .store-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .stars {
+            color: #FFD700;
+            font-size: 16px;
+        }
+        
+        .rating-text {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .store-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .store-subtitle {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .store-info {
+            background: white;
+            border-radius: 16px 16px 0 0;
+            margin-top: -16px;
+            position: relative;
+            z-index: 2;
+            padding: 24px 20px 20px;
+        }
+        
+        .info-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 4px;
+        }
+        
+        .info-tab {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .info-tab.active {
+            background: white;
+            color: #2196F3;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .highlight-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 16px 8px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+        
+        .stat-number {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2196F3;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .info-section {
+            margin-bottom: 24px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            background: #e3f2fd;
+            color: #2196F3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .info-content {
+            flex: 1;
+        }
+        
+        .info-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+        
+        .info-value {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .rooms-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .room-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .room-card:hover {
+            border-color: #2196F3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(33,150,243,0.1);
+        }
+        
+        .room-image {
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            position: relative;
+        }
+        
+        .room-status {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+        
+        .status-available {
+            background: rgba(76,175,80,0.9);
+            color: white;
+        }
+        
+        .status-occupied {
+            background: rgba(244,67,54,0.9);
+            color: white;
+        }
+        
+        .room-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .room-desc {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .room-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .price-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .price-original {
+            font-size: 11px;
+            color: #999;
+            text-decoration: line-through;
+        }
+        
+        .price-vip {
+            font-size: 14px;
+            color: #FF6B6B;
+            font-weight: 600;
+        }
+        
+        .vip-tag {
+            background: linear-gradient(135deg, #FF6B6B, #FFD93D);
+            color: white;
+            font-size: 8px;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .reviews-section {
+            margin-bottom: 24px;
+        }
+        
+        .reviews-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .reviews-stats {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .review-item {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .reviewer-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .reviewer-avatar {
+            width: 32px;
+            height: 32px;
+            background: #2196F3;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .reviewer-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .review-rating {
+            color: #FFD700;
+            font-size: 12px;
+        }
+        
+        .review-content {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .service-item {
+            text-align: center;
+            padding: 16px 8px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .service-item:hover {
+            background: #e3f2fd;
+            transform: translateY(-2px);
+        }
+        
+        .service-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .service-name {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .bottom-actions {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 375px;
+            background: white;
+            padding: 16px 20px;
+            display: flex;
+            gap: 12px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            z-index: 200;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #666;
+            border: 1px solid #e9ecef;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #FF6B6B, #FFD93D);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255,107,107,0.4);
+        }
+        
+        .floating-vip {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: linear-gradient(135deg, #FF6B6B, #FFD93D);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(255,107,107,0.4);
+            z-index: 150;
+            transition: all 0.3s ease;
+        }
+        
+        .floating-vip:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 24px rgba(255,107,107,0.5);
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-in {
+            animation: slideInUp 0.6s ease-out;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <span>9:41</span>
+            <span>📶 🔋 100%</span>
+        </div>
+        
+        <!-- 头部导航 -->
+        <div class="header">
+            <button class="nav-btn" onclick="goBack()">←</button>
+            <div style="display: flex; gap: 8px;">
+                <button class="nav-btn" onclick="shareStore()">↗</button>
+                <button class="nav-btn" onclick="favoriteStore()">♡</button>
+            </div>
+        </div>
+        
+        <!-- 店铺横幅视频 -->
+        <div class="store-banner">
+            <div class="video-placeholder" id="videoBanner">
+                🎥
+                <button class="play-btn pulse-animation" onclick="playVideo()">▶</button>
+            </div>
+            <div class="video-overlay">
+                <div class="store-rating">
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <span class="rating-text">4.8 (2,156条评价)</span>
+                </div>
+                <div class="store-title">钱柜KTV</div>
+                <div class="store-subtitle">📍 朝阳区三里屯soho · 距离您800m</div>
+            </div>
+        </div>
+        
+        <!-- VIP特权浮动按钮 -->
+        <button class="floating-vip" onclick="showVipBenefits()">💎</button>
+        
+        <!-- 店铺信息 -->
+        <div class="store-info animate-in">
+            <!-- 信息选项卡 -->
+            <div class="info-tabs">
+                <button class="info-tab active" onclick="switchTab('overview')">📍 概览</button>
+                <button class="info-tab" onclick="switchTab('rooms')">🏠 包间</button>
+                <button class="info-tab" onclick="switchTab('reviews')">💬 评价</button>
+                <button class="info-tab" onclick="switchTab('services')">🛠 服务</button>
+            </div>
+            
+            <!-- 概览标签页 -->
+            <div class="tab-content active" id="overview">
+                <!-- 亮点数据 -->
+                <div class="highlight-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">28</div>
+                        <div class="stat-label">包间总数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">85%</div>
+                        <div class="stat-label">今日使用率</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">¥168</div>
+                        <div class="stat-label">起步价格</div>
+                    </div>
+                </div>
+                
+                <!-- 基础信息 -->
+                <div class="info-section">
+                    <div class="section-title">
+                        <span>📋</span>
+                        <span>基础信息</span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <div class="info-icon">🕐</div>
+                        <div class="info-content">
+                            <div class="info-label">营业时间</div>
+                            <div class="info-value">10:00 - 02:00 (周一至周日)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-row">
+                        <div class="info-icon">📞</div>
+                        <div class="info-content">
+                            <div class="info-label">联系电话</div>
+                            <div class="info-value">010-8888-9999</div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-row">
+                        <div class="info-icon">📍</div>
+                        <div class="info-content">
+                            <div class="info-label">详细地址</div>
+                            <div class="info-value">朝阳区三里屯SOHO 3号楼B1层</div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-row">
+                        <div class="info-icon">🚗</div>
+                        <div class="info-content">
+                            <div class="info-label">停车信息</div>
+                            <div class="info-value">地下停车场 ¥5/小时</div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-row">
+                        <div class="info-icon">💳</div>
+                        <div class="info-content">
+                            <div class="info-label">支付方式</div>
+                            <div class="info-value">微信支付、支付宝、银行卡</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 特色服务 -->
+                <div class="info-section">
+                    <div class="section-title">
+                        <span>✨</span>
+                        <span>特色服务</span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <div class="info-icon">🎤</div>
+                        <div class="info-content">
+                            <div class="info-label">音响设备</div>
+                            <div class="info-value">进口JBL专业音响系统</div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-row">
+                        <div class="info-icon">🎵</div>
+                        <div class="info-content">
+                            <div class="info-label">歌曲库</div>
+                            <div class="info-value">最新华语、欧美、日韩歌曲 10万+</div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-row">
+                        <div class="info-icon">🍴</div>
+                        <div class="info-content">
+                            <div class="info-label">餐饮服务</div>
+                            <div class="info-value">精选小食、饮品、酒水</div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-row">
+                        <div class="info-icon">🎮</div>
+                        <div class="info-content">
+                            <div class="info-label">娱乐设施</div>
+                            <div class="info-value">游戏机、桌游、投影设备</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 包间标签页 -->
+            <div class="tab-content" id="rooms">
+                <div class="section-title" style="margin-bottom: 16px;">
+                    <span>🏠</span>
+                    <span>包间选择</span>
+                </div>
+                
+                <div class="rooms-grid">
+                    <div class="room-card" onclick="selectRoom('A')">
+                        <div class="room-image" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">
+                            🎵
+                            <div class="room-status status-available">空闲</div>
+                        </div>
+                        <div class="room-name">包间A - 小型</div>
+                        <div class="room-desc">2-4人 · 12㎡ · 舒适温馨</div>
+                        <div class="room-price">
+                            <div class="price-group">
+                                <span class="price-original">¥198</span>
+                                <span class="price-vip">¥168</span>
+                                <span class="vip-tag">VIP</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="room-card" onclick="selectRoom('B')">
+                        <div class="room-image" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                            🎤
+                            <div class="room-status status-occupied">使用中</div>
+                        </div>
+                        <div class="room-name">包间B - 中型</div>
+                        <div class="room-desc">4-6人 · 18㎡ · 经典配置</div>
+                        <div class="room-price">
+                            <div class="price-group">
+                                <span class="price-original">¥298</span>
+                                <span class="price-vip">¥258</span>
+                                <span class="vip-tag">VIP</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="room-card" onclick="selectRoom('C')">
+                        <div class="room-image" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                            🎶
+                            <div class="room-status status-available">空闲</div>
+                        </div>
+                        <div class="room-name">包间C - 大型</div>
+                        <div class="room-desc">6-10人 · 25㎡ · 聚会首选</div>
+                        <div class="room-price">
+                            <div class="price-group">
+                                <span class="price-original">¥398</span>
+                                <span class="price-vip">¥338</span>
+                                <span class="vip-tag">VIP</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="room-card" onclick="selectRoom('D')">
+                        <div class="room-image" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                            👑
+                            <div class="room-status status-available">空闲</div>
+                        </div>
+                        <div class="room-name">豪华包间 - VIP</div>
+                        <div class="room-desc">10-15人 · 35㎡ · 顶级体验</div>
+                        <div class="room-price">
+                            <div class="price-group">
+                                <span class="price-original">¥598</span>
+                                <span class="price-vip">¥498</span>
+                                <span class="vip-tag">VIP</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px; padding: 16px; background: #f8f9fa; border-radius: 12px; font-size: 14px; color: #666;">
+                    💡 VIP会员享受所有包间8折优惠价格
+                </div>
+            </div>
+            
+            <!-- 评价标签页 -->
+            <div class="tab-content" id="reviews">
+                <div class="reviews-header">
+                    <div class="section-title">
+                        <span>💬</span>
+                        <span>用户评价</span>
+                    </div>
+                    <div class="reviews-stats">
+                        <span>⭐4.8</span>
+                        <span>2,156条评价</span>
+                    </div>
+                </div>
+                
+                <div class="review-item">
+                    <div class="review-header">
+                        <div class="reviewer-info">
+                            <div class="reviewer-avatar">👤</div>
+                            <div class="reviewer-name">张同学</div>
+                        </div>
+                        <div class="review-rating">⭐⭐⭐⭐⭐</div>
+                    </div>
+                    <div class="review-content">
+                        音响效果超棒！包间很干净，服务员态度也很好。VIP会员价格很实惠，下次还会来的。推荐包间C，空间大人多比较嗨。
+                    </div>
+                </div>
+                
+                <div class="review-item">
+                    <div class="review-header">
+                        <div class="reviewer-info">
+                            <div class="reviewer-avatar">👩</div>
+                            <div class="reviewer-name">李女士</div>
+                        </div>
+                        <div class="review-rating">⭐⭐⭐⭐⭐</div>
+                    </div>
+                    <div class="review-content">
+                        生日party选的豪华包间，朋友们都很满意。设备新，歌曲全，还有投影可以看视频。点单也很方便，扫码就能点。
+                    </div>
+                </div>
+                
+                <div class="review-item">
+                    <div class="review-header">
+                        <div class="reviewer-info">
+                            <div class="reviewer-avatar">👨</div>
+                            <div class="reviewer-name">王先生</div>
+                        </div>
+                        <div class="review-rating">⭐⭐⭐⭐</div>
+                    </div>
+                    <div class="review-content">
+                        公司团建选的这里，包间多选择多。就是停车位有点紧张，建议提前预约。整体体验不错，会推荐给朋友。
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 16px;">
+                    <button style="
+                        background: #f8f9fa;
+                        border: 1px solid #e9ecef;
+                        border-radius: 8px;
+                        padding: 8px 20px;
+                        font-size: 14px;
+                        color: #666;
+                        cursor: pointer;
+                    ">查看更多评价</button>
+                </div>
+            </div>
+            
+            <!-- 服务标签页 -->
+            <div class="tab-content" id="services">
+                <div class="section-title" style="margin-bottom: 16px;">
+                    <span>🛠</span>
+                    <span>增值服务</span>
+                </div>
+                
+                <div class="services-grid">
+                    <div class="service-item" onclick="serviceDetail('wifi')">
+                        <span class="service-icon">📱</span>
+                        <div class="service-name">免费WiFi</div>
+                    </div>
+                    
+                    <div class="service-item" onclick="serviceDetail('parking')">
+                        <span class="service-icon">🅿️</span>
+                        <div class="service-name">停车服务</div>
+                    </div>
+                    
+                    <div class="service-item" onclick="serviceDetail('delivery')">
+                        <span class="service-icon">🚀</span>
+                        <div class="service-name">极速配送</div>
+                    </div>
+                    
+                    <div class="service-item" onclick="serviceDetail('cake')">
+                        <span class="service-icon">🎂</span>
+                        <div class="service-name">生日蛋糕</div>
+                    </div>
+                    
+                    <div class="service-item" onclick="serviceDetail('driver')">
+                        <span class="service-icon">🚗</span>
+                        <div class="service-name">代驾服务</div>
+                    </div>
+                    
+                    <div class="service-item" onclick="serviceDetail('photo')">
+                        <span class="service-icon">📸</span>
+                        <div class="service-name">拍照服务</div>
+                    </div>
+                </div>
+                
+                <div style="background: #e8f5e8; border: 1px solid #52c41a; border-radius: 12px; padding: 16px; margin-top: 20px;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="font-size: 16px;">💎</span>
+                        <span style="font-weight: 600; color: #2E7D1C;">VIP专享服务</span>
+                    </div>
+                    <div style="font-size: 14px; color: #52c41a; line-height: 1.5;">
+                        • 专属包间优先预订权<br>
+                        • 免费生日蛋糕定制<br>
+                        • 专业拍照师服务(限豪华包间)<br>
+                        • 24小时代驾服务9折优惠
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部操作栏 -->
+        <div class="bottom-actions">
+            <button class="action-btn btn-secondary" onclick="contactStore()">
+                📞 联系商家
+            </button>
+            <button class="action-btn btn-primary" onclick="makeReservation()">
+                📅 立即预订
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+        
+        function shareStore() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '钱柜KTV - 三里屯店',
+                    text: '发现了一家不错的KTV，音响设备超棒，VIP会员还有8折优惠！',
+                    url: window.location.href
+                });
+            } else {
+                showToast('店铺信息已复制到剪贴板');
+            }
+        }
+        
+        function favoriteStore() {
+            const btn = event.target;
+            if (btn.textContent === '♡') {
+                btn.textContent = '❤️';
+                showToast('已添加到收藏');
+            } else {
+                btn.textContent = '♡';
+                showToast('已取消收藏');
+            }
+        }
+        
+        function playVideo() {
+            const videoBanner = document.getElementById('videoBanner');
+            const playBtn = videoBanner.querySelector('.play-btn');
+            
+            // 模拟视频播放
+            playBtn.style.opacity = '0';
+            videoBanner.innerHTML = `
+                <video style="width: 100%; height: 100%; object-fit: cover;" autoplay controls>
+                    <source src="#" type="video/mp4">
+                    <!-- 这里应该是实际的视频文件 -->
+                </video>
+                <div style="
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: rgba(0,0,0,0.8);
+                    color: white;
+                    padding: 16px 24px;
+                    border-radius: 8px;
+                    text-align: center;
+                    font-size: 14px;
+                ">
+                    <div style="margin-bottom: 8px;">📹 20秒店铺实拍</div>
+                    <div style="font-size: 12px; opacity: 0.8;">展示包间环境和设备</div>
+                </div>
+            `;
+            
+            showToast('正在播放店铺实拍视频...');
+        }
+        
+        function switchTab(tabName) {
+            // 更新标签状态
+            document.querySelectorAll('.info-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 切换内容
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+            
+            // 添加切换动画
+            const activeContent = document.getElementById(tabName);
+            activeContent.style.opacity = '0';
+            activeContent.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                activeContent.style.transition = 'all 0.3s ease';
+                activeContent.style.opacity = '1';
+                activeContent.style.transform = 'translateY(0)';
+            }, 50);
+        }
+        
+        function selectRoom(roomId) {
+            showToast(`正在查看包间${roomId}详情...`);
+            
+            // 这里可以跳转到预订页面
+            setTimeout(() => {
+                window.location.href = `04-预订确认.html?room=${roomId}`;
+            }, 500);
+        }
+        
+        function serviceDetail(serviceId) {
+            const services = {
+                'wifi': 'WiFi: KTV_Guest / 密码: 123456',
+                'parking': '地下停车场: ¥5/小时，会员9折优惠',
+                'delivery': '15分钟内送达包间，配送费¥3',
+                'cake': '生日蛋糕定制: 8寸¥128，VIP免费',
+                'driver': '24小时代驾服务: ¥2/公里起，VIP9折',
+                'photo': '专业拍照师: ¥200/小时，豪华包间免费'
+            };
+            
+            showAlert('服务详情', services[serviceId] || '服务详情待更新');
+        }
+        
+        function showVipBenefits() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                animation: fadeIn 0.3s ease;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    border-radius: 16px;
+                    padding: 24px;
+                    max-width: 320px;
+                    width: 90%;
+                    animation: slideInUp 0.3s ease;
+                ">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <div style="font-size: 48px; margin-bottom: 8px;">💎</div>
+                        <h3 style="color: #FF6B6B; margin-bottom: 8px;">VIP会员特权</h3>
+                        <div style="font-size: 12px; color: #666;">在钱柜KTV享受专属优惠</div>
+                    </div>
+                    
+                    <div style="space-y: 12px;">
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8f9fa; border-radius: 8px; margin-bottom: 8px;">
+                            <span style="font-size: 16px;">🎫</span>
+                            <div>
+                                <div style="font-weight: 500; font-size: 14px;">8折优惠价格</div>
+                                <div style="font-size: 12px; color: #666;">所有包间享受会员价</div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8f9fa; border-radius: 8px; margin-bottom: 8px;">
+                            <span style="font-size: 16px;">🎂</span>
+                            <div>
+                                <div style="font-weight: 500; font-size: 14px;">免费生日蛋糕</div>
+                                <div style="font-size: 12px; color: #666;">8寸生日蛋糕免费定制</div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8f9fa; border-radius: 8px; margin-bottom: 8px;">
+                            <span style="font-size: 16px;">⚡</span>
+                            <div>
+                                <div style="font-weight: 500; font-size: 14px;">优先预订</div>
+                                <div style="font-size: 12px; color: #666;">繁忙时段优先安排</div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8f9fa; border-radius: 8px; margin-bottom: 16px;">
+                            <span style="font-size: 16px;">🚗</span>
+                            <div>
+                                <div style="font-weight: 500; font-size: 14px;">代驾9折</div>
+                                <div style="font-size: 12px; color: #666;">24小时代驾服务优惠</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button onclick="this.parentElement.parentElement.remove()" style="
+                        width: 100%;
+                        background: linear-gradient(135deg, #FF6B6B, #FFD93D);
+                        color: white;
+                        border: none;
+                        border-radius: 8px;
+                        padding: 12px;
+                        font-size: 14px;
+                        font-weight: 600;
+                        cursor: pointer;
+                    ">知道了</button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.remove();
+            };
+        }
+        
+        function contactStore() {
+            showAlert('联系商家', `
+                <div style="text-align: left; line-height: 1.6;">
+                    📞 电话: 010-8888-9999<br>
+                    💬 微信: qiangui_ktv<br>
+                    📍 地址: 朝阳区三里屯SOHO 3号楼B1层<br><br>
+                    <div style="font-size: 12px; color: #666;">
+                        营业时间: 10:00-02:00 (周一至周日)
+                    </div>
+                </div>
+            `);
+        }
+        
+        function makeReservation() {
+            showToast('正在跳转到预订页面...');
+            setTimeout(() => {
+                window.location.href = '04-预订确认.html?store=qiangui';
+            }, 500);
+        }
+        
+        function goHome() {
+            window.location.href = '01-首页.html';
+        }
+        
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0,0,0,0.8);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-size: 14px;
+                z-index: 10000;
+                animation: fadeInOut 2s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+        
+        function showAlert(title, content) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    border-radius: 16px;
+                    padding: 24px;
+                    max-width: 320px;
+                    width: 90%;
+                    animation: slideInUp 0.3s ease;
+                ">
+                    <h3 style="margin-bottom: 16px; color: #333;">${title}</h3>
+                    <div style="margin-bottom: 20px; color: #666; font-size: 14px;">${content}</div>
+                    <button onclick="this.parentElement.parentElement.remove()" style="
+                        width: 100%;
+                        background: #2196F3;
+                        color: white;
+                        border: none;
+                        border-radius: 8px;
+                        padding: 10px;
+                        cursor: pointer;
+                    ">确定</button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.remove();
+            };
+        }
+        
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const animateElements = document.querySelectorAll('.animate-in');
+            animateElements.forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+        
+        // 添加CSS动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            
+            @keyframes fadeInOut {
+                0%, 100% { opacity: 0; }
+                50% { opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

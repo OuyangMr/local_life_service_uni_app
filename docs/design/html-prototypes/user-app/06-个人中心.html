@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - VIP会员</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .app-container {
+            max-width: 375px;
+            margin: 0 auto;
+            background: #f8f9fa;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .status-bar {
+            height: 24px;
+            background: #000;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 12px;
+        }
+        
+        .profile-header {
+            background: linear-gradient(135deg, #FF6B6B, #FFD93D);
+            padding: 40px 20px 30px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+        
+        .profile-header::after {
+            content: '💎';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            opacity: 0.3;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            border: 3px solid rgba(255,255,255,0.3);
+            position: relative;
+        }
+        
+        .avatar-badge {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 28px;
+            height: 28px;
+            background: #FFD700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            border: 2px solid white;
+        }
+        
+        .user-details {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .user-level {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .level-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .user-id {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .vip-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .stat-item {
+            text-align: center;
+            background: rgba(255,255,255,0.15);
+            padding: 16px 8px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-number {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .quick-actions {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        
+        .actions-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        
+        .action-item {
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px;
+            border-radius: 12px;
+        }
+        
+        .action-item:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+        }
+        
+        .action-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+        
+        .action-text {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .menu-section {
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        
+        .menu-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .menu-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-right: 16px;
+            color: white;
+        }
+        
+        .menu-content {
+            flex: 1;
+        }
+        
+        .menu-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        
+        .menu-desc {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .menu-badge {
+            background: #FF6B6B;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 8px;
+            margin-left: 8px;
+        }
+        
+        .menu-arrow {
+            color: #ccc;
+            font-size: 14px;
+        }
+        
+        .vip-benefits {
+            background: linear-gradient(135deg, #E8F5E8, #D4E8D4);
+            border: 2px solid #52c41a;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .vip-benefits::before {
+            content: '👑';
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            font-size: 24px;
+            opacity: 0.3;
+        }
+        
+        .benefits-title {
+            color: #2E7D1C;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .benefits-list {
+            display: grid;
+            gap: 12px;
+        }
+        
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 10px;
+        }
+        
+        .benefit-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: #52c41a;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        
+        .benefit-text {
+            flex: 1;
+            font-size: 14px;
+            color: #2E7D1C;
+        }
+        
+        .progress-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .progress-title {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .progress-value {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF6B6B, #FFD93D);
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+        
+        .progress-desc {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 375px;
+            background: white;
+            padding: 12px 20px;
+            box-shadow: 0 -2px 16px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        
+        .nav-items {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px;
+            border-radius: 8px;
+        }
+        
+        .nav-item.active {
+            color: #FF6B6B;
+        }
+        
+        .nav-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+        }
+        
+        .nav-text {
+            font-size: 10px;
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-in {
+            animation: slideInUp 0.6s ease-out;
+        }
+        
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .count-animation {
+            animation: countUp 0.8s ease-out;
+        }
+        
+        @keyframes shimmer {
+            0% {
+                background-position: -200px 0;
+            }
+            100% {
+                background-position: calc(200px + 100%) 0;
+            }
+        }
+        
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            background-size: 200px 100%;
+            animation: shimmer 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <span>9:41</span>
+            <span>📶 🔋 100%</span>
+        </div>
+        
+        <!-- 个人资料头部 -->
+        <div class="profile-header animate-in">
+            <div class="user-info">
+                <div class="user-avatar">
+                    👤
+                    <div class="avatar-badge">💎</div>
+                </div>
+                <div class="user-details">
+                    <div class="user-name">张先生</div>
+                    <div class="user-level">
+                        <span class="level-badge">钻石VIP</span>
+                        <span style="font-size: 12px;">Lv.5</span>
+                    </div>
+                    <div class="user-id">ID: 138****8888</div>
+                </div>
+            </div>
+            
+            <div class="vip-stats count-animation">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalSpent">¥12,580</div>
+                    <div class="stat-label">累计消费</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="totalPoints">8,260</div>
+                    <div class="stat-label">当前积分</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="vipDays">365</div>
+                    <div class="stat-label">VIP天数</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- 快捷操作 -->
+            <div class="quick-actions animate-in">
+                <div class="actions-title">
+                    <span>⚡</span>
+                    <span>快捷操作</span>
+                </div>
+                
+                <div class="actions-grid">
+                    <div class="action-item" onclick="quickAction('orders')">
+                        <div class="action-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">📋</div>
+                        <div class="action-text">我的订单</div>
+                    </div>
+                    
+                    <div class="action-item" onclick="quickAction('favorites')">
+                        <div class="action-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">❤️</div>
+                        <div class="action-text">我的收藏</div>
+                    </div>
+                    
+                    <div class="action-item" onclick="quickAction('coupons')">
+                        <div class="action-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">🎫</div>
+                        <div class="action-text">优惠券</div>
+                    </div>
+                    
+                    <div class="action-item" onclick="quickAction('points')">
+                        <div class="action-icon" style="background: linear-gradient(135deg, #fa709a, #fee140);">🎯</div>
+                        <div class="action-text">积分商城</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- VIP特权说明 -->
+            <div class="vip-benefits animate-in">
+                <div class="benefits-title">
+                    <span>💎</span>
+                    <span>钻石VIP特权</span>
+                </div>
+                
+                <div class="benefits-list">
+                    <div class="benefit-item">
+                        <div class="benefit-icon">🎫</div>
+                        <div class="benefit-text">所有商家8折优惠价格</div>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <div class="benefit-icon">⚡</div>
+                        <div class="benefit-text">免费预订，无需支付订金</div>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <div class="benefit-icon">🎁</div>
+                        <div class="benefit-text">积分双倍返还，升级更快</div>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <div class="benefit-icon">🔄</div>
+                        <div class="benefit-text">专属客服，24小时在线</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 等级进度 -->
+            <div class="progress-card animate-in">
+                <div class="progress-header">
+                    <div class="progress-title">
+                        <span>📈</span>
+                        <span>等级进度</span>
+                    </div>
+                    <div class="progress-value">8,260 / 10,000</div>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%" id="progressBar"></div>
+                </div>
+                
+                <div class="progress-desc">
+                    再消费¥1,740即可升级至尊石VIP，享受更多特权
+                </div>
+            </div>
+            
+            <!-- 功能菜单 -->
+            <div class="menu-section animate-in">
+                <div class="menu-item" onclick="navigateTo('orders')">
+                    <div class="menu-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">📋</div>
+                    <div class="menu-content">
+                        <div class="menu-title">我的订单</div>
+                        <div class="menu-desc">查看预订记录和消费历史</div>
+                    </div>
+                    <div class="menu-badge">3</div>
+                    <div class="menu-arrow">›</div>
+                </div>
+                
+                <div class="menu-item" onclick="navigateTo('wallet')">
+                    <div class="menu-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">💳</div>
+                    <div class="menu-content">
+                        <div class="menu-title">我的钱包</div>
+                        <div class="menu-desc">余额、积分、优惠券管理</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+                
+                <div class="menu-item" onclick="navigateTo('vip')">
+                    <div class="menu-icon" style="background: linear-gradient(135deg, #fa709a, #fee140);">💎</div>
+                    <div class="menu-content">
+                        <div class="menu-title">VIP会员</div>
+                        <div class="menu-desc">特权说明、升级指南</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+                
+                <div class="menu-item" onclick="navigateTo('address')">
+                    <div class="menu-icon" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">📍</div>
+                    <div class="menu-content">
+                        <div class="menu-title">收货地址</div>
+                        <div class="menu-desc">管理常用地址</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+            </div>
+            
+            <div class="menu-section animate-in">
+                <div class="menu-item" onclick="navigateTo('invite')">
+                    <div class="menu-icon" style="background: linear-gradient(135deg, #ff9a9e, #fecfef);">🎁</div>
+                    <div class="menu-content">
+                        <div class="menu-title">邀请好友</div>
+                        <div class="menu-desc">邀请得积分，好友享折扣</div>
+                    </div>
+                    <div class="menu-badge">Hot</div>
+                    <div class="menu-arrow">›</div>
+                </div>
+                
+                <div class="menu-item" onclick="navigateTo('feedback')">
+                    <div class="menu-icon" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">💬</div>
+                    <div class="menu-content">
+                        <div class="menu-title">意见反馈</div>
+                        <div class="menu-desc">问题反馈和建议</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+                
+                <div class="menu-item" onclick="navigateTo('help')">
+                    <div class="menu-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">❓</div>
+                    <div class="menu-content">
+                        <div class="menu-title">帮助中心</div>
+                        <div class="menu-desc">常见问题和使用指南</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+                
+                <div class="menu-item" onclick="navigateTo('settings')">
+                    <div class="menu-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">⚙️</div>
+                    <div class="menu-content">
+                        <div class="menu-title">设置</div>
+                        <div class="menu-desc">账号安全、隐私设置</div>
+                    </div>
+                    <div class="menu-arrow">›</div>
+                </div>
+            </div>
+            
+            <!-- 底部间距 -->
+            <div style="height: 80px;"></div>
+        </div>
+        
+        <!-- 底部导航 -->
+        <div class="bottom-nav">
+            <div class="nav-items">
+                <div class="nav-item" onclick="navigateToTab('home')">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-text">首页</div>
+                </div>
+                
+                <div class="nav-item" onclick="navigateToTab('category')">
+                    <div class="nav-icon">📋</div>
+                    <div class="nav-text">分类</div>
+                </div>
+                
+                <div class="nav-item" onclick="navigateToTab('orders')">
+                    <div class="nav-icon">📦</div>
+                    <div class="nav-text">订单</div>
+                </div>
+                
+                <div class="nav-item active" onclick="navigateToTab('profile')">
+                    <div class="nav-icon">👤</div>
+                    <div class="nav-text">我的</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 数字动画效果
+        function animateNumber(elementId, targetValue, prefix = '', suffix = '') {
+            const element = document.getElementById(elementId);
+            const startValue = 0;
+            const duration = 2000;
+            const startTime = performance.now();
+            
+            function updateNumber(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const currentValue = startValue + (targetValue - startValue) * easeOut;
+                
+                if (elementId === 'totalSpent') {
+                    element.textContent = prefix + '¥' + Math.floor(currentValue).toLocaleString();
+                } else if (elementId === 'vipDays') {
+                    element.textContent = Math.floor(currentValue) + suffix;
+                } else {
+                    element.textContent = prefix + Math.floor(currentValue).toLocaleString() + suffix;
+                }
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateNumber);
+                }
+            }
+            
+            requestAnimationFrame(updateNumber);
+        }
+        
+        // 进度条动画
+        function animateProgressBar() {
+            const progressBar = document.getElementById('progressBar');
+            const targetWidth = 82.6; // 8260/10000 * 100
+            
+            setTimeout(() => {
+                progressBar.style.width = targetWidth + '%';
+            }, 1000);
+        }
+        
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const animateElements = document.querySelectorAll('.animate-in');
+            animateElements.forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.1}s`;
+            });
+            
+            // 延迟启动数字动画
+            setTimeout(() => {
+                animateNumber('totalSpent', 12580);
+                animateNumber('totalPoints', 8260);
+                animateNumber('vipDays', 365);
+                animateProgressBar();
+            }, 500);
+        });
+        
+        // 快捷操作
+        function quickAction(action) {
+            const actions = {
+                'orders': '正在跳转到我的订单...',
+                'favorites': '正在查看收藏列表...',
+                'coupons': '正在打开优惠券中心...',
+                'points': '正在进入积分商城...'
+            };
+            
+            showToast(actions[action] || '功能开发中...');
+            
+            // 模拟页面跳转
+            setTimeout(() => {
+                if (action === 'orders') {
+                    // 这里可以跳转到订单页面
+                    console.log('跳转到订单页面');
+                }
+            }, 500);
+        }
+        
+        // 页面导航
+        function navigateTo(page) {
+            const pages = {
+                'orders': '我的订单',
+                'wallet': '我的钱包',
+                'vip': 'VIP会员中心',
+                'address': '收货地址管理',
+                'invite': '邀请好友',
+                'feedback': '意见反馈',
+                'help': '帮助中心',
+                'settings': '设置'
+            };
+            
+            showToast(`正在打开${pages[page] || page}...`);
+            
+            // 特殊页面处理
+            if (page === 'vip') {
+                setTimeout(() => {
+                    showVipDetail();
+                }, 500);
+            }
+        }
+        
+        // 底部导航切换
+        function navigateToTab(tab) {
+            // 更新导航状态
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.nav-item').classList.add('active');
+            
+            const tabs = {
+                'home': '首页',
+                'category': '分类',
+                'orders': '订单',
+                'profile': '个人中心'
+            };
+            
+            if (tab !== 'profile') {
+                showToast(`正在跳转到${tabs[tab]}...`);
+                
+                setTimeout(() => {
+                    switch(tab) {
+                        case 'home':
+                            window.location.href = '01-首页.html';
+                            break;
+                        case 'category':
+                            window.location.href = '02-分类浏览.html';
+                            break;
+                        case 'orders':
+                            showToast('订单页面开发中...');
+                            break;
+                        default:
+                            console.log(`跳转到${tab}页面`);
+                    }
+                }, 500);
+            }
+        }
+        
+        // VIP详情展示
+        function showVipDetail() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                animation: fadeIn 0.3s ease;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    border-radius: 16px;
+                    padding: 24px;
+                    max-width: 320px;
+                    width: 90%;
+                    max-height: 80vh;
+                    overflow-y: auto;
+                    animation: slideInUp 0.3s ease;
+                ">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <div style="font-size: 48px; margin-bottom: 8px;">💎</div>
+                        <h3 style="color: #FF6B6B; margin-bottom: 8px;">钻石VIP会员</h3>
+                        <div style="font-size: 12px; color: #666;">尊享专属特权，品质生活从此开始</div>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 16px; border-radius: 12px; margin-bottom: 20px;">
+                        <div style="text-align: center; margin-bottom: 12px;">
+                            <div style="font-size: 14px; color: #666; margin-bottom: 4px;">当前等级进度</div>
+                            <div style="height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden;">
+                                <div style="height: 100%; width: 82.6%; background: linear-gradient(90deg, #FF6B6B, #FFD93D); border-radius: 3px;"></div>
+                            </div>
+                            <div style="font-size: 12px; color: #666; margin-top: 4px;">8,260 / 10,000 积分</div>
+                        </div>
+                        <div style="text-align: center; font-size: 12px; color: #666;">
+                            距离至尊石VIP还需 1,740 积分
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="margin-bottom: 12px; color: #333;">当前特权</h4>
+                        <div style="font-size: 14px; line-height: 1.6; color: #666;">
+                            🎫 全场商家8折优惠<br>
+                            ⚡ 免费预订，无需订金<br>
+                            🎁 积分双倍返还<br>
+                            🔄 专属客服24小时在线<br>
+                            📦 配送费减免<br>
+                            🎂 生日专属礼品
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="margin-bottom: 12px; color: #333;">升级至尊石VIP特权</h4>
+                        <div style="font-size: 14px; line-height: 1.6; color: #666;">
+                            👑 全场商家7折优惠<br>
+                            🎯 积分三倍返还<br>
+                            🎁 每月专属礼品<br>
+                            ✈️ 优先客服通道<br>
+                            🏆 专属活动邀请
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 12px;">
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" style="
+                            flex: 1;
+                            background: #f8f9fa;
+                            color: #666;
+                            border: 1px solid #e9ecef;
+                            border-radius: 8px;
+                            padding: 10px;
+                            cursor: pointer;
+                        ">关闭</button>
+                        <button onclick="upgradeVip()" style="
+                            flex: 1;
+                            background: linear-gradient(135deg, #FF6B6B, #FFD93D);
+                            color: white;
+                            border: none;
+                            border-radius: 8px;
+                            padding: 10px;
+                            cursor: pointer;
+                        ">立即升级</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.remove();
+            };
+        }
+        
+        function upgradeVip() {
+            showToast('正在跳转到VIP升级页面...');
+            // 移除弹窗
+            document.querySelector('[style*="position: fixed"]').remove();
+        }
+        
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0,0,0,0.8);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-size: 14px;
+                z-index: 10000;
+                animation: fadeInOut 2s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+        
+        // 添加CSS动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            
+            @keyframes fadeInOut {
+                0%, 100% { opacity: 0; }
+                50% { opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

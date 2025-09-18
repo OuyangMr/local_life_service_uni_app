@@ -1,0 +1,730 @@
+/**
+ * 商户端响应式样式
+ * 针对商户端的多设备适配，包括手机、平板、PC
+ */
+
+/* ==================== 商户端断点定义 ==================== */
+
+$merchant-breakpoints: (
+  mobile: 320px,     // 手机
+  tablet: 768px,     // 平板
+  laptop: 1024px,    // 笔记本
+  desktop: 1440px,   // 台式机
+  wide: 1920px       // 宽屏
+);
+
+/* 商户端响应式混入 */
+@mixin merchant-respond-to($breakpoint) {
+  @if map-has-key($merchant-breakpoints, $breakpoint) {
+    @media (min-width: map-get($merchant-breakpoints, $breakpoint)) {
+      @content;
+    }
+  } @else {
+    @warn "Unknown breakpoint: #{$breakpoint}";
+  }
+}
+
+@mixin merchant-respond-between($min, $max) {
+  @if map-has-key($merchant-breakpoints, $min) and map-has-key($merchant-breakpoints, $max) {
+    @media (min-width: map-get($merchant-breakpoints, $min)) and (max-width: map-get($merchant-breakpoints, $max) - 1px) {
+      @content;
+    }
+  }
+}
+
+@mixin merchant-respond-down($breakpoint) {
+  @if map-has-key($merchant-breakpoints, $breakpoint) {
+    @media (max-width: map-get($merchant-breakpoints, $breakpoint) - 1px) {
+      @content;
+    }
+  }
+}
+
+/* ==================== 商户端布局容器 ==================== */
+
+.merchant-container {
+  width: 100%;
+  padding: 0 var(--spacing-base);
+  margin: 0 auto;
+  
+  @include merchant-respond-to(tablet) {
+    max-width: 720px;
+    padding: 0 var(--spacing-lg);
+  }
+  
+  @include merchant-respond-to(laptop) {
+    max-width: 960px;
+  }
+  
+  @include merchant-respond-to(desktop) {
+    max-width: 1200px;
+  }
+  
+  @include merchant-respond-to(wide) {
+    max-width: 1400px;
+  }
+}
+
+.merchant-container-fluid {
+  width: 100%;
+  padding: 0 var(--spacing-base);
+  
+  @include merchant-respond-to(tablet) {
+    padding: 0 var(--spacing-lg);
+  }
+  
+  @include merchant-respond-to(laptop) {
+    padding: 0 var(--spacing-xl);
+  }
+}
+
+/* ==================== 商户端网格系统 ==================== */
+
+.merchant-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 calc(var(--spacing-base) / -2);
+  
+  @include merchant-respond-to(tablet) {
+    margin: 0 calc(var(--spacing-lg) / -2);
+  }
+}
+
+.merchant-col {
+  flex: 1;
+  padding: 0 calc(var(--spacing-base) / 2);
+  
+  @include merchant-respond-to(tablet) {
+    padding: 0 calc(var(--spacing-lg) / 2);
+  }
+}
+
+// 生成商户端栅格类
+@for $i from 1 through 24 {
+  .merchant-col-#{$i} {
+    flex: 0 0 percentage($i / 24);
+    max-width: percentage($i / 24);
+    padding: 0 calc(var(--spacing-base) / 2);
+    
+    @include merchant-respond-to(tablet) {
+      padding: 0 calc(var(--spacing-lg) / 2);
+    }
+  }
+}
+
+// 商户端响应式栅格
+@each $breakpoint, $width in $merchant-breakpoints {
+  @include merchant-respond-to($breakpoint) {
+    @for $i from 1 through 24 {
+      .merchant-col-#{$breakpoint}-#{$i} {
+        flex: 0 0 percentage($i / 24);
+        max-width: percentage($i / 24);
+      }
+    }
+    
+    .merchant-col-#{$breakpoint} {
+      flex: 1;
+    }
+    
+    .merchant-col-#{$breakpoint}-auto {
+      flex: 0 0 auto;
+      width: auto;
+    }
+  }
+}
+
+/* ==================== 商户端侧边栏布局 ==================== */
+
+.merchant-layout {
+  display: flex;
+  min-height: 100vh;
+  
+  &-sidebar {
+    width: 240rpx;
+    background: var(--theme-bg-primary);
+    border-right: 1rpx solid var(--theme-border-light);
+    transition: all var(--duration-base) var(--ease-out);
+    
+    @include merchant-respond-down(tablet) {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: var(--z-modal);
+      transform: translateX(-100%);
+      
+      &.open {
+        transform: translateX(0);
+      }
+    }
+    
+    @include merchant-respond-to(tablet) {
+      width: 280rpx;
+    }
+    
+    @include merchant-respond-to(laptop) {
+      width: 320rpx;
+    }
+    
+    &.collapsed {
+      width: 120rpx;
+      
+      @include merchant-respond-to(tablet) {
+        width: 120rpx;
+      }
+      
+      .sidebar-nav {
+        &-menu {
+          .menu-item {
+            .text {
+              display: none;
+            }
+            
+            .badge {
+              display: none;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  &-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    
+    @include merchant-respond-down(tablet) {
+      width: 100%;
+    }
+  }
+  
+  &-header {
+    height: 120rpx;
+    background: var(--theme-bg-primary);
+    border-bottom: 1rpx solid var(--theme-border-light);
+    display: flex;
+    align-items: center;
+    padding: 0 var(--spacing-lg);
+    
+    @include merchant-respond-to(tablet) {
+      height: 140rpx;
+      padding: 0 var(--spacing-xl);
+    }
+  }
+  
+  &-content {
+    flex: 1;
+    padding: var(--spacing-lg);
+    background: var(--theme-bg-secondary);
+    overflow-y: auto;
+    
+    @include merchant-respond-to(tablet) {
+      padding: var(--spacing-xl);
+    }
+    
+    @include merchant-respond-to(laptop) {
+      padding: var(--spacing-xl) var(--spacing-xxl);
+    }
+  }
+  
+  &-footer {
+    padding: var(--spacing-base) var(--spacing-lg);
+    background: var(--theme-bg-primary);
+    border-top: 1rpx solid var(--theme-border-light);
+    text-align: center;
+    
+    @include merchant-respond-to(tablet) {
+      padding: var(--spacing-lg) var(--spacing-xl);
+    }
+  }
+}
+
+/* 移动端遮罩层 */
+.merchant-layout-mask {
+  display: none;
+  
+  @include merchant-respond-down(tablet) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--theme-bg-mask);
+    z-index: var(--z-modal-backdrop);
+    
+    &.show {
+      display: block;
+    }
+  }
+}
+
+/* ==================== 商户端表格响应式 ==================== */
+
+.merchant-table {
+  @include merchant-respond-down(tablet) {
+    .table {
+      min-width: 800rpx;
+    }
+  }
+  
+  @include merchant-respond-to(tablet) {
+    &-body {
+      .table {
+        .table-row {
+          .table-cell {
+            padding: var(--spacing-lg) var(--spacing-xl);
+          }
+        }
+      }
+    }
+  }
+  
+  @include merchant-respond-to(laptop) {
+    &-header {
+      padding: var(--spacing-xl);
+    }
+    
+    &-filters {
+      padding: var(--spacing-lg) var(--spacing-xl);
+    }
+    
+    &-footer {
+      padding: var(--spacing-lg) var(--spacing-xl);
+    }
+  }
+}
+
+/* ==================== 数据卡片响应式 ==================== */
+
+.merchant-stat-card {
+  @include merchant-respond-to(tablet) {
+    padding: var(--spacing-xl);
+    
+    &-value {
+      font-size: 72rpx;
+    }
+  }
+}
+
+.dashboard-grid {
+  display: grid;
+  gap: var(--spacing-base);
+  grid-template-columns: 1fr;
+  
+  @include merchant-respond-to(tablet) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+  }
+  
+  @include merchant-respond-to(laptop) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  @include merchant-respond-to(desktop) {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-xl);
+  }
+}
+
+/* ==================== 房间卡片响应式 ==================== */
+
+.rooms-grid {
+  display: grid;
+  gap: var(--spacing-base);
+  grid-template-columns: 1fr;
+  
+  @include merchant-respond-to(tablet) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+  }
+  
+  @include merchant-respond-to(laptop) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  @include merchant-respond-to(desktop) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  @include merchant-respond-to(wide) {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+.room-status-card {
+  @include merchant-respond-to(tablet) {
+    padding: var(--spacing-lg);
+  }
+}
+
+/* ==================== 订单卡片响应式 ==================== */
+
+.orders-grid {
+  display: grid;
+  gap: var(--spacing-base);
+  grid-template-columns: 1fr;
+  
+  @include merchant-respond-to(tablet) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+  }
+  
+  @include merchant-respond-to(laptop) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.order-management-card {
+  @include merchant-respond-to(tablet) {
+    padding: var(--spacing-lg);
+  }
+}
+
+/* ==================== 表单响应式 ==================== */
+
+.merchant-form {
+  @include merchant-respond-to(tablet) {
+    .form-row {
+      display: flex;
+      gap: var(--spacing-lg);
+      
+      .form-item {
+        flex: 1;
+      }
+    }
+  }
+  
+  @include merchant-respond-to(laptop) {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+}
+
+.merchant-search {
+  @include merchant-respond-to(tablet) {
+    max-width: 600rpx;
+  }
+}
+
+/* ==================== 图表响应式 ==================== */
+
+.merchant-chart-container {
+  @include merchant-respond-to(tablet) {
+    padding: var(--spacing-xl);
+    
+    &-chart {
+      height: 800rpx;
+    }
+  }
+  
+  @include merchant-respond-to(laptop) {
+    &-chart {
+      height: 1000rpx;
+    }
+  }
+}
+
+.revenue-chart-container {
+  @include merchant-respond-to(tablet) {
+    &-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacing-lg);
+      text-align: left;
+    }
+  }
+}
+
+/* ==================== 分页响应式 ==================== */
+
+.merchant-pagination {
+  @include merchant-respond-down(tablet) {
+    flex-wrap: wrap;
+    justify-content: center;
+    
+    &-info {
+      order: -1;
+      width: 100%;
+      text-align: center;
+      margin-bottom: var(--spacing-base);
+    }
+    
+    &-size-selector {
+      margin-left: 0;
+      margin-top: var(--spacing-base);
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+/* ==================== 模态框响应式 ==================== */
+
+.merchant-modal {
+  @include merchant-respond-to(tablet) {
+    &-content {
+      max-width: 800rpx;
+      margin: var(--spacing-xl);
+    }
+  }
+  
+  @include merchant-respond-to(laptop) {
+    &-content {
+      max-width: 1000rpx;
+    }
+  }
+}
+
+/* ==================== 工具栏响应式 ==================== */
+
+.merchant-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-base);
+  align-items: center;
+  padding: var(--spacing-base);
+  background: var(--theme-bg-primary);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-lg);
+  
+  @include merchant-respond-down(tablet) {
+    flex-direction: column;
+    align-items: stretch;
+    
+    .toolbar-left,
+    .toolbar-right {
+      width: 100%;
+    }
+    
+    .toolbar-right {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-sm);
+    }
+  }
+  
+  @include merchant-respond-to(tablet) {
+    padding: var(--spacing-lg);
+    
+    .toolbar-left {
+      flex: 1;
+    }
+    
+    .toolbar-right {
+      display: flex;
+      gap: var(--spacing-sm);
+    }
+  }
+}
+
+/* ==================== 标签页响应式 ==================== */
+
+.merchant-tabs {
+  @include merchant-respond-down(tablet) {
+    &-nav {
+      overflow-x: auto;
+      white-space: nowrap;
+      
+      .tab-item {
+        flex-shrink: 0;
+      }
+    }
+  }
+  
+  @include merchant-respond-to(tablet) {
+    &-content {
+      padding: var(--spacing-xl);
+    }
+  }
+}
+
+/* ==================== 头部响应式 ==================== */
+
+.merchant-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  
+  &-left {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-base);
+    
+    .menu-toggle {
+      display: none;
+      
+      @include merchant-respond-down(tablet) {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 80rpx;
+        height: 80rpx;
+        border: none;
+        background: transparent;
+        color: var(--theme-text-regular);
+        font-size: var(--font-size-xl);
+        cursor: pointer;
+      }
+    }
+    
+    .breadcrumb {
+      @include merchant-respond-down(tablet) {
+        display: none;
+      }
+    }
+  }
+  
+  &-right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-base);
+    
+    .notifications {
+      @include merchant-respond-down(tablet) {
+        display: none;
+      }
+    }
+    
+    .user-menu {
+      .avatar {
+        @include merchant-respond-down(tablet) {
+          width: 64rpx;
+          height: 64rpx;
+        }
+      }
+    }
+  }
+}
+
+/* ==================== 隐藏/显示工具类 ==================== */
+
+@each $breakpoint, $width in $merchant-breakpoints {
+  @include merchant-respond-to($breakpoint) {
+    .d-#{$breakpoint}-block { display: block !important; }
+    .d-#{$breakpoint}-inline { display: inline !important; }
+    .d-#{$breakpoint}-inline-block { display: inline-block !important; }
+    .d-#{$breakpoint}-flex { display: flex !important; }
+    .d-#{$breakpoint}-grid { display: grid !important; }
+    .d-#{$breakpoint}-none { display: none !important; }
+  }
+}
+
+@each $breakpoint, $width in $merchant-breakpoints {
+  @include merchant-respond-down($breakpoint) {
+    .d-#{$breakpoint}-down-none { display: none !important; }
+  }
+}
+
+/* ==================== 打印样式 ==================== */
+
+@media print {
+  .merchant-layout-sidebar,
+  .merchant-header,
+  .merchant-toolbar,
+  .no-print {
+    display: none !important;
+  }
+  
+  .merchant-layout-main {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .merchant-layout-content {
+    padding: 20mm;
+    background: white !important;
+  }
+  
+  .merchant-table {
+    box-shadow: none !important;
+    border: 1px solid #000 !important;
+    
+    .table {
+      .table-header,
+      .table-cell {
+        border: 1px solid #000 !important;
+        padding: 8rpx !important;
+      }
+    }
+  }
+  
+  .merchant-chart-container {
+    box-shadow: none !important;
+    border: 1px solid #000 !important;
+    
+    &-chart {
+      height: 200mm !important;
+    }
+  }
+  
+  .merchant-stat-card {
+    box-shadow: none !important;
+    border: 1px solid #000 !important;
+    break-inside: avoid;
+    margin-bottom: 10mm;
+  }
+  
+  .page-break {
+    page-break-before: always;
+  }
+  
+  .no-page-break {
+    page-break-inside: avoid;
+  }
+}
+
+/* ==================== 深色模式适配 ==================== */
+
+@media (prefers-color-scheme: dark) {
+  .merchant-layout {
+    &-sidebar {
+      background: var(--theme-bg-dark);
+      border-right-color: var(--theme-border-darker);
+    }
+    
+    &-header {
+      background: var(--theme-bg-dark);
+      border-bottom-color: var(--theme-border-darker);
+    }
+    
+    &-content {
+      background: #1a1a1a;
+    }
+  }
+  
+  .merchant-table {
+    box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.3);
+  }
+  
+  .merchant-stat-card {
+    box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* ==================== 触摸设备优化 ==================== */
+
+@media (hover: none) and (pointer: coarse) {
+  .merchant-button {
+    min-height: 88rpx;
+    padding: var(--spacing-lg) var(--spacing-xl);
+  }
+  
+  .merchant-table {
+    .table-row {
+      .table-cell {
+        padding: var(--spacing-lg);
+      }
+    }
+  }
+  
+  .merchant-pagination-item {
+    min-width: 88rpx;
+    min-height: 88rpx;
+  }
+  
+  .tab-item {
+    min-height: 88rpx;
+  }
+}

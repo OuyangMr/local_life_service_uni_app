@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "sass": "^1.92.1",
+    "ts-jest": "^29.4.2"
+  }
+}

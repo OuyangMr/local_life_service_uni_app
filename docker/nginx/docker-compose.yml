@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: local-life-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+      - static_files:/var/www/static
+    depends_on:
+      - backend
+    networks:
+      - local-life-network
+
+volumes:
+  static_files:
+    driver: local
+
+networks:
+  local-life-network:
+    external: true

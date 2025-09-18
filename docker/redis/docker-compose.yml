@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7.0-alpine
+    container_name: local-life-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --requirepass ${REDIS_PASSWORD:-redis123}
+    networks:
+      - local-life-network
+
+volumes:
+  redis_data:
+    driver: local
+
+networks:
+  local-life-network:
+    external: true

@@ -1,0 +1,112 @@
+{
+    "name": "本地生活服务",
+    "appid": "__UNI__LOCAL_LIFE",
+    "description": "本地生活服务应用，提供空间预订和扫码点单服务",
+    "locale": "zh-Hans",
+    "versionName": "1.0.0",
+    "versionCode": "100",
+    "transformPx": false,
+    "debug": true,
+    "uniStatistics": {
+        "enable": false
+    },
+    "app-plus": {
+        "usingComponents": true,
+        "nvueStyleCompiler": "uni-app",
+        "compilerVersion": 3,
+        "splashscreen": {
+            "alwaysShowBeforeRender": true,
+            "waiting": true,
+            "autoclose": true,
+            "delay": 0
+        },
+        "modules": {},
+        "distribute": {
+            "android": {
+                "permissions": [
+                    "<uses-permission android:name=\"android.permission.CAMERA\" />",
+                    "<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />",
+                    "<uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\" />"
+                ]
+            },
+            "ios": {},
+            "sdkConfigs": {}
+        }
+    },
+    "quickapp": {},
+    "mp-weixin": {
+        "appid": "",
+        "setting": {
+            "urlCheck": false,
+            "es6": true,
+            "enhance": true,
+            "postcss": true,
+            "preloadBackgroundData": false,
+            "minified": true,
+            "newFeature": false,
+            "coverView": true,
+            "nodeModules": false,
+            "autoAudits": false,
+            "showShadowRootInWxmlPanel": true,
+            "scopeDataCheck": false,
+            "uglifyFileName": false,
+            "checkInvalidKey": true,
+            "checkSiteMap": true,
+            "uploadWithSourceMap": true,
+            "compileHotReLoad": false,
+            "lazyloadPlaceholderEnable": false,
+            "useMultiFrameRuntime": true,
+            "useApiHook": true,
+            "useApiHostProcess": true,
+            "babelSetting": {
+                "ignore": [],
+                "disablePlugins": [],
+                "outputPath": ""
+            },
+            "enableEngineNative": false,
+            "useIsolateContext": true,
+            "userConfirmedBundleSwitch": false,
+            "packNpmManually": false,
+            "packNpmRelationList": [],
+            "minifyWXSS": true,
+            "disableUseStrict": false,
+            "minifyWXML": true,
+            "showES6CompileOption": false,
+            "useCompilerPlugins": false
+        },
+        "usingComponents": true,
+        "permission": {
+            "scope.userLocation": {
+                "desc": "您的位置信息将用于获取附近的店铺信息"
+            }
+        },
+        "requiredPrivateInfos": ["getLocation", "startLocationUpdate"],
+        "lazyCodeLoading": "requiredComponents"
+    },
+    "mp-alipay": {
+        "usingComponents": true,
+        "component2": true
+    },
+    "mp-baidu": {
+        "usingComponents": true
+    },
+    "mp-toutiao": {
+        "usingComponents": true
+    },
+    "h5": {
+        "title": "本地生活服务",
+        "template": "index.html",
+        "router": {
+            "mode": "hash",
+            "base": "./"
+        },
+        "optimization": {
+            "treeShaking": {
+                "enable": false
+            }
+        },
+        "publicPath": "./"
+    },
+    "vueVersion": "3"
+}
+

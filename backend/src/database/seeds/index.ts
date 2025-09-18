@@ -17,6 +17,8 @@ type CreatedRefs = {
   customerId?: string;
   orderIds?: string[];
   reviewIds?: string[];
+  adminId?: string;
+  vipIds?: string[];
 };
 
 async function ensureMerchantOwner(): Promise<string> {
@@ -67,6 +69,56 @@ async function ensureCustomerUser(): Promise<string> {
   return user._id.toString();
 }
 
+async function ensureAdminUser(): Promise<string> {
+  const phone = '19900003333';
+  const existing = await User.findOne({ phone }).select('_id');
+  if (existing) {
+    console.log('Admin exists:', existing._id.toString());
+    return existing._id.toString();
+  }
+  const user = await User.create({
+    phone,
+    password: 'Passw0rd!@#',
+    nickname: '系统管理员',
+    userType: 'admin',
+    vipLevel: 0,
+    isVerified: true,
+  });
+  console.log('Admin created:', user._id.toString());
+  return user._id.toString();
+}
+
+async function ensureVipUsers(): Promise<string[]> {
+  const vipDefs = [
+    { phone: '19900004444', level: 1, nickname: 'VIP一号' },
+    { phone: '19900005555', level: 2, nickname: 'VIP二号' },
+    { phone: '19900006666', level: 3, nickname: 'VIP三号' },
+  ];
+  const ids: string[] = [];
+  for (const v of vipDefs) {
+    const exists = await User.findOne({ phone: v.phone }).select('_id');
+    if (exists) {
+      console.log('VIP exists:', v.level, exists._id.toString());
+      ids.push(exists._id.toString());
+      continue;
+    }
+    const expireAt = new Date(Date.now() + 180 * 24 * 3600 * 1000);
+    const user = await User.create({
+      phone: v.phone,
+      password: 'Passw0rd!@#',
+      nickname: v.nickname,
+      userType: 'user',
+      vipLevel: v.level,
+      vipExpireAt: expireAt,
+      isVerified: true,
+      balance: 500,
+    });
+    console.log('VIP created:', v.level, user._id.toString());
+    ids.push(user._id.toString());
+  }
+  return ids;
+}
+
 async function createStores(ownerId: string): Promise<string[]> {
   const samples = [
     {
@@ -111,6 +163,69 @@ async function createStores(ownerId: string): Promise<string[]> {
       roomCount: 0,
       features: ['自助点歌', '主题包间'],
     },
+    {
+      name: '夜色KTV（中关村店）',
+      description: '设备新、主题房，审核中门店',
+      phone: '13700000003',
+      address: '北京市海淀区海淀大街1号',
+      location: { type: 'Point' as const, coordinates: [116.3269, 39.9834] },
+      businessHours: { open: '11:00', close: '22:30', isClosed: false },
+      images: ['https://picsum.photos/seed/store3/800/400'],
+      tags: ['主题房', '设备新'],
+      rating: 0,
+      reviewCount: 0,
+      totalRevenue: 0,
+      monthlyRevenue: 0,
+      status: 'pending' as const,
+      isVerified: false,
+      amenities: ['WiFi'],
+      priceRange: { min: 99, max: 699 },
+      capacity: 120,
+      roomCount: 0,
+      features: ['审核中'],
+    },
+    {
+      name: '天籁之音KTV（通州店）',
+      description: '暂停营业维护中',
+      phone: '13600000004',
+      address: '北京市通州区新华大街8号',
+      location: { type: 'Point' as const, coordinates: [116.6586, 39.9097] },
+      businessHours: { open: '10:00', close: '22:00', isClosed: true },
+      images: ['https://picsum.photos/seed/store4/800/400'],
+      tags: ['维护中'],
+      rating: 0,
+      reviewCount: 0,
+      totalRevenue: 0,
+      monthlyRevenue: 0,
+      status: 'suspended' as const,
+      isVerified: false,
+      amenities: [],
+      priceRange: { min: 0, max: 0 },
+      capacity: 1,
+      roomCount: 0,
+      features: [],
+    },
+    {
+      name: '悠然KTV（望京店）',
+      description: '暂未开业',
+      phone: '13500000005',
+      address: '北京市朝阳区望京东路2号',
+      location: { type: 'Point' as const, coordinates: [116.4821, 40.0031] },
+      businessHours: { open: '12:00', close: '21:30', isClosed: true },
+      images: ['https://picsum.photos/seed/store5/800/400'],
+      tags: ['未开业'],
+      rating: 0,
+      reviewCount: 0,
+      totalRevenue: 0,
+      monthlyRevenue: 0,
+      status: 'inactive' as const,
+      isVerified: false,
+      amenities: [],
+      priceRange: { min: 0, max: 0 },
+      capacity: 1,
+      roomCount: 0,
+      features: [],
+    },
   ];
 
   const ids: string[] = [];
@@ -135,6 +250,8 @@ async function createRooms(storeId: string): Promise<string[]> {
     { name: '欢聚小包', capacity: 6, price: 198, deposit: 100, status: RoomStatus.AVAILABLE },
     { name: '派对中包', capacity: 12, price: 398, deposit: 200, status: RoomStatus.AVAILABLE },
     { name: '豪华大包', capacity: 20, price: 888, deposit: 500, status: RoomStatus.AVAILABLE },
+    { name: '维护中-中包', capacity: 10, price: 288, deposit: 150, status: RoomStatus.MAINTENANCE },
+    { name: '已禁用-小包', capacity: 4, price: 128, deposit: 80, status: RoomStatus.DISABLED },
   ];
   const ids: string[] = [];
   for (const r of roomDefs) {
@@ -180,6 +297,9 @@ async function createDishes(storeId: string): Promise<string[]> {
     { name: '香辣花生', price: 18, category: '小食', tags: ['佐酒'], spicyLevel: 2 },
     { name: '牛肉干', price: 38, category: '小食', tags: ['高蛋白'], spicyLevel: 1 },
     { name: '百威啤酒（6听）', price: 78, category: '酒水', tags: ['畅销'], spicyLevel: 0 },
+    { name: '重庆辣子鸡', price: 58, category: '热菜', tags: ['重辣'], spicyLevel: 5 },
+    { name: '冰镇可乐', price: 8, category: '酒水', tags: ['清凉'], spicyLevel: 0 },
+    { name: '鱼香肉丝', price: 42, category: '热菜', tags: ['家常'], spicyLevel: 2 },
   ];
   const ids: string[] = [];
   for (const d of dishes) {
@@ -200,8 +320,8 @@ async function createDishes(storeId: string): Promise<string[]> {
       tags: d.tags || [],
       images: ['https://picsum.photos/seed/dish-' + encodeURIComponent(d.name) + '/600/400'],
       isActive: true,
-      stock: 999,
-      salesCount: 0,
+      stock: d.name.includes('可乐') ? 300 : d.name.includes('辣子鸡') ? 50 : 999,
+      salesCount: d.name.includes('百威') ? 120 : d.name.includes('果盘') ? 60 : 0,
       rating: 0,
       reviewCount: 0,
       preparationTime: 10,
@@ -218,6 +338,8 @@ async function createDishes(storeId: string): Promise<string[]> {
 async function seed(): Promise<CreatedRefs> {
   const ownerId = await ensureMerchantOwner();
   const customerId = await ensureCustomerUser();
+  const adminId = await ensureAdminUser();
+  const vipIds = await ensureVipUsers();
   const storeIds = await createStores(ownerId);
 
   const roomIds: string[] = [];
@@ -229,7 +351,7 @@ async function seed(): Promise<CreatedRefs> {
     dishIds.push(...dIds);
   }
 
-  return { ownerId, customerId, storeIds, roomIds, dishIds };
+  return { ownerId, customerId, adminId, vipIds, storeIds, roomIds, dishIds };
 }
 
 async function createLinkedDemo(result: CreatedRefs) {

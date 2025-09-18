@@ -1,6 +1,12 @@
 {
   "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "husky": "^9.1.7",
     "sass": "^1.92.1",
     "ts-jest": "^29.4.2"
+  },
+  "scripts": {
+    "prepare": "husky"
   }
 }

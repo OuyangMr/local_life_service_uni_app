@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+if npm run | grep -qE "^\s*test\b"; then
+  npm test
+else
+  echo "husky: no root test script; skipping tests"
+fi

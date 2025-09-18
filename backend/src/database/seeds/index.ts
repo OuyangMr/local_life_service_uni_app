@@ -340,6 +340,198 @@ async function main() {
     console.log('MongoDB connected. Seeding data...');
     const result = await seed();
     const link = await createLinkedDemo(result);
+
+    // 追加更多联动与状态覆盖（幂等）
+    const storeId = result.storeIds[0];
+    const dishes = await Dish.find({ storeId }).limit(3);
+    if (result.customerId && dishes.length) {
+      const mkItems = (mult = 1) =>
+        dishes.map((d) => ({
+          dishId: d._id as any,
+          name: d.name,
+          price: d.price,
+          quantity: mult,
+          subtotal: d.price * mult,
+        }));
+
+      // PENDING（待支付）
+      if (!(await Order.findOne({ orderNumber: 'SEED-DEMO-PENDING-1' }).select('_id'))) {
+        await Order.create({
+          orderNumber: 'SEED-DEMO-PENDING-1',
+          userId: result.customerId,
+          storeId,
+          type: 'food_order',
+          items: mkItems(1),
+          deposit: 0,
+          discount: 0,
+          contactPhone: '15900003333',
+          specialRequests: '[seed] pending',
+          expiredAt: new Date(Date.now() + 15 * 60 * 1000),
+        });
+      }
+
+      // PAID（已支付）
+      if (!(await Order.findOne({ orderNumber: 'SEED-DEMO-PAID-1' }).select('_id'))) {
+        const paid = await Order.create({
+          orderNumber: 'SEED-DEMO-PAID-1',
+          userId: result.customerId,
+          storeId,
+          type: 'food_order',
+          items: mkItems(2),
+          deposit: 0,
+          discount: 0,
+          contactPhone: '15900003333',
+          specialRequests: '[seed] paid',
+          expiredAt: new Date(Date.now() + 15 * 60 * 1000),
+        });
+        await paid.pay({
+          method: PaymentMethod.WECHAT,
+          amount: paid.actualAmount,
+          transactionId: 'SEED-TXN-P1',
+        });
+      }
+
+      // CONFIRMED（已确认）
+      if (!(await Order.findOne({ orderNumber: 'SEED-DEMO-CONFIRMED-1' }).select('_id'))) {
+        const confirmed = await Order.create({
+          orderNumber: 'SEED-DEMO-CONFIRMED-1',
+          userId: result.customerId,
+          storeId,
+          type: 'food_order',
+          items: mkItems(1),
+          contactPhone: '15900003333',
+          specialRequests: '[seed] confirmed',
+          expiredAt: new Date(Date.now() + 15 * 60 * 1000),
+        });
+        await confirmed.pay({
+          method: PaymentMethod.ALIPAY,
+          amount: confirmed.actualAmount,
+          transactionId: 'SEED-TXN-C1',
+        });
+        await confirmed.confirm();
+      }
+
+      // IN_PROGRESS（进行中）
+      if (!(await Order.findOne({ orderNumber: 'SEED-DEMO-INPROGRESS-1' }).select('_id'))) {
+        const ip = await Order.create({
+          orderNumber: 'SEED-DEMO-INPROGRESS-1',
+          userId: result.customerId,
+          storeId,
+          type: 'food_order',
+          items: mkItems(1),
+          contactPhone: '15900003333',
+          specialRequests: '[seed] in_progress',
+          expiredAt: new Date(Date.now() + 15 * 60 * 1000),
+        });
+        await ip.pay({
+          method: PaymentMethod.BALANCE,
+          amount: ip.actualAmount,
+          transactionId: 'SEED-TXN-IP1',
+        });
+        await ip.confirm();
+        ip.status = OrderStatus.IN_PROGRESS;
+        await ip.save();
+      }
+
+      // COMPLETED（已完成）
+      if (!(await Order.findOne({ orderNumber: 'SEED-DEMO-COMPLETED-1' }).select('_id'))) {
+        const done = await Order.create({
+          orderNumber: 'SEED-DEMO-COMPLETED-1',
+          userId: result.customerId,
+          storeId,
+          type: 'food_order',
+          items: mkItems(3),
+          contactPhone: '15900003333',
+          specialRequests: '[seed] completed',
+          expiredAt: new Date(Date.now() + 15 * 60 * 1000),
+        });
+        await done.pay({
+          method: PaymentMethod.WECHAT,
+          amount: done.actualAmount,
+          transactionId: 'SEED-TXN-D1',
+        });
+        await done.confirm();
+        done.status = OrderStatus.IN_PROGRESS;
+        await done.save();
+        await done.complete();
+
+        // 对完成订单创建积分使用示例（消费积分）
+        try {
+          await PointRecord.createUseRecord(
+            result.customerId,
+            5,
+            done._id as any,
+            `订单 ${done.orderNumber} 使用积分抵扣`
+          );
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.log('[seed] createUseRecord skipped:', (e as any)?.message || e);
+        }
+      }
+
+      // CANCELLED（已取消，未支付）
+      if (!(await Order.findOne({ orderNumber: 'SEED-DEMO-CANCELLED-1' }).select('_id'))) {
+        const cancel = await Order.create({
+          orderNumber: 'SEED-DEMO-CANCELLED-1',
+          userId: result.customerId,
+          storeId,
+          type: 'food_order',
+          items: mkItems(1),
+          contactPhone: '15900003333',
+          specialRequests: '[seed] cancelled (unpaid)',
+          expiredAt: new Date(Date.now() + 15 * 60 * 1000),
+        });
+        await cancel.cancel('用户主动取消（未支付）');
+      }
+
+      // REFUNDED（已退款）
+      if (!(await Order.findOne({ orderNumber: 'SEED-DEMO-REFUNDED-1' }).select('_id'))) {
+        const ref = await Order.create({
+          orderNumber: 'SEED-DEMO-REFUNDED-1',
+          userId: result.customerId,
+          storeId,
+          type: 'food_order',
+          items: mkItems(2),
+          contactPhone: '15900003333',
+          specialRequests: '[seed] refunded',
+          expiredAt: new Date(Date.now() + 15 * 60 * 1000),
+        });
+        await ref.pay({
+          method: PaymentMethod.BALANCE,
+          amount: ref.actualAmount,
+          transactionId: 'SEED-TXN-R1',
+        });
+        await ref.cancel('商户处理退款');
+      }
+
+      // 额外评价（不绑定订单，绑定店铺/菜品）
+      const extraReviewKey = '环境佳，菜品不错，推荐拼盘';
+      if (!(await Review.findOne({ content: extraReviewKey }).select('_id'))) {
+        await Review.create({
+          userId: result.customerId,
+          storeId,
+          dishId: dishes[0]._id as any,
+          rating: 4,
+          content: extraReviewKey,
+          images: ['https://picsum.photos/seed/rev2/640/360'],
+          tags: ['环境佳', '菜品美味'],
+          isAnonymous: true,
+        });
+      }
+
+      // 人为制造一个即将过期的积分并处理过期
+      const earnTemp = await PointRecord.createEarnRecord(
+        result.customerId,
+        3,
+        PointSource.ACTIVITY,
+        '活动奖励临期积分'
+      );
+      await PointRecord.updateOne(
+        { _id: earnTemp._id },
+        { $set: { expiredAt: new Date(Date.now() - 24 * 3600 * 1000) } }
+      );
+      await PointRecord.processExpiredPoints();
+    }
     // eslint-disable-next-line no-console
     console.log('✅ 种子数据导入完成:', {
       ownerId: result.ownerId,

@@ -5,8 +5,8 @@ import { logger } from '@/utils/logger';
  * 积分类型枚举
  */
 export enum PointType {
-  EARN = 'earn',     // 获得积分
-  USE = 'use',       // 使用积分
+  EARN = 'earn', // 获得积分
+  USE = 'use', // 使用积分
   EXPIRE = 'expire', // 积分过期
   REFUND = 'refund', // 积分退回
 }
@@ -15,12 +15,12 @@ export enum PointType {
  * 积分来源枚举
  */
 export enum PointSource {
-  ORDER = 'order',       // 订单获得
+  ORDER = 'order', // 订单获得
   ACTIVITY = 'activity', // 活动获得
-  MANUAL = 'manual',     // 手动调整
-  REFUND = 'refund',     // 退款退回
-  SIGN_IN = 'sign_in',   // 签到获得
-  INVITE = 'invite',     // 邀请获得
+  MANUAL = 'manual', // 手动调整
+  REFUND = 'refund', // 退款退回
+  SIGN_IN = 'sign_in', // 签到获得
+  INVITE = 'invite', // 邀请获得
 }
 
 /**
@@ -46,7 +46,7 @@ export interface IPointRecord extends Document {
   };
   createdAt: Date;
   updatedAt: Date;
-  
+
   // 实例方法
   process(): Promise<void>;
   cancel(): Promise<void>;
@@ -61,8 +61,19 @@ export interface IPointRecordModel extends Model<IPointRecord> {
   getUserBalance(userId: string): Promise<number>;
   processExpiredPoints(): Promise<number>;
   getEarningStats(userId: string, startDate: Date, endDate: Date): Promise<any>;
-  createEarnRecord(userId: string, amount: number, source: PointSource, description: string, metadata?: any): Promise<IPointRecord>;
-  createUseRecord(userId: string, amount: number, orderId: string, description: string): Promise<IPointRecord>;
+  createEarnRecord(
+    userId: string,
+    amount: number,
+    source: PointSource,
+    description: string,
+    metadata?: any
+  ): Promise<IPointRecord>;
+  createUseRecord(
+    userId: string,
+    amount: number,
+    orderId: string,
+    description: string
+  ): Promise<IPointRecord>;
 }
 
 /**
@@ -89,7 +100,7 @@ const PointRecordSchema = new Schema<IPointRecord>(
       type: Number,
       required: [true, '积分数量不能为空'],
       validate: {
-        validator: function(this: IPointRecord, v: number) {
+        validator: function (this: IPointRecord, v: number) {
           if (this.type === PointType.EARN || this.type === PointType.REFUND) {
             return v > 0;
           } else {
@@ -127,7 +138,7 @@ const PointRecordSchema = new Schema<IPointRecord>(
     expiredAt: {
       type: Date,
       validate: {
-        validator: function(this: IPointRecord, v: Date) {
+        validator: function (this: IPointRecord, v: Date) {
           // 只有获得积分才需要设置过期时间
           if (this.type === PointType.EARN) {
             return v && v > new Date();
@@ -169,7 +180,7 @@ const PointRecordSchema = new Schema<IPointRecord>(
     timestamps: true,
     toJSON: {
       getters: true,
-      transform: function(doc, ret) {
+      transform: function (doc, ret) {
         delete ret.__v;
         return ret;
       },
@@ -193,38 +204,38 @@ PointRecordSchema.index({ source: 1, createdAt: -1 });
 /**
  * 预保存中间件
  */
-PointRecordSchema.pre('save', function(next) {
+PointRecordSchema.pre('save', function (next) {
   // 设置积分过期时间（获得积分的默认过期时间为1年）
   if (this.type === PointType.EARN && !this.expiredAt) {
     this.expiredAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000); // 1年后过期
   }
-  
+
   // 使用和过期类型的积分数量应为负数
   if ((this.type === PointType.USE || this.type === PointType.EXPIRE) && this.amount > 0) {
     this.amount = -Math.abs(this.amount);
   }
-  
+
   next();
 });
 
 /**
  * 后置中间件 - 更新用户积分余额
  */
-PointRecordSchema.post('save', async function() {
+PointRecordSchema.post('save', async function () {
   if (!this.isProcessed) {
     try {
       const User = mongoose.model('User');
       await User.findByIdAndUpdate(this.userId, {
-        $inc: { points: this.amount }
+        $inc: { points: this.amount },
       });
-      
+
       this.isProcessed = true;
       this.processedAt = new Date();
-      await this.updateOne({ 
-        isProcessed: true, 
-        processedAt: new Date() 
+      await this.updateOne({
+        isProcessed: true,
+        processedAt: new Date(),
       });
-      
+
       logger.info(`用户 ${this.userId} 积分变动: ${this.amount}, 余额: ${this.balance}`);
     } catch (error) {
       logger.error('更新用户积分失败:', error);
@@ -237,21 +248,21 @@ PointRecordSchema.post('save', async function() {
  */
 
 // 处理积分
-PointRecordSchema.methods.process = async function(): Promise<void> {
+PointRecordSchema.methods.process = async function (): Promise<void> {
   if (this.isProcessed) {
     throw new Error('积分记录已处理');
   }
-  
+
   const User = mongoose.model('User');
   const user = await User.findById(this.userId);
   if (!user) {
     throw new Error('用户不存在');
   }
-  
+
   // 更新用户积分
   const newBalance = Math.max(0, (user.points || 0) + this.amount);
   await User.findByIdAndUpdate(this.userId, { points: newBalance });
-  
+
   this.balance = newBalance;
   this.isProcessed = true;
   this.processedAt = new Date();
@@ -259,7 +270,7 @@ PointRecordSchema.methods.process = async function(): Promise<void> {
 };
 
 // 取消积分记录
-PointRecordSchema.methods.cancel = async function(): Promise<void> {
+PointRecordSchema.methods.cancel = async function (): Promise<void> {
   if (this.isProcessed) {
     // 创建反向记录
     const reverseRecord = new (this.constructor as IPointRecordModel)({
@@ -269,13 +280,13 @@ PointRecordSchema.methods.cancel = async function(): Promise<void> {
       description: `取消: ${this.description}`,
       source: PointSource.MANUAL,
     });
-    
+
     await reverseRecord.save();
   }
 };
 
 // 检查是否过期
-PointRecordSchema.methods.isExpired = function(): boolean {
+PointRecordSchema.methods.isExpired = function (): boolean {
   return this.expiredAt && new Date() > this.expiredAt;
 };
 
@@ -284,27 +295,30 @@ PointRecordSchema.methods.isExpired = function(): boolean {
  */
 
 // 根据用户查找积分记录
-PointRecordSchema.statics.findByUser = function(userId: string, type?: PointType): Promise<IPointRecord[]> {
+PointRecordSchema.statics.findByUser = function (
+  userId: string,
+  type?: PointType
+): Promise<IPointRecord[]> {
   const query: any = { userId };
   if (type) {
     query.type = type;
   }
-  
+
   return this.find(query).sort({ createdAt: -1 });
 };
 
 // 获取用户积分余额
-PointRecordSchema.statics.getUserBalance = async function(userId: string): Promise<number> {
+PointRecordSchema.statics.getUserBalance = async function (userId: string): Promise<number> {
   const result = await this.aggregate([
     { $match: { userId: new mongoose.Types.ObjectId(userId), isProcessed: true } },
-    { $group: { _id: null, balance: { $sum: '$amount' } } }
+    { $group: { _id: null, balance: { $sum: '$amount' } } },
   ]);
-  
+
   return result.length > 0 ? Math.max(0, result[0].balance) : 0;
 };
 
 // 处理过期积分
-PointRecordSchema.statics.processExpiredPoints = async function(): Promise<number> {
+PointRecordSchema.statics.processExpiredPoints = async function (): Promise<number> {
   const expiredRecords = await this.find({
     type: PointType.EARN,
     isProcessed: true,
@@ -312,40 +326,44 @@ PointRecordSchema.statics.processExpiredPoints = async function(): Promise<numbe
     // 确保没有对应的过期记录
     _id: {
       $nin: await this.distinct('metadata.originalRecordId', {
-        type: PointType.EXPIRE
-      })
-    }
+        type: PointType.EXPIRE,
+      }),
+    },
   });
-  
+
   let expiredCount = 0;
   for (const record of expiredRecords) {
     try {
+      // 计算过期后余额（需要满足 balance 必填）
+      const currentBalance = await this.getUserBalance(record.userId as any);
+      const nextBalance = Math.max(0, currentBalance - record.amount);
       // 创建过期记录
       const expireRecord = new this({
         userId: record.userId,
         type: PointType.EXPIRE,
         amount: -record.amount,
+        balance: nextBalance,
         description: `积分过期: ${record.description}`,
         source: PointSource.MANUAL,
         metadata: {
-          originalRecordId: record._id
-        }
+          originalRecordId: record._id,
+        },
       });
-      
+
       await expireRecord.save();
       expiredCount++;
     } catch (error) {
       logger.error(`处理过期积分失败 ${record._id}:`, error);
     }
   }
-  
+
   return expiredCount;
 };
 
 // 获取积分统计
-PointRecordSchema.statics.getEarningStats = function(
-  userId: string, 
-  startDate: Date, 
+PointRecordSchema.statics.getEarningStats = function (
+  userId: string,
+  startDate: Date,
   endDate: Date
 ): Promise<any> {
   return this.aggregate([
@@ -353,22 +371,22 @@ PointRecordSchema.statics.getEarningStats = function(
       $match: {
         userId: new mongoose.Types.ObjectId(userId),
         type: PointType.EARN,
-        createdAt: { $gte: startDate, $lte: endDate }
-      }
+        createdAt: { $gte: startDate, $lte: endDate },
+      },
     },
     {
       $group: {
         _id: '$source',
         totalAmount: { $sum: '$amount' },
-        count: { $sum: 1 }
-      }
+        count: { $sum: 1 },
+      },
     },
-    { $sort: { totalAmount: -1 } }
+    { $sort: { totalAmount: -1 } },
   ]);
 };
 
 // 创建获得积分记录
-PointRecordSchema.statics.createEarnRecord = async function(
+PointRecordSchema.statics.createEarnRecord = async function (
   userId: string,
   amount: number,
   source: PointSource,
@@ -378,9 +396,9 @@ PointRecordSchema.statics.createEarnRecord = async function(
   if (amount <= 0) {
     throw new Error('获得积分数量必须大于0');
   }
-  
+
   const currentBalance = await this.getUserBalance(userId);
-  
+
   const record = new this({
     userId,
     type: PointType.EARN,
@@ -388,15 +406,15 @@ PointRecordSchema.statics.createEarnRecord = async function(
     balance: currentBalance + amount,
     description,
     source,
-    metadata
+    metadata,
   });
-  
+
   await record.save();
   return record;
 };
 
 // 创建使用积分记录
-PointRecordSchema.statics.createUseRecord = async function(
+PointRecordSchema.statics.createUseRecord = async function (
   userId: string,
   amount: number,
   orderId: string,
@@ -405,12 +423,12 @@ PointRecordSchema.statics.createUseRecord = async function(
   if (amount <= 0) {
     throw new Error('使用积分数量必须大于0');
   }
-  
+
   const currentBalance = await this.getUserBalance(userId);
   if (currentBalance < amount) {
     throw new Error('积分余额不足');
   }
-  
+
   const record = new this({
     userId,
     type: PointType.USE,
@@ -418,9 +436,9 @@ PointRecordSchema.statics.createUseRecord = async function(
     balance: currentBalance - amount,
     orderId,
     description,
-    source: PointSource.ORDER
+    source: PointSource.ORDER,
   });
-  
+
   await record.save();
   return record;
 };
@@ -430,7 +448,7 @@ PointRecordSchema.statics.createUseRecord = async function(
  */
 
 // 积分类型描述
-PointRecordSchema.virtual('typeText').get(function() {
+PointRecordSchema.virtual('typeText').get(function () {
   const typeMap = {
     [PointType.EARN]: '获得',
     [PointType.USE]: '使用',
@@ -441,7 +459,7 @@ PointRecordSchema.virtual('typeText').get(function() {
 });
 
 // 积分来源描述
-PointRecordSchema.virtual('sourceText').get(function() {
+PointRecordSchema.virtual('sourceText').get(function () {
   const sourceMap = {
     [PointSource.ORDER]: '订单获得',
     [PointSource.ACTIVITY]: '活动获得',
@@ -456,4 +474,7 @@ PointRecordSchema.virtual('sourceText').get(function() {
 /**
  * 导出模型
  */
-export const PointRecord = mongoose.model<IPointRecord, IPointRecordModel>('PointRecord', PointRecordSchema);
+export const PointRecord = mongoose.model<IPointRecord, IPointRecordModel>(
+  'PointRecord',
+  PointRecordSchema
+);

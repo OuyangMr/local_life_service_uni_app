@@ -453,6 +453,368 @@ async function createLinkedDemo(result: CreatedRefs) {
   return { orderIds, reviewIds };
 }
 
+async function createAdvancedScenarios(result: CreatedRefs) {
+  const storeId = result.storeIds[0];
+  if (!storeId || !result.customerId) return;
+
+  // 库存告警/售罄场景
+  const spicy = await Dish.findOne({ storeId, name: '重庆辣子鸡' });
+  const cola = await Dish.findOne({ storeId, name: '冰镇可乐' });
+  if (spicy) {
+    // 将辣子鸡库存降至 1，随后创建订单扣减至 0
+    if (spicy.stock !== 1) {
+      spicy.stock = 1 as any;
+      await spicy.save();
+    }
+    const invOrderNo = 'SEED-INVENTORY-LOW-1';
+    if (!(await Order.findOne({ orderNumber: invOrderNo }).select('_id'))) {
+      const order = await Order.create({
+        orderNumber: invOrderNo,
+        userId: result.customerId,
+        storeId,
+        type: 'food_order',
+        items: [
+          {
+            dishId: spicy._id as any,
+            name: spicy.name,
+            price: spicy.price,
+            quantity: 1,
+            subtotal: spicy.price,
+          },
+        ],
+        contactPhone: '15900003333',
+        specialRequests: '[seed] 库存告警/售罄',
+        expiredAt: new Date(Date.now() + 15 * 60 * 1000),
+      });
+      await order.pay({
+        method: PaymentMethod.WECHAT,
+        amount: order.actualAmount,
+        transactionId: 'SEED-TXN-INV1',
+      });
+      // 手动扣减库存与增加销量
+      await spicy.updateStock(-1);
+      await spicy.addSales(1);
+    }
+  }
+  if (cola) {
+    // 制造低库存商品（例如库存 2），然后一次下两份
+    if (cola.stock !== 2) {
+      cola.stock = 2 as any;
+      await cola.save();
+    }
+    const invOrderNo2 = 'SEED-INVENTORY-LOW-2';
+    if (!(await Order.findOne({ orderNumber: invOrderNo2 }).select('_id'))) {
+      const order = await Order.create({
+        orderNumber: invOrderNo2,
+        userId: result.customerId,
+        storeId,
+        type: 'food_order',
+        items: [
+          {
+            dishId: cola._id as any,
+            name: cola.name,
+            price: cola.price,
+            quantity: 2,
+            subtotal: cola.price * 2,
+          },
+        ],
+        contactPhone: '15900003333',
+        specialRequests: '[seed] 库存用尽',
+        expiredAt: new Date(Date.now() + 15 * 60 * 1000),
+      });
+      await order.pay({
+        method: PaymentMethod.ALIPAY,
+        amount: order.actualAmount,
+        transactionId: 'SEED-TXN-INV2',
+      });
+      await cola.updateStock(-2);
+      await cola.addSales(2);
+    }
+  }
+
+  // 房间满负荷（同一时间段多订单占用）
+  const room = await Room.findOne({ storeId }).sort({ capacity: 1 });
+  if (room) {
+    const start = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    const end = new Date(Date.now() + 26 * 60 * 60 * 1000);
+    const makeRoomOrder = async (no: string) => {
+      if (await Order.findOne({ orderNumber: no }).select('_id')) return;
+      const o = await Order.create({
+        orderNumber: no,
+        userId: result.customerId,
+        storeId,
+        roomId: room._id as any,
+        type: 'room_booking',
+        startTime: start,
+        endTime: end,
+        guestCount: 4,
+        items: [],
+        deposit: (room.deposit as any) || (room.price as any) || 100,
+        contactPhone: '15900003333',
+        specialRequests: '[seed] 房间满负荷',
+        expiredAt: new Date(Date.now() + 15 * 60 * 1000),
+      });
+      await o.pay({
+        method: PaymentMethod.BALANCE,
+        amount: o.actualAmount,
+        transactionId: `SEED-TXN-RF-${no}`,
+      });
+      await o.confirm();
+      o.status = OrderStatus.IN_PROGRESS;
+      await o.save();
+    };
+    await makeRoomOrder('SEED-ROOM-FULL-1');
+    await makeRoomOrder('SEED-ROOM-FULL-2');
+  }
+
+  // 部分退款 & 优惠 + 积分组合
+  const dishes = await Dish.find({ storeId }).limit(1);
+  if (dishes.length) {
+    // 部分退款
+    const prNo = 'SEED-PARTIAL-REFUND-2';
+    if (!(await Order.findOne({ orderNumber: prNo }).select('_id'))) {
+      const d = dishes[0];
+      const o = await Order.create({
+        orderNumber: prNo,
+        userId: result.customerId,
+        storeId,
+        type: 'food_order',
+        items: [
+          {
+            dishId: d._id as any,
+            name: d.name,
+            price: d.price,
+            quantity: 3,
+            subtotal: d.price * 3,
+          },
+        ],
+        contactPhone: '15900003333',
+        specialRequests: '[seed] 部分退款',
+        expiredAt: new Date(Date.now() + 15 * 60 * 1000),
+      });
+      await o.pay({
+        method: PaymentMethod.BALANCE,
+        amount: o.actualAmount,
+        transactionId: 'SEED-TXN-PR2',
+      });
+      await o.confirm();
+      // 直接部分退款一半金额
+      try {
+        await o.refund(Math.max(1, Math.round(o.actualAmount / 2)));
+      } catch (e) {
+        console.log('[seed] partial refund failed:', (e as any)?.message || e);
+      }
+    }
+
+    // 优惠 + 积分组合
+    const dpNo = 'SEED-DISCOUNT-POINTS-2';
+    if (!(await Order.findOne({ orderNumber: dpNo }).select('_id'))) {
+      const d = dishes[0];
+      const baseSubtotal = d.price * 4;
+      const discount = Math.min(10, baseSubtotal / 2);
+      const o = await Order.create({
+        orderNumber: dpNo,
+        userId: result.customerId,
+        storeId,
+        type: 'food_order',
+        items: [
+          {
+            dishId: d._id as any,
+            name: d.name,
+            price: d.price,
+            quantity: 4,
+            subtotal: baseSubtotal,
+          },
+        ],
+        discount,
+        contactPhone: '15900003333',
+        specialRequests: '[seed] 优惠+积分组合',
+        expiredAt: new Date(Date.now() + 15 * 60 * 1000),
+      });
+      await o.pay({
+        method: PaymentMethod.WECHAT,
+        amount: o.actualAmount,
+        transactionId: 'SEED-TXN-DP2',
+      });
+      try {
+        await PointRecord.createUseRecord(
+          result.customerId,
+          10,
+          o._id as any,
+          `订单 ${o.orderNumber} 使用积分抵扣`
+        );
+      } catch (e) {
+        console.log('[seed] createUseRecord skipped:', (e as any)?.message || e);
+      }
+    }
+  }
+}
+
+async function createStressAndHistoryScenarios(result: CreatedRefs) {
+  const storeId = result.storeIds[0];
+  if (!storeId) return;
+
+  // 高并发房间冲突追加（同一时间多订单）
+  const room = await Room.findOne({ storeId }).sort({ capacity: 1 });
+  if (room && result.customerId) {
+    const start = new Date(Date.now() + 48 * 60 * 60 * 1000);
+    const end = new Date(Date.now() + 50 * 60 * 60 * 1000);
+    for (let i = 3; i <= 5; i++) {
+      const no = `SEED-ROOM-FULL-${i}`;
+      if (!(await Order.findOne({ orderNumber: no }).select('_id'))) {
+        const o = await Order.create({
+          orderNumber: no,
+          userId: result.customerId,
+          storeId,
+          roomId: room._id as any,
+          type: 'room_booking',
+          startTime: start,
+          endTime: end,
+          guestCount: 6,
+          items: [],
+          deposit: (room.deposit as any) || (room.price as any) || 100,
+          contactPhone: '15900003333',
+          specialRequests: '[seed] 房间满负荷-追加',
+          expiredAt: new Date(Date.now() + 15 * 60 * 1000),
+        });
+        await o.pay({
+          method: PaymentMethod.WECHAT,
+          amount: o.actualAmount,
+          transactionId: `SEED-TXN-RF-${no}`,
+        });
+        await o.confirm();
+        o.status = OrderStatus.IN_PROGRESS;
+        await o.save();
+      }
+    }
+  }
+
+  // 历史订单/评价/积分（使用 VIP 用户，分布在30/60/90天前）
+  if (result.vipIds && result.vipIds.length) {
+    const vipUser = result.vipIds[0];
+    const dish = await Dish.findOne({ storeId });
+    if (vipUser && dish) {
+      const days = [30, 60, 90];
+      for (const d of days) {
+        const no = `SEED-VIP-HIST-${d}`;
+        if (await Order.findOne({ orderNumber: no }).select('_id')) continue;
+        const created = new Date(Date.now() - d * 24 * 3600 * 1000);
+        const o = await Order.create({
+          orderNumber: no,
+          userId: vipUser,
+          storeId,
+          type: 'food_order',
+          items: [
+            {
+              dishId: dish._id as any,
+              name: dish.name,
+              price: dish.price,
+              quantity: 2,
+              subtotal: dish.price * 2,
+            },
+          ],
+          discount: d >= 60 ? 5 : 0,
+          contactPhone: '15800007777',
+          specialRequests: `[seed] 历史订单 ${d} 天前`,
+          createdAt: created,
+          // 为避免支付阶段触发“已过期”，先将 expiredAt 设为未来，再在后续保存时修正其他时间字段
+          expiredAt: new Date(Date.now() + 60 * 60 * 1000),
+        } as any);
+        await o.pay({
+          method: PaymentMethod.ALIPAY,
+          amount: o.actualAmount,
+          transactionId: `SEED-TXN-HIST-${d}`,
+        });
+        await o.confirm();
+        o.status = OrderStatus.COMPLETED;
+        o.completedAt = new Date(created.getTime() + 2 * 60 * 60 * 1000);
+        await o.save();
+
+        // 历史评价（仅30天与60天）
+        if (d !== 90) {
+          const rev = await Review.create({
+            userId: vipUser,
+            storeId,
+            orderId: o._id as any,
+            rating: d === 30 ? 5 : 4,
+            content: `[seed] 历史评价 ${d} 天前`,
+            images: ['https://picsum.photos/seed/rev_hist/640/360'],
+            tags: ['服务好', '环境佳'],
+            createdAt: new Date(created.getTime() + 3 * 60 * 60 * 1000),
+          } as any);
+          o.isReviewed = true;
+          o.reviewId = rev._id as any;
+          await o.save();
+        }
+
+        // 历史积分（earn）
+        await PointRecord.createEarnRecord(vipUser, 5, PointSource.ORDER, `历史订单 ${no} 积分`, {
+          hist: true,
+        });
+      }
+    }
+  }
+
+  // 退款争议样例：先支付再全额退款，并记录退款积分（正向）
+  if (result.customerId) {
+    const no = 'SEED-REFUND-DISPUTE-1';
+    if (!(await Order.findOne({ orderNumber: no }).select('_id'))) {
+      const dish = await Dish.findOne({ storeId });
+      if (dish) {
+        const o = await Order.create({
+          orderNumber: no,
+          userId: result.customerId,
+          storeId,
+          type: 'food_order',
+          items: [
+            {
+              dishId: dish._id as any,
+              name: dish.name,
+              price: dish.price,
+              quantity: 1,
+              subtotal: dish.price,
+            },
+          ],
+          contactPhone: '15900003333',
+          specialRequests: '[seed] 退款争议',
+          expiredAt: new Date(Date.now() + 15 * 60 * 1000),
+        });
+        await o.pay({
+          method: PaymentMethod.WECHAT,
+          amount: o.actualAmount,
+          transactionId: 'SEED-TXN-RFD1',
+        });
+        await o.refund();
+        // 积分退回示例
+        await PointRecord.createEarnRecord(
+          result.customerId,
+          2,
+          PointSource.REFUND,
+          `订单 ${no} 退款积分退回`
+        );
+      }
+    }
+  }
+
+  // 评价审核样例：被多次举报后自动隐藏
+  const flaggedKey = '[seed] 可疑评价，需人工复核';
+  const flagged = await Review.findOne({ content: flaggedKey }).select('_id');
+  if (!flagged && result.customerId) {
+    const anyStore = storeId;
+    const r = await Review.create({
+      userId: result.customerId,
+      storeId: anyStore,
+      rating: 2,
+      content: flaggedKey,
+      images: [],
+      tags: ['环境差'],
+    });
+    for (let i = 0; i < 5; i++) {
+      await r.addReport();
+    }
+  }
+}
+
 async function main() {
   // eslint-disable-next-line no-console
   console.log('Seed start: connecting to MongoDB...');
@@ -462,6 +824,8 @@ async function main() {
     console.log('MongoDB connected. Seeding data...');
     const result = await seed();
     const link = await createLinkedDemo(result);
+    await createAdvancedScenarios(result);
+    await createStressAndHistoryScenarios(result);
 
     // 追加更多联动与状态覆盖（幂等）
     const storeId = result.storeIds[0];

@@ -4189,3 +4189,9 @@ _后续: 建议添加店铺测试数据以验证完整功能_
 - 操作: 首次推送 + 提交规范配置
 - 分支: main
 - 内容: 配置 origin 并完成首次 push；安装并初始化 husky、commitlint；新增 commit-msg 钩子与更安全的 pre-commit；README 增加提交规范；解决与远程 main 的冲突（优先远程版本的 .gitignore、README）
+
+### 2025-09-18 18:19:17 CST
+
+- 操作: 增加 lint-staged + prettier 与新人 Git 手册
+- 分支: main
+- 内容: 在根 package.json 增加 lint-staged 配置；新增 .prettierrc；更新 .husky/pre-commit 以运行 lint-staged；新增 docs/steering/git-guide.md；提交并推送至远程

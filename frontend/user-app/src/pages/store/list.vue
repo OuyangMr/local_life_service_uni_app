@@ -128,7 +128,9 @@
               <view class="store-header">
                 <text class="store-name">{{ store.name }}</text>
                 <view class="store-rating">
-                  <text class="rating-text">{{ store.averageRating.toFixed(1) }}</text>
+                  <text class="rating-text">{{
+                    (store.averageRating || store.rating || 0).toFixed(1)
+                  }}</text>
                   <text class="rating-star">⭐</text>
                 </view>
               </view>
@@ -483,31 +485,13 @@ const loadStoreList = async (reset = false) => {
   isLoading.value = true;
 
   try {
+    // 后端只支持这些参数: latitude, longitude, radius, limit
     const params: any = {
       latitude: mapCenter.value.latitude,
       longitude: mapCenter.value.longitude,
-      radius: 10000,
-      page: currentPage.value,
-      pageSize: pageSize.value,
-      sortBy: sortBy.value,
+      radius: 10, // 10公里（后端期望公里数，不是米）
+      limit: pageSize.value, // 使用limit而不是pageSize
     };
-
-    if (searchKeyword.value) {
-      params.keyword = searchKeyword.value;
-    }
-
-    if (selectedCategoryValue.value) {
-      params.category = selectedCategoryValue.value;
-    }
-
-    if (selectedPriceValue.value) {
-      if (selectedPriceValue.value.min) {
-        params.minPrice = selectedPriceValue.value.min;
-      }
-      if (selectedPriceValue.value.max) {
-        params.maxPrice = selectedPriceValue.value.max;
-      }
-    }
 
     const stores = await storeService.getNearbyStores(params);
 
@@ -558,7 +542,10 @@ const getCurrentLocation = () => {
 };
 
 // 格式化距离
-const formatDistance = (distance: number): string => {
+const formatDistance = (distance: number | undefined): string => {
+  if (!distance && distance !== 0) {
+    return '距离未知';
+  }
   if (distance < 1000) {
     return `${distance}m`;
   } else {

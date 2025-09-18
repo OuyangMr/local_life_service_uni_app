@@ -4401,3 +4401,10 @@ _修复时间: 2025-09-18 19:46_
 _状态: ✅ 已彻底解决 - 用户端首页功能完全正常_
 _核心功能: API调用正常，地理位置获取成功，页面渲染正常_
 _备注: WebSocket功能暂时禁用，不影响主要业务流程_
+
+### 2025-09-18 20:15:12 CST
+
+- 操作: 导入测试数据（店铺/包间/菜品）
+- 位置: backend/src/database/seeds/index.ts
+- 结果: stores=2, rooms=6, dishes=10, users=6
+- 说明: 修复 database.healthCheck 判空；将 db:seed 使用 --transpile-only 跳过全量类型检查阻塞；修正营业时间校验；新增详细日志

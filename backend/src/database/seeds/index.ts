@@ -5,12 +5,18 @@ import { User } from '../../models/User';
 import { Store } from '../../models/Store';
 import { Room, RoomStatus } from '../../models/Room';
 import { Dish } from '../../models/Dish';
+import { Order, OrderStatus, PaymentMethod } from '../../models/Order';
+import { Review } from '../../models/Review';
+import { PointRecord, PointSource } from '../../models/PointRecord';
 
 type CreatedRefs = {
   ownerId: string;
   storeIds: string[];
   roomIds: string[];
   dishIds: string[];
+  customerId?: string;
+  orderIds?: string[];
+  reviewIds?: string[];
 };
 
 async function ensureMerchantOwner(): Promise<string> {
@@ -34,6 +40,30 @@ async function ensureMerchantOwner(): Promise<string> {
   });
   // eslint-disable-next-line no-console
   console.log('Owner created:', user._id.toString());
+  return user._id.toString();
+}
+
+async function ensureCustomerUser(): Promise<string> {
+  const phone = '19900002222';
+  const existing = await User.findOne({ phone }).select('_id');
+  if (existing) {
+    // eslint-disable-next-line no-console
+    console.log('Customer exists:', existing._id.toString());
+    return existing._id.toString();
+  }
+
+  const user = await User.create({
+    phone,
+    password: 'Passw0rd!@#',
+    nickname: '示例用户',
+    userType: 'user',
+    vipLevel: 0,
+    isVerified: true,
+    balance: 2000,
+    totalSpent: 0,
+  });
+  // eslint-disable-next-line no-console
+  console.log('Customer created:', user._id.toString());
   return user._id.toString();
 }
 
@@ -187,6 +217,7 @@ async function createDishes(storeId: string): Promise<string[]> {
 
 async function seed(): Promise<CreatedRefs> {
   const ownerId = await ensureMerchantOwner();
+  const customerId = await ensureCustomerUser();
   const storeIds = await createStores(ownerId);
 
   const roomIds: string[] = [];
@@ -198,7 +229,106 @@ async function seed(): Promise<CreatedRefs> {
     dishIds.push(...dIds);
   }
 
-  return { ownerId, storeIds, roomIds, dishIds };
+  return { ownerId, customerId, storeIds, roomIds, dishIds };
+}
+
+async function createLinkedDemo(result: CreatedRefs) {
+  const orderIds: string[] = [];
+  const reviewIds: string[] = [];
+
+  const storeId = result.storeIds[0];
+  const room = await Room.findOne({ storeId }).sort({ capacity: 1 });
+  const dishes = await Dish.find({ storeId }).limit(2);
+
+  if (!storeId || !room || dishes.length === 0 || !result.customerId) {
+    // eslint-disable-next-line no-console
+    console.log('Skip linked demo due to missing base data');
+    return { orderIds, reviewIds };
+  }
+
+  // 幂等：若已存在则不重复创建
+  const existingOrder = await Order.findOne({ orderNumber: 'SEED-DEMO-ROOM-1' }).select('_id');
+  if (!existingOrder) {
+    const start = new Date(Date.now() + 60 * 60 * 1000);
+    const end = new Date(Date.now() + 3 * 60 * 60 * 1000);
+    const items = dishes.map((d) => ({
+      dishId: d._id as any,
+      name: d.name,
+      price: d.price,
+      quantity: 1,
+      subtotal: d.price,
+    }));
+
+    const order = await Order.create({
+      orderNumber: 'SEED-DEMO-ROOM-1',
+      userId: result.customerId,
+      storeId,
+      roomId: room._id as any,
+      type: 'combo',
+      startTime: start,
+      endTime: end,
+      guestCount: 4,
+      items,
+      deposit: room.deposit || 0,
+      discount: 0,
+      contactPhone: '15900003333',
+      specialRequests: '[seed] 联动演示订单',
+      expiredAt: new Date(Date.now() + 15 * 60 * 1000),
+    });
+
+    // 支付
+    await order.pay({
+      method: PaymentMethod.BALANCE,
+      amount: order.actualAmount,
+      transactionId: 'SEED-TXN-1',
+    });
+    // 确认
+    await order.confirm();
+    // 进行中
+    order.status = OrderStatus.IN_PROGRESS;
+    await order.save();
+    // 完成
+    await order.complete();
+
+    // 评价
+    const review = await Review.create({
+      userId: result.customerId,
+      storeId,
+      roomId: room._id as any,
+      orderId: order._id as any,
+      rating: 5,
+      content: '环境好，音效棒，服务到位，推荐！',
+      images: ['https://picsum.photos/seed/rev1/640/360'],
+      tags: ['服务好', '环境佳', '设备新'],
+      isAnonymous: false,
+    });
+    order.isReviewed = true;
+    order.reviewId = review._id as any;
+    await order.save();
+
+    // 积分（按5%比例）
+    const earn = Math.max(1, Math.floor(order.actualAmount * 0.05));
+    await PointRecord.createEarnRecord(
+      result.customerId,
+      earn,
+      PointSource.ORDER,
+      `订单 ${order.orderNumber} 消费返积分`
+    );
+
+    orderIds.push(order._id.toString());
+    reviewIds.push(review._id.toString());
+    // eslint-disable-next-line no-console
+    console.log('Linked demo created:', {
+      orderId: order._id.toString(),
+      reviewId: review._id.toString(),
+      earn,
+    });
+  } else {
+    // eslint-disable-next-line no-console
+    console.log('Linked demo order exists, skip');
+  }
+
+  return { orderIds, reviewIds };
 }
 
 async function main() {
@@ -209,12 +339,16 @@ async function main() {
     // eslint-disable-next-line no-console
     console.log('MongoDB connected. Seeding data...');
     const result = await seed();
+    const link = await createLinkedDemo(result);
     // eslint-disable-next-line no-console
     console.log('✅ 种子数据导入完成:', {
       ownerId: result.ownerId,
+      customerId: result.customerId,
       stores: result.storeIds.length,
       rooms: result.roomIds.length,
       dishes: result.dishIds.length,
+      orders: link.orderIds?.length || 0,
+      reviews: link.reviewIds?.length || 0,
     });
   } catch (error) {
     // eslint-disable-next-line no-console

@@ -1,0 +1,56 @@
+// 主题色
+$primary-color: #667eea;
+$success-color: #67c23a;
+$warning-color: #e6a23c;
+$danger-color: #f56c6c;
+$info-color: #909399;
+
+// 文本颜色
+$text-primary: #303133;
+$text-regular: #606266;
+$text-secondary: #909399;
+$text-placeholder: #a8abb2;
+$text-disabled: #c0c4cc;
+
+// 边框颜色
+$border-base: #dcdfe6;
+$border-light: #e4e7ed;
+$border-lighter: #ebeef5;
+$border-extra-light: #f2f6fc;
+
+// 背景颜色
+$bg-white: #ffffff;
+$bg-page: #f5f7fa;
+$bg-base: #f5f7fa;
+$bg-light: #fafafa;
+
+// 阴影
+$box-shadow-base: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
+$box-shadow-light: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+
+// 间距
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+
+// 圆角
+$radius-sm: 4px;
+$radius-base: 8px;
+$radius-lg: 12px;
+$radius-round: 9999px;
+
+// 过渡时间
+$transition-duration: 0.3s;
+$transition-duration-fast: 0.2s;
+
+// 侧边栏
+$sidebar-width: 240px;
+$sidebar-width-collapse: 64px;
+
+// 顶部导航
+$header-height: 60px;
+
+// 标签页
+$tags-view-height: 34px;

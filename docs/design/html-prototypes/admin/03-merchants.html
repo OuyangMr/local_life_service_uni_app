@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 商户管理</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Helvetica Neue', sans-serif;
+            background: #f5f7fa;
+            color: #2d3748;
+        }
+
+        /* 复用仪表板的样式 */
+        .header {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .system-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification-btn {
+            position: relative;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #4a5568;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #f56c6c;
+            color: white;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #4a5568;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 60px;
+            bottom: 0;
+            width: 240px;
+            background: white;
+            box-shadow: 1px 0 3px rgba(0, 0, 0, 0.05);
+            overflow-y: auto;
+            z-index: 99;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            color: #4a5568;
+            text-decoration: none;
+        }
+
+        .menu-item:hover {
+            background: #f7fafc;
+        }
+
+        .menu-item.active {
+            background: #eef2ff;
+            border-left-color: #667eea;
+            color: #667eea;
+        }
+
+        .menu-icon {
+            font-size: 20px;
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .menu-title {
+            font-size: 15px;
+        }
+
+        .main-content {
+            margin-left: 240px;
+            margin-top: 60px;
+            padding: 20px;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* 商户管理特定样式 */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-title-section {
+            flex: 1;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .add-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        /* 搜索和筛选区域 */
+        .filter-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a0aec0;
+            font-size: 18px;
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-label {
+            color: #4a5568;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .filter-select {
+            padding: 8px 32px 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #2d3748;
+            background: white;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%234a5568' d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+        }
+
+        /* 商户列表表格 */
+        .merchants-table {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 16px;
+            background: #f7fafc;
+            color: #4a5568;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 16px;
+            border-top: 1px solid #f1f5f9;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: #f7fafc;
+        }
+
+        .merchant-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .merchant-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #e2e8f0;
+        }
+
+        .merchant-name {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+
+        .merchant-category {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.active {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-badge.disabled {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .rating-stars {
+            color: #fbbf24;
+        }
+
+        .rating-value {
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: white;
+            color: #4a5568;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+            background: #eef2ff;
+        }
+
+        .action-btn.danger:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+            background: #fee2e2;
+        }
+
+        /* 分页 */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .pagination-info {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .page-btn {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: white;
+            color: #4a5568;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .page-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .page-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 商户详情弹窗 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #718096;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #f7fafc;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .detail-section {
+            margin-bottom: 24px;
+        }
+
+        .detail-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 12px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: #2d3748;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">M</div>
+            <div class="system-name">本地生活服务管理平台</div>
+        </div>
+        <div class="header-right">
+            <button class="notification-btn">
+                🔔
+                <span class="notification-badge">5</span>
+            </button>
+            <div class="user-info">
+                <div class="user-avatar">👤</div>
+                <div>
+                    <div style="font-size: 14px; font-weight: 500;">超级管理员</div>
+                    <div style="font-size: 12px; color: #718096;">admin</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 侧边栏 -->
+    <aside class="sidebar">
+        <a href="02-dashboard.html" class="menu-item">
+            <span class="menu-icon">📊</span>
+            <span class="menu-title">数据看板</span>
+        </a>
+        <a href="03-merchants.html" class="menu-item active">
+            <span class="menu-icon">🏪</span>
+            <span class="menu-title">商户管理</span>
+        </a>
+        <a href="04-users.html" class="menu-item">
+            <span class="menu-icon">👥</span>
+            <span class="menu-title">用户管理</span>
+        </a>
+        <a href="05-orders.html" class="menu-item">
+            <span class="menu-icon">📋</span>
+            <span class="menu-title">订单管理</span>
+        </a>
+        <a href="#" class="menu-item">
+            <span class="menu-icon">💰</span>
+            <span class="menu-title">财务管理</span>
+        </a>
+        <a href="#" class="menu-item">
+            <span class="menu-icon">🎯</span>
+            <span class="menu-title">营销管理</span>
+        </a>
+        <a href="#" class="menu-item">
+            <span class="menu-icon">📝</span>
+            <span class="menu-title">内容管理</span>
+        </a>
+        <a href="#" class="menu-item">
+            <span class="menu-icon">⚙️</span>
+            <span class="menu-title">系统设置</span>
+        </a>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <div class="page-title-section">
+                <h1 class="page-title">商户管理</h1>
+                <p class="page-subtitle">管理平台所有商户信息，审核新商户入驻申请</p>
+            </div>
+            <button class="add-btn">
+                <span>➕</span>
+                <span>添加商户</span>
+            </button>
+        </div>
+
+        <!-- 搜索和筛选 -->
+        <div class="filter-section">
+            <div class="filter-row">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="搜索商户名称、ID、联系人...">
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">状态：</span>
+                    <select class="filter-select">
+                        <option>全部状态</option>
+                        <option>营业中</option>
+                        <option>待审核</option>
+                        <option>已禁用</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">类目：</span>
+                    <select class="filter-select">
+                        <option>全部类目</option>
+                        <option>KTV</option>
+                        <option>茶楼</option>
+                        <option>咖啡厅</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">排序：</span>
+                    <select class="filter-select">
+                        <option>创建时间倒序</option>
+                        <option>创建时间正序</option>
+                        <option>营业额倒序</option>
+                        <option>评分倒序</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 商户列表 -->
+        <div class="merchants-table">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>商户信息</th>
+                            <th>联系方式</th>
+                            <th>营业状态</th>
+                            <th>评分</th>
+                            <th>今日营收</th>
+                            <th>总营收</th>
+                            <th>注册时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="merchant-info">
+                                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect width='48' height='48' fill='%23667eea'/%3E%3C/svg%3E" alt="Logo" class="merchant-logo">
+                                    <div>
+                                        <div class="merchant-name">星光KTV（国贸店）</div>
+                                        <div class="merchant-category">KTV · ID: M10001</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div>张经理</div>
+                                <div style="color: #718096; font-size: 12px;">13812345678</div>
+                            </td>
+                            <td>
+                                <span class="status-badge active">营业中</span>
+                            </td>
+                            <td>
+                                <div class="rating">
+                                    <span class="rating-stars">⭐</span>
+                                    <span class="rating-value">4.8</span>
+                                </div>
+                            </td>
+                            <td>¥12,580</td>
+                            <td>¥1,258,900</td>
+                            <td>2025-01-15</td>
+                            <td>
+                                <div class="actions">
+                                    <button class="action-btn" onclick="viewMerchant()">查看</button>
+                                    <button class="action-btn">编辑</button>
+                                    <button class="action-btn danger">禁用</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="merchant-info">
+                                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect width='48' height='48' fill='%2310b981'/%3E%3C/svg%3E" alt="Logo" class="merchant-logo">
+                                    <div>
+                                        <div class="merchant-name">悦茶楼（朝阳店）</div>
+                                        <div class="merchant-category">茶楼 · ID: M10002</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div>李老板</div>
+                                <div style="color: #718096; font-size: 12px;">13987654321</div>
+                            </td>
+                            <td>
+                                <span class="status-badge active">营业中</span>
+                            </td>
+                            <td>
+                                <div class="rating">
+                                    <span class="rating-stars">⭐</span>
+                                    <span class="rating-value">4.6</span>
+                                </div>
+                            </td>
+                            <td>¥8,320</td>
+                            <td>¥892,100</td>
+                            <td>2025-01-20</td>
+                            <td>
+                                <div class="actions">
+                                    <button class="action-btn">查看</button>
+                                    <button class="action-btn">编辑</button>
+                                    <button class="action-btn danger">禁用</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="merchant-info">
+                                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect width='48' height='48' fill='%23f59e0b'/%3E%3C/svg%3E" alt="Logo" class="merchant-logo">
+                                    <div>
+                                        <div class="merchant-name">漫咖啡（三里屯店）</div>
+                                        <div class="merchant-category">咖啡厅 · ID: M10003</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div>王店长</div>
+                                <div style="color: #718096; font-size: 12px;">13611223344</div>
+                            </td>
+                            <td>
+                                <span class="status-badge pending">待审核</span>
+                            </td>
+                            <td>
+                                <div class="rating">
+                                    <span class="rating-stars">⭐</span>
+                                    <span class="rating-value">-</span>
+                                </div>
+                            </td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>2025-03-18</td>
+                            <td>
+                                <div class="actions">
+                                    <button class="action-btn">查看</button>
+                                    <button class="action-btn" style="background: #10b981; color: white; border-color: #10b981;">审核</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="merchant-info">
+                                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect width='48' height='48' fill='%23a855f7'/%3E%3C/svg%3E" alt="Logo" class="merchant-logo">
+                                    <div>
+                                        <div class="merchant-name">钱柜KTV（望京店）</div>
+                                        <div class="merchant-category">KTV · ID: M10004</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div>赵总</div>
+                                <div style="color: #718096; font-size: 12px;">13899887766</div>
+                            </td>
+                            <td>
+                                <span class="status-badge disabled">已禁用</span>
+                            </td>
+                            <td>
+                                <div class="rating">
+                                    <span class="rating-stars">⭐</span>
+                                    <span class="rating-value">3.2</span>
+                                </div>
+                            </td>
+                            <td>-</td>
+                            <td>¥568,200</td>
+                            <td>2024-12-10</td>
+                            <td>
+                                <div class="actions">
+                                    <button class="action-btn">查看</button>
+                                    <button class="action-btn" style="background: #10b981; color: white; border-color: #10b981;">启用</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 分页 -->
+            <div class="pagination">
+                <div class="pagination-info">
+                    显示第 1-4 条，共 156 条记录
+                </div>
+                <div class="pagination-controls">
+                    <button class="page-btn" disabled>上一页</button>
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">3</button>
+                    <button class="page-btn">...</button>
+                    <button class="page-btn">39</button>
+                    <button class="page-btn">下一页</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 商户详情弹窗 -->
+    <div class="modal-overlay" id="merchantModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">商户详情</h3>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-section">
+                    <h4 class="detail-title">基本信息</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">商户ID</span>
+                            <span class="detail-value">M10001</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">商户名称</span>
+                            <span class="detail-value">星光KTV（国贸店）</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">商户类目</span>
+                            <span class="detail-value">KTV</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">营业状态</span>
+                            <span class="detail-value"><span class="status-badge active">营业中</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4 class="detail-title">联系信息</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">联系人</span>
+                            <span class="detail-value">张经理</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">联系电话</span>
+                            <span class="detail-value">13812345678</span>
+                        </div>
+                        <div class="detail-item" style="grid-column: 1 / -1;">
+                            <span class="detail-label">商户地址</span>
+                            <span class="detail-value">北京市朝阳区建国门外大街甲6号中环世贸中心D座</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4 class="detail-title">营业信息</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">营业时间</span>
+                            <span class="detail-value">14:00 - 02:00</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">人均消费</span>
+                            <span class="detail-value">¥248</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">包间数量</span>
+                            <span class="detail-value">48个</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">员工数量</span>
+                            <span class="detail-value">36人</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4 class="detail-title">资质信息</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">营业执照</span>
+                            <span class="detail-value" style="color: #10b981;">已审核 ✓</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">经营许可证</span>
+                            <span class="detail-value" style="color: #10b981;">已审核 ✓</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">注册时间</span>
+                            <span class="detail-value">2025-01-15 14:23:18</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">最后登录</span>
+                            <span class="detail-value">2025-09-19 09:45:32</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 查看商户详情
+        function viewMerchant() {
+            document.getElementById('merchantModal').style.display = 'flex';
+        }
+
+        // 关闭弹窗
+        function closeModal() {
+            document.getElementById('merchantModal').style.display = 'none';
+        }
+
+        // 点击弹窗外部关闭
+        document.getElementById('merchantModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // 搜索功能
+        const searchInput = document.querySelector('.search-input');
+        searchInput.addEventListener('input', function(e) {
+            console.log('搜索内容：', e.target.value);
+            // 这里可以添加搜索逻辑
+        });
+
+        // 筛选功能
+        document.querySelectorAll('.filter-select').forEach(select => {
+            select.addEventListener('change', function(e) {
+                console.log('筛选条件变化：', e.target.value);
+                // 这里可以添加筛选逻辑
+            });
+        });
+
+        // 分页功能
+        document.querySelectorAll('.page-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (!this.disabled) {
+                    document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+                    if (!this.textContent.includes('...') && !this.textContent.includes('上一页') && !this.textContent.includes('下一页')) {
+                        this.classList.add('active');
+                    }
+                }
+            });
+        });
+
+        // 添加商户
+        document.querySelector('.add-btn').addEventListener('click', function() {
+            alert('添加商户功能待实现');
+        });
+
+        // 用户信息点击
+        document.querySelector('.user-info').addEventListener('click', function() {
+            if (confirm('确定要退出登录吗？')) {
+                window.location.href = '01-login.html';
+            }
+        });
+    </script>
+</body>
+</html>

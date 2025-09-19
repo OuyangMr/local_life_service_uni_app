@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 订单管理</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Helvetica Neue', sans-serif;
+            background: #f5f7fa;
+            color: #2d3748;
+        }
+
+        /* 复用基础样式 */
+        .header {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .system-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification-btn {
+            position: relative;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #4a5568;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #f56c6c;
+            color: white;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #4a5568;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 60px;
+            bottom: 0;
+            width: 240px;
+            background: white;
+            box-shadow: 1px 0 3px rgba(0, 0, 0, 0.05);
+            overflow-y: auto;
+            z-index: 99;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            color: #4a5568;
+            text-decoration: none;
+        }
+
+        .menu-item:hover {
+            background: #f7fafc;
+        }
+
+        .menu-item.active {
+            background: #eef2ff;
+            border-left-color: #667eea;
+            color: #667eea;
+        }
+
+        .menu-icon {
+            font-size: 20px;
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .menu-title {
+            font-size: 15px;
+        }
+
+        .main-content {
+            margin-left: 240px;
+            margin-top: 60px;
+            padding: 20px;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* 订单管理特定样式 */
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        /* 订单统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+
+        .stat-trend.up {
+            color: #10b981;
+        }
+
+        .stat-trend.down {
+            color: #ef4444;
+        }
+
+        /* 筛选和搜索区域 */
+        .filter-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a0aec0;
+            font-size: 18px;
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-label {
+            color: #4a5568;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .filter-select {
+            padding: 8px 32px 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #2d3748;
+            background: white;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%234a5568' d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+        }
+
+        .date-range {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .date-input {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #2d3748;
+        }
+
+        /* 订单列表表格 */
+        .orders-table {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 16px;
+            background: #f7fafc;
+            color: #4a5568;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 16px;
+            border-top: 1px solid #f1f5f9;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: #f7fafc;
+        }
+
+        .order-id {
+            color: #667eea;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .order-id:hover {
+            text-decoration: underline;
+        }
+
+        .order-type {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .order-type.booking {
+            background: #eef2ff;
+            color: #667eea;
+        }
+
+        .order-type.scan {
+            background: #f0fdf4;
+            color: #10b981;
+        }
+
+        .user-level {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .user-level.vip {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .user-level.normal {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .order-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .order-status.pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .order-status.paid {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .order-status.processing {
+            background: #e0e7ff;
+            color: #4c1d95;
+        }
+
+        .order-status.completed {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .order-status.cancelled {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: white;
+            color: #4a5568;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+            background: #eef2ff;
+        }
+
+        /* 分页 */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .pagination-info {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .page-btn {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: white;
+            color: #4a5568;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .page-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .page-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 订单详情弹窗 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #718096;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #f7fafc;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .detail-section {
+            margin-bottom: 24px;
+        }
+
+        .detail-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 12px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: #2d3748;
+        }
+
+        /* 商品列表 */
+        .product-list {
+            margin-top: 16px;
+        }
+
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .product-info {
+            display: flex;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .product-img {
+            width: 48px;
+            height: 48px;
+            border-radius: 6px;
+            background: #e2e8f0;
+        }
+
+        .product-details {
+            flex: 1;
+        }
+
+        .product-name {
+            font-weight: 500;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+
+        .product-spec {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .product-price {
+            text-align: right;
+        }
+
+        .price-unit {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .price-total {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        /* 订单时间线 */
+        .timeline {
+            margin-top: 16px;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 16px;
+            padding: 12px 0;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 9px;
+            top: 36px;
+            bottom: -12px;
+            width: 2px;
+            background: #e2e8f0;
+        }
+
+        .timeline-item:last-child::before {
+            display: none;
+        }
+
+        .timeline-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #e2e8f0;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+
+        .timeline-dot.active {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-title {
+            font-weight: 500;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+
+        .timeline-time {
+            font-size: 12px;
+            color: #718096;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">M</div>
+            <div class="system-name">本地生活服务管理平台</div>
+        </div>
+        <div class="header-right">
+            <button class="notification-btn">
+                🔔
+                <span class="notification-badge">5</span>
+            </button>
+            <div class="user-info">
+                <div class="user-avatar">👤</div>
+                <div>
+                    <div style="font-size: 14px; font-weight: 500;">超级管理员</div>
+                    <div style="font-size: 12px; color: #718096;">admin</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 侧边栏 -->
+    <aside class="sidebar">
+        <a href="02-dashboard.html" class="menu-item">
+            <span class="menu-icon">📊</span>
+            <span class="menu-title">数据看板</span>
+        </a>
+        <a href="03-merchants.html" class="menu-item">
+            <span class="menu-icon">🏪</span>
+            <span class="menu-title">商户管理</span>
+        </a>
+        <a href="04-users.html" class="menu-item">
+            <span class="menu-icon">👥</span>
+            <span class="menu-title">用户管理</span>
+        </a>
+        <a href="05-orders.html" class="menu-item active">
+            <span class="menu-icon">📋</span>
+            <span class="menu-title">订单管理</span>
+        </a>
+        <a href="#" class="menu-item">
+            <span class="menu-icon">💰</span>
+            <span class="menu-title">财务管理</span>
+        </a>
+        <a href="#" class="menu-item">
+            <span class="menu-icon">🎯</span>
+            <span class="menu-title">营销管理</span>
+        </a>
+        <a href="#" class="menu-item">
+            <span class="menu-icon">📝</span>
+            <span class="menu-title">内容管理</span>
+        </a>
+        <a href="#" class="menu-item">
+            <span class="menu-icon">⚙️</span>
+            <span class="menu-title">系统设置</span>
+        </a>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <h1 class="page-title">订单管理</h1>
+            <p class="page-subtitle">管理平台所有订单，查看订单详情和处理异常订单</p>
+        </div>
+
+        <!-- 订单统计 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">今日订单</div>
+                <div class="stat-value">1,234</div>
+                <div class="stat-trend up">
+                    <span>↑ 12.5%</span>
+                    <span style="color: #718096;">较昨日</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">待处理</div>
+                <div class="stat-value">56</div>
+                <div class="stat-trend down">
+                    <span>↓ 8.3%</span>
+                    <span style="color: #718096;">较昨日</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">进行中</div>
+                <div class="stat-value">128</div>
+                <div class="stat-trend up">
+                    <span>↑ 15.2%</span>
+                    <span style="color: #718096;">较昨日</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">已完成</div>
+                <div class="stat-value">892</div>
+                <div class="stat-trend up">
+                    <span>↑ 10.8%</span>
+                    <span style="color: #718096;">较昨日</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">已取消</div>
+                <div class="stat-value">23</div>
+                <div class="stat-trend down">
+                    <span>↓ 5.6%</span>
+                    <span style="color: #718096;">较昨日</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 搜索和筛选 -->
+        <div class="filter-section">
+            <div class="filter-row">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="搜索订单号、用户名、商户名...">
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">订单类型：</span>
+                    <select class="filter-select">
+                        <option>全部类型</option>
+                        <option>预订订单</option>
+                        <option>扫码点单</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">订单状态：</span>
+                    <select class="filter-select">
+                        <option>全部状态</option>
+                        <option>待支付</option>
+                        <option>已支付</option>
+                        <option>进行中</option>
+                        <option>已完成</option>
+                        <option>已取消</option>
+                    </select>
+                </div>
+                <div class="filter-item date-range">
+                    <span class="filter-label">时间范围：</span>
+                    <input type="date" class="date-input" value="2025-09-19">
+                    <span>至</span>
+                    <input type="date" class="date-input" value="2025-09-19">
+                </div>
+            </div>
+        </div>
+
+        <!-- 订单列表 -->
+        <div class="orders-table">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>订单编号</th>
+                            <th>订单类型</th>
+                            <th>用户信息</th>
+                            <th>商户名称</th>
+                            <th>订单金额</th>
+                            <th>支付方式</th>
+                            <th>下单时间</th>
+                            <th>订单状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="order-id" onclick="viewOrder()">#202503190001</span></td>
+                            <td><span class="order-type booking">预订</span></td>
+                            <td>
+                                <div>张三 <span class="user-level vip">VIP</span></div>
+                                <div style="font-size: 12px; color: #718096;">138****5678</div>
+                            </td>
+                            <td>星光KTV（国贸店）</td>
+                            <td>¥568.00</td>
+                            <td>微信支付</td>
+                            <td>10:25:33</td>
+                            <td><span class="order-status completed">已完成</span></td>
+                            <td>
+                                <div class="actions">
+                                    <button class="action-btn" onclick="viewOrder()">查看</button>
+                                    <button class="action-btn">退款</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="order-id">#202503190002</span></td>
+                            <td><span class="order-type scan">扫码</span></td>
+                            <td>
+                                <div>李四 <span class="user-level normal">普通</span></div>
+                                <div style="font-size: 12px; color: #718096;">139****8765</div>
+                            </td>
+                            <td>悦茶楼（朝阳店）</td>
+                            <td>¥238.00</td>
+                            <td>支付宝</td>
+                            <td>10:22:15</td>
+                            <td><span class="order-status processing">进行中</span></td>
+                            <td>
+                                <div class="actions">
+                                    <button class="action-btn">查看</button>
+                                    <button class="action-btn">催单</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="order-id">#202503190003</span></td>
+                            <td><span class="order-type scan">扫码</span></td>
+                            <td>
+                                <div>王五 <span class="user-level normal">普通</span></div>
+                                <div style="font-size: 12px; color: #718096;">137****3456</div>
+                            </td>
+                            <td>漫咖啡（三里屯店）</td>
+                            <td>¥88.00</td>
+                            <td>-</td>
+                            <td>10:18:42</td>
+                            <td><span class="order-status pending">待支付</span></td>
+                            <td>
+                                <div class="actions">
+                                    <button class="action-btn">查看</button>
+                                    <button class="action-btn">取消</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="order-id">#202503190004</span></td>
+                            <td><span class="order-type booking">预订</span></td>
+                            <td>
+                                <div>赵六 <span class="user-level vip">VIP</span></div>
+                                <div style="font-size: 12px; color: #718096;">136****2468</div>
+                            </td>
+                            <td>星光KTV（国贸店）</td>
+                            <td>¥1,288.00</td>
+                            <td>微信支付</td>
+                            <td>10:15:20</td>
+                            <td><span class="order-status paid">已支付</span></td>
+                            <td>
+                                <div class="actions">
+                                    <button class="action-btn">查看</button>
+                                    <button class="action-btn">确认</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="order-id">#202503190005</span></td>
+                            <td><span class="order-type scan">扫码</span></td>
+                            <td>
+                                <div>孙七 <span class="user-level normal">普通</span></div>
+                                <div style="font-size: 12px; color: #718096;">135****9876</div>
+                            </td>
+                            <td>悦茶楼（朝阳店）</td>
+                            <td>¥398.00</td>
+                            <td>积分抵扣</td>
+                            <td>10:10:55</td>
+                            <td><span class="order-status cancelled">已取消</span></td>
+                            <td>
+                                <div class="actions">
+                                    <button class="action-btn">查看</button>
+                                    <button class="action-btn">删除</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 分页 -->
+            <div class="pagination">
+                <div class="pagination-info">
+                    显示第 1-5 条，共 12,345 条记录
+                </div>
+                <div class="pagination-controls">
+                    <button class="page-btn" disabled>上一页</button>
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">3</button>
+                    <button class="page-btn">...</button>
+                    <button class="page-btn">2469</button>
+                    <button class="page-btn">下一页</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 订单详情弹窗 -->
+    <div class="modal-overlay" id="orderModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">订单详情</h3>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-section">
+                    <h4 class="detail-title">订单信息</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">订单编号</span>
+                            <span class="detail-value">#202503190001</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">订单类型</span>
+                            <span class="detail-value"><span class="order-type booking">预订订单</span></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">订单状态</span>
+                            <span class="detail-value"><span class="order-status completed">已完成</span></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">下单时间</span>
+                            <span class="detail-value">2025-09-19 10:25:33</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4 class="detail-title">用户信息</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">用户姓名</span>
+                            <span class="detail-value">张三 <span class="user-level vip">VIP</span></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">手机号码</span>
+                            <span class="detail-value">138****5678</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">用户ID</span>
+                            <span class="detail-value">U10001</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">预订人数</span>
+                            <span class="detail-value">6人</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4 class="detail-title">商户信息</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">商户名称</span>
+                            <span class="detail-value">星光KTV（国贸店）</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">包间信息</span>
+                            <span class="detail-value">豪华大包 A08</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">预订时间</span>
+                            <span class="detail-value">2025-09-19 20:00-23:00</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">商户电话</span>
+                            <span class="detail-value">010-87654321</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4 class="detail-title">商品明细</h4>
+                    <div class="product-list">
+                        <div class="product-item">
+                            <div class="product-info">
+                                <div class="product-img"></div>
+                                <div class="product-details">
+                                    <div class="product-name">豪华大包预订</div>
+                                    <div class="product-spec">3小时 | 20:00-23:00</div>
+                                </div>
+                            </div>
+                            <div class="product-price">
+                                <div class="price-unit">¥168 × 3小时</div>
+                                <div class="price-total">¥504.00</div>
+                            </div>
+                        </div>
+                        <div class="product-item">
+                            <div class="product-info">
+                                <div class="product-img"></div>
+                                <div class="product-details">
+                                    <div class="product-name">果盘拼盘</div>
+                                    <div class="product-spec">大份</div>
+                                </div>
+                            </div>
+                            <div class="product-price">
+                                <div class="price-unit">¥88 × 1份</div>
+                                <div class="price-total">¥88.00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4 class="detail-title">支付信息</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">支付方式</span>
+                            <span class="detail-value">微信支付</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">支付时间</span>
+                            <span class="detail-value">2025-09-19 10:26:05</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">商品金额</span>
+                            <span class="detail-value">¥592.00</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">VIP折扣</span>
+                            <span class="detail-value">-¥24.00</span>
+                        </div>
+                        <div class="detail-item" style="grid-column: 1 / -1;">
+                            <span class="detail-label">实付金额</span>
+                            <span class="detail-value" style="color: #667eea; font-size: 20px; font-weight: 600;">¥568.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4 class="detail-title">订单时间线</h4>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-dot active">✓</div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">订单已完成</div>
+                                <div class="timeline-time">2025-09-19 23:15:00</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot active">✓</div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">用户已到店</div>
+                                <div class="timeline-time">2025-09-19 19:55:00</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot active">✓</div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">商户已确认</div>
+                                <div class="timeline-time">2025-09-19 10:28:00</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot active">✓</div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">支付成功</div>
+                                <div class="timeline-time">2025-09-19 10:26:05</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot active">✓</div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">创建订单</div>
+                                <div class="timeline-time">2025-09-19 10:25:33</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 查看订单详情
+        function viewOrder() {
+            document.getElementById('orderModal').style.display = 'flex';
+        }
+
+        // 关闭弹窗
+        function closeModal() {
+            document.getElementById('orderModal').style.display = 'none';
+        }
+
+        // 点击弹窗外部关闭
+        document.getElementById('orderModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // 搜索功能
+        const searchInput = document.querySelector('.search-input');
+        searchInput.addEventListener('input', function(e) {
+            console.log('搜索内容：', e.target.value);
+        });
+
+        // 筛选功能
+        document.querySelectorAll('.filter-select').forEach(select => {
+            select.addEventListener('change', function(e) {
+                console.log('筛选条件变化：', e.target.value);
+            });
+        });
+
+        // 日期筛选
+        document.querySelectorAll('.date-input').forEach(input => {
+            input.addEventListener('change', function(e) {
+                console.log('日期变化：', e.target.value);
+            });
+        });
+
+        // 分页功能
+        document.querySelectorAll('.page-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (!this.disabled) {
+                    document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+                    if (!this.textContent.includes('...') && !this.textContent.includes('上一页') && !this.textContent.includes('下一页')) {
+                        this.classList.add('active');
+                    }
+                }
+            });
+        });
+
+        // 用户信息点击
+        document.querySelector('.header .user-info').addEventListener('click', function() {
+            if (confirm('确定要退出登录吗？')) {
+                window.location.href = '01-login.html';
+            }
+        });
+    </script>
+</body>
+</html>

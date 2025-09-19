@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 用户管理</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Helvetica Neue', sans-serif;
+            background: #f5f7fa;
+            color: #2d3748;
+        }
+
+        /* 复用基础样式 */
+        .header {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .system-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification-btn {
+            position: relative;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #4a5568;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #f56c6c;
+            color: white;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #4a5568;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 60px;
+            bottom: 0;
+            width: 240px;
+            background: white;
+            box-shadow: 1px 0 3px rgba(0, 0, 0, 0.05);
+            overflow-y: auto;
+            z-index: 99;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            color: #4a5568;
+            text-decoration: none;
+        }
+
+        .menu-item:hover {
+            background: #f7fafc;
+        }
+
+        .menu-item.active {
+            background: #eef2ff;
+            border-left-color: #667eea;
+            color: #667eea;
+        }
+
+        .menu-icon {
+            font-size: 20px;
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .menu-title {
+            font-size: 15px;
+        }
+
+        .main-content {
+            margin-left: 240px;
+            margin-top: 60px;
+            padding: 20px;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* 用户管理特定样式 */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-title-section {
+            flex: 1;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .export-btn {
+            padding: 10px 20px;
+            background: white;
+            color: #667eea;
+            border: 1px solid #667eea;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .export-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .stat-icon.blue {
+            background: #eef2ff;
+            color: #667eea;
+        }
+
+        .stat-icon.green {
+            background: #f0fdf4;
+            color: #10b981;
+        }
+
+        .stat-icon.orange {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+
+        .stat-icon.purple {
+            background: #faf5ff;
+            color: #a855f7;
+        }
+
+        .stat-info {
+            flex: 1;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        /* 搜索和筛选区域 */
+        .filter-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a0aec0;
+            font-size: 18px;
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-label {
+            color: #4a5568;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .filter-select {
+            padding: 8px 32px 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #2d3748;
+            background: white;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%234a5568' d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+        }
+
+        /* 用户列表表格 */
+        .users-table {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 16px;
+            background: #f7fafc;
+            color: #4a5568;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 16px;
+            border-top: 1px solid #f1f5f9;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: #f7fafc;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #718096;
+            font-size: 16px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 2px;
+        }
+
+        .user-phone {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .level-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .level-badge.normal {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .level-badge.silver {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .level-badge.gold {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .level-badge.diamond {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .level-badge.vip {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.active {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .status-badge.disabled {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: white;
+            color: #4a5568;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+            background: #eef2ff;
+        }
+
+        .action-btn.danger:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+            background: #fee2e2;
+        }
+
+        /* 分页 */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .pagination-info {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .page-btn {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: white;
+            color: #4a5568;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .page-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .page-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 用户详情弹窗 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #718096;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #f7fafc;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .detail-section {
+            margin-bottom: 24px;
+        }
+
+        .detail-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 12px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: #2d3748;
+        }
+
+        /* 消费记录表格 */
+        .order-history {
+            margin-top: 16px;
+        }
+
+        .mini-table {
+            width: 100%;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .mini-table th,
+        .mini-table td {
+            padding: 12px;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        .mini-table th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .mini-table td {
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .mini-table tr:hover {
+            background: #f7fafc;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">M</div>
+            <div class="system-name">本地生活服务管理平台</div>
+        </div>
+        <div class="header-right">
+            <button class="notification-btn">
+                🔔
+                <span class="notification-badge">5</span>
+            </button>
+            <div class="user-info">
+                <div class="user-avatar">👤</div>
+                <div>
+                    <div style="font-size: 14px; font-weight: 500;">超级管理员</div>
+                    <div style="font-size: 12px; color: #718096;">admin</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 侧边栏 -->
+    <aside class="sidebar">
+        <a href="02-dashboard.html" class="menu-item">
+            <span class="menu-icon">📊</span>
+            <span class="menu-title">数据看板</span>
+        </a>
+        <a href="03-merchants.html" class="menu-item">
+            <span class="menu-icon">🏪</span>
+            <span class="menu-title">商户管理</span>
+        </a>
+        <a href="04-users.html" class="menu-item active">
+            <span class="menu-icon">👥</span>
+            <span class="menu-title">用户管理</span>
+        </a>
+        <a href="05-orders.html" class="menu-item">
+            <span class="menu-icon">📋</span>
+            <span class="menu-title">订单管理</span>
+        </a>
+        <a href="#" class="menu-item">
+            <span class="menu-icon">💰</span>
+            <span class="menu-title">财务管理</span>
+        </a>
+        <a href="#" class="menu-item">
+            <span class="menu-icon">🎯</span>
+            <span class="menu-title">营销管理</span>
+        </a>
+        <a href="#" class="menu-item">
+            <span class="menu-icon">📝</span>
+            <span class="menu-title">内容管理</span>
+        </a>
+        <a href="#" class="menu-item">
+            <span class="menu-icon">⚙️</span>
+            <span class="menu-title">系统设置</span>
+        </a>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <div class="page-title-section">
+                <h1 class="page-title">用户管理</h1>
+                <p class="page-subtitle">管理平台所有注册用户，查看用户画像和消费数据</p>
+            </div>
+            <button class="export-btn">
+                <span>📊</span>
+                <span>导出数据</span>
+            </button>
+        </div>
+
+        <!-- 统计卡片 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon blue">👥</div>
+                <div class="stat-info">
+                    <div class="stat-label">总用户数</div>
+                    <div class="stat-value">23,456</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green">✨</div>
+                <div class="stat-info">
+                    <div class="stat-label">今日新增</div>
+                    <div class="stat-value">342</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange">📱</div>
+                <div class="stat-info">
+                    <div class="stat-label">活跃用户</div>
+                    <div class="stat-value">8,923</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon purple">💎</div>
+                <div class="stat-info">
+                    <div class="stat-label">VIP用户</div>
+                    <div class="stat-value">1,234</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 搜索和筛选 -->
+        <div class="filter-section">
+            <div class="filter-row">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="搜索用户昵称、手机号、ID...">
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">会员等级：</span>
+                    <select class="filter-select">
+                        <option>全部等级</option>
+                        <option>普通用户</option>
+                        <option>银卡会员</option>
+                        <option>金卡会员</option>
+                        <option>钻石会员</option>
+                        <option>VIP会员</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">状态：</span>
+                    <select class="filter-select">
+                        <option>全部状态</option>
+                        <option>正常</option>
+                        <option>已禁用</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">注册时间：</span>
+                    <select class="filter-select">
+                        <option>全部时间</option>
+                        <option>今天</option>
+                        <option>最近7天</option>
+                        <option>最近30天</option>
+                        <option>最近90天</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 用户列表 -->
+        <div class="users-table">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>用户信息</th>
+                            <th>会员等级</th>
+                            <th>注册时间</th>
+                            <th>累计消费</th>
+                            <th>积分余额</th>
+                            <th>最后活跃</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="user-info">
+                                    <div class="user-avatar-img">👨</div>
+                                    <div>
+                                        <div class="user-name">张三</div>
+                                        <div class="user-phone">138****5678</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="level-badge vip">VIP会员</span>
+                            </td>
+                            <td>2024-06-15</td>
+                            <td>¥28,580</td>
+                            <td>8,540</td>
+                            <td>2分钟前</td>
+                            <td>
+                                <span class="status-badge active">正常</span>
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    <button class="action-btn" onclick="viewUser()">查看</button>
+                                    <button class="action-btn">编辑</button>
+                                    <button class="action-btn danger">禁用</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="user-info">
+                                    <div class="user-avatar-img">👩</div>
+                                    <div>
+                                        <div class="user-name">李小花</div>
+                                        <div class="user-phone">139****8765</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="level-badge gold">金卡会员</span>
+                            </td>
+                            <td>2024-08-20</td>
+                            <td>¥12,350</td>
+                            <td>3,260</td>
+                            <td>1小时前</td>
+                            <td>
+                                <span class="status-badge active">正常</span>
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    <button class="action-btn">查看</button>
+                                    <button class="action-btn">编辑</button>
+                                    <button class="action-btn danger">禁用</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="user-info">
+                                    <div class="user-avatar-img">👨</div>
+                                    <div>
+                                        <div class="user-name">王五</div>
+                                        <div class="user-phone">137****3456</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="level-badge silver">银卡会员</span>
+                            </td>
+                            <td>2024-10-12</td>
+                            <td>¥6,880</td>
+                            <td>1,520</td>
+                            <td>3天前</td>
+                            <td>
+                                <span class="status-badge active">正常</span>
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    <button class="action-btn">查看</button>
+                                    <button class="action-btn">编辑</button>
+                                    <button class="action-btn danger">禁用</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="user-info">
+                                    <div class="user-avatar-img">👩</div>
+                                    <div>
+                                        <div class="user-name">赵小美</div>
+                                        <div class="user-phone">136****2468</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="level-badge normal">普通用户</span>
+                            </td>
+                            <td>2025-01-20</td>
+                            <td>¥2,340</td>
+                            <td>580</td>
+                            <td>1周前</td>
+                            <td>
+                                <span class="status-badge active">正常</span>
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    <button class="action-btn">查看</button>
+                                    <button class="action-btn">编辑</button>
+                                    <button class="action-btn danger">禁用</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="user-info">
+                                    <div class="user-avatar-img">👨</div>
+                                    <div>
+                                        <div class="user-name">孙大强</div>
+                                        <div class="user-phone">135****9876</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="level-badge diamond">钻石会员</span>
+                            </td>
+                            <td>2024-03-08</td>
+                            <td>¥45,680</td>
+                            <td>12,350</td>
+                            <td>2小时前</td>
+                            <td>
+                                <span class="status-badge disabled">已禁用</span>
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    <button class="action-btn">查看</button>
+                                    <button class="action-btn" style="background: #10b981; color: white; border-color: #10b981;">启用</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 分页 -->
+            <div class="pagination">
+                <div class="pagination-info">
+                    显示第 1-5 条，共 23,456 条记录
+                </div>
+                <div class="pagination-controls">
+                    <button class="page-btn" disabled>上一页</button>
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">3</button>
+                    <button class="page-btn">...</button>
+                    <button class="page-btn">4691</button>
+                    <button class="page-btn">下一页</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 用户详情弹窗 -->
+    <div class="modal-overlay" id="userModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">用户详情</h3>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-section">
+                    <h4 class="detail-title">基本信息</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">用户ID</span>
+                            <span class="detail-value">U10001</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">昵称</span>
+                            <span class="detail-value">张三</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">手机号</span>
+                            <span class="detail-value">138****5678</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">会员等级</span>
+                            <span class="detail-value"><span class="level-badge vip">VIP会员</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4 class="detail-title">账户信息</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">注册时间</span>
+                            <span class="detail-value">2024-06-15 14:23:18</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">最后活跃</span>
+                            <span class="detail-value">2025-09-19 10:28:45</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">账户状态</span>
+                            <span class="detail-value"><span class="status-badge active">正常</span></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">实名认证</span>
+                            <span class="detail-value" style="color: #10b981;">已认证 ✓</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4 class="detail-title">消费统计</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">累计消费</span>
+                            <span class="detail-value" style="color: #667eea; font-size: 18px; font-weight: 600;">¥28,580</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">订单数量</span>
+                            <span class="detail-value">156单</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">积分余额</span>
+                            <span class="detail-value">8,540分</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">优惠券</span>
+                            <span class="detail-value">12张</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4 class="detail-title">最近消费记录</h4>
+                    <div class="order-history">
+                        <table class="mini-table">
+                            <thead>
+                                <tr>
+                                    <th>订单号</th>
+                                    <th>商户</th>
+                                    <th>金额</th>
+                                    <th>时间</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#202503190001</td>
+                                    <td>星光KTV（国贸店）</td>
+                                    <td>¥568</td>
+                                    <td>2025-09-19</td>
+                                    <td><span class="status-badge active">已完成</span></td>
+                                </tr>
+                                <tr>
+                                    <td>#202503180023</td>
+                                    <td>悦茶楼（朝阳店）</td>
+                                    <td>¥238</td>
+                                    <td>2025-09-18</td>
+                                    <td><span class="status-badge active">已完成</span></td>
+                                </tr>
+                                <tr>
+                                    <td>#202503170045</td>
+                                    <td>漫咖啡（三里屯店）</td>
+                                    <td>¥128</td>
+                                    <td>2025-09-17</td>
+                                    <td><span class="status-badge active">已完成</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 查看用户详情
+        function viewUser() {
+            document.getElementById('userModal').style.display = 'flex';
+        }
+
+        // 关闭弹窗
+        function closeModal() {
+            document.getElementById('userModal').style.display = 'none';
+        }
+
+        // 点击弹窗外部关闭
+        document.getElementById('userModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // 搜索功能
+        const searchInput = document.querySelector('.search-input');
+        searchInput.addEventListener('input', function(e) {
+            console.log('搜索内容：', e.target.value);
+        });
+
+        // 筛选功能
+        document.querySelectorAll('.filter-select').forEach(select => {
+            select.addEventListener('change', function(e) {
+                console.log('筛选条件变化：', e.target.value);
+            });
+        });
+
+        // 分页功能
+        document.querySelectorAll('.page-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (!this.disabled) {
+                    document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+                    if (!this.textContent.includes('...') && !this.textContent.includes('上一页') && !this.textContent.includes('下一页')) {
+                        this.classList.add('active');
+                    }
+                }
+            });
+        });
+
+        // 导出数据
+        document.querySelector('.export-btn').addEventListener('click', function() {
+            alert('正在导出用户数据...');
+        });
+
+        // 用户信息点击
+        document.querySelector('.header .user-info').addEventListener('click', function() {
+            if (confirm('确定要退出登录吗？')) {
+                window.location.href = '01-login.html';
+            }
+        });
+    </script>
+</body>
+</html>

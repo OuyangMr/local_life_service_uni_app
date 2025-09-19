@@ -1,0 +1,50 @@
+// 引入变量
+@use './variables.scss' as *;
+
+// 引入基础样式
+@use './reset.scss';
+@use './common.scss';
+
+// 引入过渡动画
+@use './transition.scss';
+
+// 全局样式覆盖
+:root {
+  --el-color-primary: #667eea;
+  --el-color-primary-light-3: #8b9ef4;
+  --el-color-primary-light-5: #b0bcf7;
+  --el-color-primary-light-7: #d4dbfb;
+  --el-color-primary-light-8: #e1e6fc;
+  --el-color-primary-light-9: #eff2fe;
+  --el-color-primary-dark-2: #5266bb;
+}
+
+// 暗黑模式
+html.dark {
+  --el-color-primary: #8b9ef4;
+}
+
+// 滚动条样式
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--el-fill-color-lighter);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--el-fill-color);
+  border-radius: 4px;
+  
+  &:hover {
+    background-color: var(--el-fill-color-dark);
+  }
+}
+
+// 选择文本样式
+::selection {
+  background-color: var(--el-color-primary);
+  color: #fff;
+}
